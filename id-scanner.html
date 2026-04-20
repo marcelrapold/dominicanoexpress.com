@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>ID Scanner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c28;
+      --border: rgba(255,255,255,.08);
+      --accent: #4f8ef7;
+      --accent2: #7c5cf7;
+      --success: #22d3a5;
+      --warn: #f7a04f;
+      --text: #f0f0f8;
+      --text-muted: #7b7b96;
+      --radius: 20px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px 40px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      background: var(--surface);
+      border-radius: 44px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Status bar ── */
+    .statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      color: var(--text);
+    }
+    .statusbar-icons { display: flex; gap: 6px; align-items: center; }
+    .statusbar-icons svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ── App header ── */
+    .app-header {
+      padding: 12px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .back-btn svg { width: 18px; height: 18px; stroke: var(--text); fill: none; }
+    .app-title { font-size: 17px; font-weight: 700; flex: 1; }
+    .badge {
+      font-size: 11px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: .4px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      padding: 0 24px 16px;
+      gap: 8px;
+    }
+    .tab {
+      flex: 1; padding: 9px 0;
+      border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1.5px solid transparent;
+      transition: all .2s;
+    }
+    .tab.active {
+      background: linear-gradient(135deg,rgba(79,142,247,.15),rgba(124,92,247,.15));
+      border-color: rgba(79,142,247,.3);
+      color: var(--accent);
+    }
+
+    /* ── Scanner view ── */
+    #view-scan { display: block; }
+    #view-result { display: none; }
+
+    .scanner-wrap {
+      position: relative;
+      margin: 0 24px;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 1.586 / 1;
+      background: #000;
+    }
+
+    /* fake camera feed */
+    .cam-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, #1a2238 0%, #060a12 100%);
+    }
+    .cam-noise {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");
+      opacity: .5;
+    }
+
+    /* card silhouette inside camera */
+    .card-ghost {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82%; aspect-ratio: 1.586;
+      border-radius: 10px;
+      background: linear-gradient(135deg,#1e3a5f 0%, #0e2040 100%);
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      overflow: hidden;
+    }
+    .card-ghost::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.06) 50%, transparent 70%);
+      animation: cardShine 3s ease-in-out infinite;
+    }
+    @keyframes cardShine {
+      0%   { transform: translateX(-100%); }
+      50%  { transform: translateX(100%); }
+      100% { transform: translateX(100%); }
+    }
+    .card-face {
+      display: flex; gap: 8px; padding: 10px 12px;
+    }
+    .card-photo {
+      width: 36px; height: 46px;
+      border-radius: 4px;
+      background: linear-gradient(160deg,#2a4a7a,#1a2a4a);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-photo svg { width: 22px; height: 22px; fill: rgba(255,255,255,.25); }
+    .card-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; padding-top: 3px; }
+    .card-line {
+      height: 5px; border-radius: 3px;
+      background: rgba(255,255,255,.15);
+    }
+    .card-line.short { width: 55%; }
+    .card-line.medium { width: 75%; }
+    .card-line.long { width: 90%; }
+    .card-flag {
+      position: absolute; bottom: 8px; right: 10px;
+      font-size: 18px; opacity: .6;
+    }
+
+    /* scanning overlay */
+    .scan-overlay {
+      position: absolute; inset: 0;
+    }
+    .corner {
+      position: absolute;
+      width: 28px; height: 28px;
+      border-color: var(--accent);
+      border-style: solid;
+      border-radius: 3px;
+    }
+    .corner.tl { top: 12px; left: 12px; border-width: 3px 0 0 3px; }
+    .corner.tr { top: 12px; right: 12px; border-width: 3px 3px 0 0; }
+    .corner.bl { bottom: 12px; left: 12px; border-width: 0 0 3px 3px; }
+    .corner.br { bottom: 12px; right: 12px; border-width: 0 3px 3px 0; }
+
+    .scan-line {
+      position: absolute;
+      left: 12px; right: 12px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      top: 12px;
+      animation: scanMove 2.2s ease-in-out infinite;
+      box-shadow: 0 0 12px 2px rgba(79,142,247,.5);
+    }
+    @keyframes scanMove {
+      0%   { top: 12px; opacity: 1; }
+      90%  { top: calc(100% - 14px); opacity: 1; }
+      100% { top: calc(100% - 14px); opacity: 0; }
+    }
+
+    /* progress dots */
+    .scan-dots {
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 5px;
+    }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      animation: dotPulse 1.5s ease-in-out infinite;
+    }
+    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes dotPulse {
+      0%, 100% { opacity: .25; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* hint text */
+    .scan-hint {
+      text-align: center;
+      margin: 14px 24px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .scan-hint strong { color: var(--text); }
+
+    /* doc type selector */
+    .doc-types {
+      display: flex;
+      padding: 14px 24px 0;
+      gap: 8px;
+    }
+    .doc-type {
+      flex: 1; padding: 10px 4px;
+      border-radius: 12px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .doc-type:hover { border-color: rgba(79,142,247,.4); }
+    .doc-type.active {
+      background: linear-gradient(135deg,rgba(79,142,247,.12),rgba(124,92,247,.12));
+      border-color: rgba(79,142,247,.45);
+    }
+    .doc-type-icon { font-size: 20px; margin-bottom: 3px; }
+    .doc-type-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: .3px; }
+    .doc-type.active .doc-type-label { color: var(--accent); }
+
+    /* capture button */
+    .capture-row {
+      padding: 20px 24px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+    .icon-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .icon-btn svg { width: 20px; height: 20px; stroke: var(--text-muted); fill: none; }
+    .capture-btn {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: 4px solid rgba(255,255,255,.15);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 2px rgba(79,142,247,.3), 0 8px 24px rgba(79,142,247,.4);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .capture-btn:hover { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(79,142,247,.3), 0 12px 32px rgba(79,142,247,.5); }
+    .capture-btn:active { transform: scale(.95); }
+    .capture-btn svg { width: 28px; height: 28px; stroke: #fff; fill: none; }
+
+    /* ── Processing overlay ── */
+    #view-process {
+      display: none;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .process-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--surface2);
+      border-top-color: var(--accent);
+      margin: 0 auto 20px;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .process-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .process-sub { font-size: 13px; color: var(--text-muted); }
+    .process-steps {
+      margin-top: 28px;
+      display: flex; flex-direction: column; gap: 10px;
+      text-align: left;
+    }
+    .process-step {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 13px; font-weight: 500;
+    }
+    .step-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 14px;
+    }
+    .step-icon.done { background: rgba(34,211,165,.15); color: var(--success); }
+    .step-icon.active { background: rgba(79,142,247,.15); color: var(--accent); animation: stepPulse .8s ease-in-out infinite alternate; }
+    .step-icon.pending { background: var(--surface); color: var(--text-muted); opacity: .4; }
+    @keyframes stepPulse { to { opacity: .4; } }
+
+    /* ── Result view ── */
+    #view-result { display: none; }
+
+    .result-header {
+      padding: 8px 24px 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .success-badge {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg,rgba(34,211,165,.2),rgba(34,211,165,.05));
+      border: 1.5px solid rgba(34,211,165,.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .result-titles { flex: 1; }
+    .result-title { font-size: 15px; font-weight: 700; }
+    .result-sub { font-size: 12px; color: var(--success); font-weight: 600; margin-top: 1px; }
+    .conf-badge {
+      font-size: 11px; font-weight: 700;
+      background: rgba(34,211,165,.12);
+      color: var(--success);
+      padding: 4px 10px; border-radius: 99px;
+      border: 1px solid rgba(34,211,165,.25);
+    }
+
+    /* ID card preview */
+    .card-preview {
+      margin: 0 24px 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 1.586;
+      background: linear-gradient(135deg,#0d2350 0%, #1a3a6a 40%, #0d2350 100%);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .card-preview::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 50% 60% at 15% 50%, rgba(255,255,255,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 80% at 85% 50%, rgba(79,142,247,.1) 0%, transparent 60%);
+    }
+    .card-preview-inner {
+      position: relative;
+      display: flex; gap: 12px;
+      padding: 16px;
+      height: 100%;
+    }
+    .id-photo {
+      width: 56px; height: 72px;
+      border-radius: 6px;
+      background: linear-gradient(160deg,#1e3a6e,#0d2040);
+      border: 1.5px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .id-photo svg { width: 34px; height: 34px; fill: rgba(255,255,255,.3); }
+    .id-data { flex: 1; padding-top: 2px; }
+    .id-name { font-size: 13px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: #fff; }
+    .id-dob { font-size: 10px; color: rgba(255,255,255,.55); margin-top: 3px; }
+    .id-fields { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+    .id-field { display: flex; gap: 6px; align-items: center; }
+    .id-field-label { font-size: 9px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; width: 28px; }
+    .id-field-bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.12); position: relative; overflow: hidden; }
+    .id-field-bar::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(79,142,247,.6);
+      border-radius: inherit;
+    }
+    .id-field-bar.w60::after { width: 60%; }
+    .id-field-bar.w80::after { width: 80%; }
+    .id-field-bar.w45::after { width: 45%; }
+
+    .card-chip {
+      position: absolute; bottom: 14px; left: 80px;
+      width: 32px; height: 24px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, rgba(212,175,55,.4), rgba(255,215,0,.2));
+      border: 1px solid rgba(212,175,55,.3);
+    }
+    .card-flag2 {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 22px; opacity: .7;
+    }
+    .card-label {
+      position: absolute; bottom: 12px; right: 14px;
+      font-size: 8px; font-weight: 700;
+      color: rgba(255,255,255,.35);
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    /* highlight segments on card */
+    .hl-box {
+      position: absolute;
+      border: 1.5px solid rgba(79,142,247,.7);
+      border-radius: 3px;
+      background: rgba(79,142,247,.06);
+      animation: hlPulse 2s ease-in-out infinite;
+    }
+    @keyframes hlPulse {
+      0%,100% { border-color: rgba(79,142,247,.7); }
+      50% { border-color: rgba(79,142,247,1); }
+    }
+    .hl-box.name  { top: 15px; left: 76px; width: 150px; height: 16px; }
+    .hl-box.photo { top: 14px; left: 14px; width: 60px; height: 75px; }
+    .hl-box.dob   { top: 36px; left: 76px; width: 80px; height: 13px; }
+
+    /* extracted fields */
+    .fields-title {
+      padding: 0 24px 10px;
+      font-size: 13px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .8px;
+    }
+    .fields-grid {
+      padding: 0 24px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .field-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color .2s;
+    }
+    .field-card:hover { border-color: rgba(79,142,247,.3); }
+    .field-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(79,142,247,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .field-info { flex: 1; min-width: 0; }
+    .field-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .field-value { font-size: 15px; font-weight: 600; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .field-status {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 99px;
+    }
+    .field-status.ok { background: rgba(34,211,165,.1); color: var(--success); }
+    .field-status.warn { background: rgba(247,160,79,.1); color: var(--warn); }
+    .field-status.info { background: rgba(79,142,247,.1); color: var(--accent); }
+
+    /* MRZ strip */
+    .mrz-wrap {
+      margin: 14px 24px 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .mrz-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .mrz-line {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: rgba(79,142,247,.8);
+      line-height: 1.6;
+      letter-spacing: 1.5px;
+      word-break: break-all;
+    }
+
+    /* action row */
+    .action-row {
+      padding: 16px 24px 24px;
+      display: flex; gap: 10px;
+    }
+    .btn {
+      flex: 1; padding: 14px;
+      border-radius: 14px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      border: none;
+      transition: all .15s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(79,142,247,.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,142,247,.45); }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,.2); }
+
+    /* verification bar */
+    .verify-bar {
+      margin: 14px 24px 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: linear-gradient(135deg,rgba(34,211,165,.08),rgba(34,211,165,.03));
+      border: 1px solid rgba(34,211,165,.25);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .verify-icon { font-size: 20px; }
+    .verify-text { flex: 1; }
+    .verify-title { font-size: 13px; font-weight: 700; color: var(--success); }
+    .verify-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .verify-score { font-size: 22px; font-weight: 800; color: var(--success); }
+
+    /* bottom nav */
+    .bottom-nav {
+      display: flex;
+      padding: 12px 16px 20px;
+      gap: 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      padding: 8px 4px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .nav-item:hover { background: var(--surface2); }
+    .nav-item.active { background: rgba(79,142,247,.08); }
+    .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); fill: none; }
+    .nav-item.active svg { stroke: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+    .nav-item.active .nav-label { color: var(--accent); }
+
+    /* home indicator */
+    .home-indicator {
+      width: 120px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,.2);
+      margin: 0 auto 8px;
+    }
+
+    /* scrollable content */
+    .scroll-body {
+      overflow-y: auto;
+      max-height: calc(100dvh - 48px);
+      scrollbar-width: none;
+    }
+    .scroll-body::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+<div class="phone">
+  <div class="scroll-body">
+
+    <!-- Status Bar -->
+    <div class="statusbar">
+      <span>14:32</span>
+      <div class="statusbar-icons">
+        <!-- signal -->
+        <svg viewBox="0 0 24 24"><rect x="2" y="16" width="3" height="6" rx="1"/><rect x="7" y="11" width="3" height="11" rx="1"/><rect x="12" y="7" width="3" height="15" rx="1"/><rect x="17" y="3" width="3" height="19" rx="1"/></svg>
+        <!-- wifi -->
+        <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke-width="1.8" stroke-linecap="round" fill="none" stroke="currentColor"/></svg>
+        <!-- battery -->
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M22 11v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><rect x="4" y="9" width="12" height="7" rx="1" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <!-- App Header -->
+    <div class="app-header">
+      <div class="back-btn">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </div>
+      <span class="app-title">ID Scanner</span>
+      <span class="badge">AI</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('scan',this)">Scannen</div>
+      <div class="tab" onclick="showTab('history',this)">Verlauf</div>
+      <div class="tab" onclick="showTab('settings',this)">Einstellungen</div>
+    </div>
+
+    <!-- ══════ SCAN VIEW ══════ -->
+    <div id="view-scan">
+
+      <!-- Scanner -->
+      <div class="scanner-wrap">
+        <div class="cam-bg"></div>
+        <div class="cam-noise"></div>
+
+        <!-- card ghost -->
+        <div class="card-ghost">
+          <div class="card-face">
+            <div class="card-photo">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div class="card-lines">
+              <div class="card-line long"></div>
+              <div class="card-line medium"></div>
+              <div class="card-line short"></div>
+              <div class="card-line medium"></div>
+            </div>
+          </div>
+          <div class="card-flag">🇩🇪</div>
+        </div>
+
+        <!-- scan animation -->
+        <div class="scan-overlay">
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+          <div class="scan-line"></div>
+        </div>
+
+        <div class="scan-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+
+      <p class="scan-hint"><strong>Vorderseite ausrichten</strong> · Karte im Rahmen halten</p>
+
+      <!-- Document types -->
+      <div class="doc-types">
+        <div class="doc-type active">
+          <div class="doc-type-icon">🪪</div>
+          <div class="doc-type-label">Ausweis</div>
+        </div>
+        <div class="doc-type" onclick="activateDocType(this)">
+          <div class="doc-type-icon">🛂</div>
+          <div class="doc-type-label">Reisepass</div>
+        </div>
+        <div class="doc-type" onclick="activateDocType(this)">
+          <div class="doc-type-icon">🚗</div>
+          <div class="doc-type-label">Führerschein</div>
+        </div>
+        <div class="doc-type" onclick="activateDocType(this)">
+          <div class="doc-type-icon">📄</div>
+          <div class="doc-type-label">Visum</div>
+        </div>
+      </div>
+
+      <!-- Capture controls -->
+      <div class="capture-row">
+        <div class="icon-btn">
+          <!-- gallery -->
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+
+        <div class="capture-btn" onclick="startScan()">
+          <!-- scan icon -->
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>
+          </svg>
+        </div>
+
+        <div class="icon-btn">
+          <!-- flash -->
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ PROCESSING VIEW ══════ -->
+    <div id="view-process">
+      <div class="process-ring"></div>
+      <div class="process-title">Analyse läuft…</div>
+      <div class="process-sub">KI extrahiert Dokumentdaten</div>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-icon done">✓</div>
+          <span>Dokument erkannt</span>
+        </div>
+        <div class="process-step">
+          <div class="step-icon done">✓</div>
+          <span>Entzerrung &amp; Vorverarbeitung</span>
+        </div>
+        <div class="process-step" id="step-ocr">
+          <div class="step-icon active">◐</div>
+          <span>OCR &amp; Textextraktion</span>
+        </div>
+        <div class="process-step" id="step-verify">
+          <div class="step-icon pending">○</div>
+          <span>Datenvalidierung</span>
+        </div>
+        <div class="process-step" id="step-parse">
+          <div class="step-icon pending">○</div>
+          <span>Felder strukturieren</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ RESULT VIEW ══════ -->
+    <div id="view-result">
+
+      <!-- Success header -->
+      <div class="result-header">
+        <div class="success-badge">✓</div>
+        <div class="result-titles">
+          <div class="result-title">Extraktion erfolgreich</div>
+          <div class="result-sub">Personalausweis · Deutschland</div>
+        </div>
+        <div class="conf-badge">98%</div>
+      </div>
+
+      <!-- Card preview with highlights -->
+      <div class="card-preview">
+        <div class="card-preview-inner">
+          <div class="id-photo">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="id-data">
+            <div class="id-name">Müller, Maria</div>
+            <div class="id-dob">* 14.03.1990 · ♀</div>
+            <div class="id-fields">
+              <div class="id-field">
+                <span class="id-field-label">NR</span>
+                <div class="id-field-bar w80"></div>
+              </div>
+              <div class="id-field">
+                <span class="id-field-label">GÜL</span>
+                <div class="id-field-bar w60"></div>
+              </div>
+              <div class="id-field">
+                <span class="id-field-label">ADR</span>
+                <div class="id-field-bar w45"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-chip"></div>
+          <div class="card-flag2">🇩🇪</div>
+          <div class="card-label">Personalausweis</div>
+        </div>
+        <!-- highlight boxes -->
+        <div class="hl-box photo"></div>
+        <div class="hl-box name"></div>
+        <div class="hl-box dob"></div>
+      </div>
+
+      <!-- Verification bar -->
+      <div class="verify-bar">
+        <div class="verify-icon">🛡️</div>
+        <div class="verify-text">
+          <div class="verify-title">Dokument verifiziert</div>
+          <div class="verify-sub">MRZ-Prüfsumme · Sicherheitsmerkmale erkannt</div>
+        </div>
+        <div class="verify-score">A+</div>
+      </div>
+
+      <!-- Extracted fields -->
+      <div class="fields-title" style="margin-top:16px">Extrahierte Daten</div>
+      <div class="fields-grid">
+
+        <div class="field-card">
+          <div class="field-icon">👤</div>
+          <div class="field-info">
+            <div class="field-label">Vollständiger Name</div>
+            <div class="field-value">Maria Anna Müller</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">🎂</div>
+          <div class="field-info">
+            <div class="field-label">Geburtsdatum</div>
+            <div class="field-value">14. März 1990</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">🔢</div>
+          <div class="field-info">
+            <div class="field-label">Ausweisnummer</div>
+            <div class="field-value">L01X00T47</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">📅</div>
+          <div class="field-info">
+            <div class="field-label">Gültig bis</div>
+            <div class="field-value">14. März 2030</div>
+          </div>
+          <div class="field-status info">4 J.</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">🌍</div>
+          <div class="field-info">
+            <div class="field-label">Staatsangehörigkeit</div>
+            <div class="field-value">Deutsch (DEU)</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">⚧</div>
+          <div class="field-info">
+            <div class="field-label">Geschlecht</div>
+            <div class="field-value">Weiblich</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">📍</div>
+          <div class="field-info">
+            <div class="field-label">Geburtsort</div>
+            <div class="field-value">Berlin</div>
+          </div>
+          <div class="field-status ok">OK</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon">🏠</div>
+          <div class="field-info">
+            <div class="field-label">Adresse</div>
+            <div class="field-value">Musterstraße 12, 10115 Berlin</div>
+          </div>
+          <div class="field-status warn">Prüfen</div>
+        </div>
+
+      </div>
+
+      <!-- MRZ -->
+      <div class="mrz-wrap">
+        <div class="mrz-label">Maschinenlesbare Zone (MRZ)</div>
+        <div class="mrz-line">IDD&lt;&lt;MÜLLER&lt;&lt;MARIA&lt;&lt;ANNA&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+        <div class="mrz-line">L01X00T479DEU9003143F3003148&lt;&lt;&lt;&lt;&lt;4</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-row">
+        <button class="btn btn-secondary" onclick="resetScan()">Neu scannen</button>
+        <button class="btn btn-primary">Daten übernehmen</button>
+      </div>
+
+    </div><!-- /view-result -->
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span class="nav-label">Scan</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span class="nav-label">Verlauf</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="nav-label">Profil</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="nav-label">Einstellungen</span>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div><!-- /scroll-body -->
+</div><!-- /phone -->
+
+<script>
+  function showTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function activateDocType(el) {
+    document.querySelectorAll('.doc-type').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function startScan() {
+    document.getElementById('view-scan').style.display = 'none';
+    document.getElementById('view-process').style.display = 'block';
+    document.getElementById('view-result').style.display = 'none';
+
+    // simulate processing steps
+    setTimeout(() => {
+      const stepOcr = document.getElementById('step-ocr');
+      stepOcr.querySelector('.step-icon').className = 'step-icon done';
+      stepOcr.querySelector('.step-icon').textContent = '✓';
+      const stepVerify = document.getElementById('step-verify');
+      stepVerify.querySelector('.step-icon').className = 'step-icon active';
+      stepVerify.querySelector('.step-icon').textContent = '◐';
+    }, 900);
+
+    setTimeout(() => {
+      const stepVerify = document.getElementById('step-verify');
+      stepVerify.querySelector('.step-icon').className = 'step-icon done';
+      stepVerify.querySelector('.step-icon').textContent = '✓';
+      const stepParse = document.getElementById('step-parse');
+      stepParse.querySelector('.step-icon').className = 'step-icon active';
+      stepParse.querySelector('.step-icon').textContent = '◐';
+    }, 1800);
+
+    setTimeout(() => {
+      const stepParse = document.getElementById('step-parse');
+      stepParse.querySelector('.step-icon').className = 'step-icon done';
+      stepParse.querySelector('.step-icon').textContent = '✓';
+    }, 2600);
+
+    setTimeout(showResult, 3000);
+  }
+
+  function showResult() {
+    document.getElementById('view-process').style.display = 'none';
+    document.getElementById('view-result').style.display = 'block';
+    // scroll to top
+    document.querySelector('.scroll-body').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetScan() {
+    document.getElementById('view-scan').style.display = 'block';
+    document.getElementById('view-process').style.display = 'none';
+    document.getElementById('view-result').style.display = 'none';
+    // reset steps
+    const steps = ['step-ocr','step-verify','step-parse'];
+    const icons = ['◐','○','○'];
+    const classes = ['active','pending','pending'];
+    steps.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.querySelector('.step-icon').className = 'step-icon ' + classes[i];
+      el.querySelector('.step-icon').textContent = icons[i];
+    });
+    document.querySelector('.scroll-body').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
