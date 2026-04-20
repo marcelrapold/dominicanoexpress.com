@@ -685,10 +685,14 @@ async function initTesseract() {
   setTessStatus('loading', 'OCR-Engine lädt…');
   try {
     tessWorker = await Tesseract.createWorker('eng', 1, {
+      workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/worker.min.js',
+      langPath:   'https://tessdata.projectnaptha.com/4.0.0',
+      corePath:   'https://cdn.jsdelivr.net/npm/tesseract.js-core@4/tesseract-core-simd.wasm.js',
       logger: m => {
-        if (m.status === 'loading tesseract core') setTessStatus('loading', 'Kern lädt…');
+        if (m.status === 'loading tesseract core')       setTessStatus('loading', 'Kern lädt…');
         if (m.status === 'loading language traineddata') setTessStatus('loading', 'Sprachdaten lädt…');
-        if (m.status === 'initializing api') setTessStatus('loading', 'Initialisiere…');
+        if (m.status === 'initializing api')             setTessStatus('loading', 'Initialisiere…');
+        if (m.status === 'recognizing text')             setOCRProgress(m.progress);
       }
     });
     setTessStatus('ready', 'OCR bereit');
@@ -697,6 +701,11 @@ async function initTesseract() {
     setTessStatus('error', 'OCR Fehler – Seite neu laden');
     console.error('Tesseract init error:', e);
   }
+}
+
+function setOCRProgress(p) {
+  const pct = 20 + Math.round(p * 60); // map 0-1 to 20-80%
+  document.getElementById('ocr-bar').style.width = pct + '%';
 }
 
 function setTessStatus(state, text) {
@@ -708,21 +717,30 @@ function setTessStatus(state, text) {
 // ─── Camera ─────────────────────────────────────────────────────────────────
 async function initCamera() {
   const video = document.getElementById('camera-video');
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }
-    });
-    cameraStream = stream;
-    video.srcObject = stream;
-    // keep flash track ref
-    flashTrack = stream.getVideoTracks()[0];
-    document.getElementById('no-camera').style.display = 'none';
-    video.style.display = 'block';
-  } catch (e) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     video.style.display = 'none';
     document.getElementById('no-camera').style.display = 'flex';
-    console.warn('Camera not available:', e.message);
+    return;
   }
+  // Try environment (rear) camera first, fall back to any camera
+  const constraints = [
+    { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+    { video: { facingMode: 'environment' } },
+    { video: true }
+  ];
+  for (const c of constraints) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(c);
+      cameraStream = stream;
+      video.srcObject = stream;
+      flashTrack = stream.getVideoTracks()[0];
+      document.getElementById('no-camera').style.display = 'none';
+      video.style.display = 'block';
+      return;
+    } catch (_) {}
+  }
+  video.style.display = 'none';
+  document.getElementById('no-camera').style.display = 'flex';
 }
 
 function toggleFlash() {
@@ -773,44 +791,38 @@ async function captureAndScan() {
 
 // ─── OCR pipeline ────────────────────────────────────────────────────────────
 async function runOCROnDataURL(dataURL) {
-  // show captured image
   const capturedImg = document.getElementById('captured-img');
   capturedImg.src = dataURL;
   capturedImg.style.display = 'block';
   document.getElementById('camera-video').style.display = 'none';
   document.getElementById('scan-line').classList.remove('animating');
 
-  // show ocr overlay
   const overlay = document.getElementById('ocr-overlay');
   overlay.classList.add('active');
   setOCRStatus('Bild vorverarbeiten…', 5);
-
   document.getElementById('capture-btn').disabled = true;
 
   try {
-    // preprocess for better OCR
-    const processed = preprocessImage(dataURL);
+    // Bug fix: preprocessImage is now async – properly awaits image load
+    const processedCanvas = await preprocessImage(dataURL);
     setOCRStatus('OCR läuft…', 20);
 
-    const { data } = await tessWorker.recognize(processed, {}, {
-      text: true, hocr: false, tsv: false, box: false, unlv: false,
-      osd: false, pdf: false
-    });
+    // Pass canvas directly to Tesseract (more reliable than dataURL string)
+    const { data } = await tessWorker.recognize(processedCanvas);
 
     setOCRStatus('Felder extrahieren…', 85);
     const fields = extractFields(data.text, data.confidence);
     setOCRStatus('Fertig!', 100);
 
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 350));
     overlay.classList.remove('active');
-
     displayResults(fields, data.text, dataURL, data.confidence);
 
   } catch (e) {
     overlay.classList.remove('active');
     showToast('OCR fehlgeschlagen: ' + e.message, 'error');
     resetCameraView();
-    console.error(e);
+    console.error('OCR error:', e);
   }
 
   document.getElementById('capture-btn').disabled = false;
@@ -822,18 +834,32 @@ function setOCRStatus(text, pct) {
 }
 
 // ─── Image preprocessing ─────────────────────────────────────────────────────
+// Bug fix 1: async – waits for image.onload before drawing (was sync → empty canvas)
+// Bug fix 2: removed invalid CSS filter sharpen(1) (not a real filter keyword)
+// Bug fix 3: returns Canvas object directly (not dataURL string)
 function preprocessImage(dataURL) {
-  const img = new Image();
-  img.src = dataURL;
-  const c = document.createElement('canvas');
-  // upscale for better OCR (target ~1600px wide)
-  const scale = Math.max(1, Math.min(3, 1600 / (img.width || 800)));
-  c.width = (img.width || 800) * scale;
-  c.height = (img.height || 600) * scale;
-  const ctx = c.getContext('2d');
-  ctx.filter = 'grayscale(100%) contrast(160%) brightness(108%) sharpen(1)';
-  ctx.drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL('image/png');
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      const scale = Math.max(1, Math.min(3, 1600 / img.width));
+      c.width  = img.width  * scale;
+      c.height = img.height * scale;
+      const ctx = c.getContext('2d');
+      // ctx.filter only applied if browser supports it (fails silently on old iOS)
+      try { ctx.filter = 'grayscale(100%) contrast(160%) brightness(108%)'; } catch (_) {}
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      resolve(c);
+    };
+    img.onerror = () => {
+      // Fallback: return a plain canvas from the dataURL without preprocessing
+      const fallback = document.createElement('canvas');
+      fallback.width = 800; fallback.height = 500;
+      fallback.getContext('2d'); // just init
+      reject(new Error('Bild konnte nicht geladen werden'));
+    };
+    img.src = dataURL;
+  });
 }
 
 // ─── Field extraction ─────────────────────────────────────────────────────────
