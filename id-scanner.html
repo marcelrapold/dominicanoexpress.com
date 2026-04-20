@@ -456,11 +456,36 @@
 
     canvas#capture-canvas { display: none; }
     input#file-input { display: none; }
+    input#file-input-gallery { display: none; }
+
+    /* upload strip */
+    .upload-strip {
+      margin: 10px 24px 0;
+      display: flex; gap: 8px;
+    }
+    .upload-btn {
+      flex: 1; padding: 11px 8px;
+      border-radius: 13px;
+      background: var(--surface2);
+      border: 1.5px dashed rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      cursor: pointer; transition: all .2s;
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+    }
+    .upload-btn:hover, .upload-btn.drag-over {
+      border-color: rgba(79,142,247,.5);
+      background: rgba(79,142,247,.08);
+      color: var(--accent);
+    }
+    .upload-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; flex-shrink: 0; }
   </style>
 </head>
 <body>
 
 <canvas id="capture-canvas"></canvas>
+<!-- gallery: no capture attribute so user can pick from photos -->
+<input type="file" id="file-input-gallery" accept="image/*" />
+<!-- camera: capture forces camera on mobile -->
 <input type="file" id="file-input" accept="image/*" capture="environment" />
 <div class="toast" id="toast"></div>
 
@@ -507,7 +532,7 @@
             <circle cx="12" cy="13" r="4"/>
           </svg>
           <p>Kein Kamerazugriff.<br/>Bild aus Galerie laden.</p>
-          <button onclick="document.getElementById('file-input').click()">📁 Bild auswählen</button>
+          <button onclick="document.getElementById('file-input-gallery').click()">📁 Bild auswählen</button>
         </div>
 
         <div class="scan-overlay" id="scan-overlay">
@@ -527,6 +552,29 @@
 
       <p class="scan-hint"><strong>Ausweis ausrichten</strong> · Karte vollständig im Rahmen halten</p>
 
+      <!-- Upload strip -->
+      <div class="upload-strip" id="upload-strip">
+        <div class="upload-btn" onclick="document.getElementById('file-input-gallery').click()"
+             id="drop-zone"
+             ondragover="event.preventDefault(); this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="handleDrop(event)">
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          Foto hochladen
+        </div>
+        <div class="upload-btn" onclick="document.getElementById('file-input').click()" style="flex:.55">
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Kamera
+        </div>
+      </div>
+
       <!-- Tesseract status -->
       <div class="tess-status" id="tess-status">
         <div class="tess-dot loading" id="tess-dot"></div>
@@ -543,10 +591,9 @@
 
       <!-- Capture controls -->
       <div class="capture-row">
-        <div class="icon-btn" onclick="document.getElementById('file-input').click()" title="Aus Galerie">
+        <div class="icon-btn" onclick="toggleFlash()" id="flash-btn-left" title="Blitz" style="visibility:hidden">
           <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
           </svg>
         </div>
 
@@ -753,17 +800,35 @@ function toggleFlash() {
 }
 
 // ─── Gallery / file input ────────────────────────────────────────────────────
-document.getElementById('file-input').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+function handleFileInput(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    showToast('Bitte ein Bild auswählen', 'error'); return;
+  }
+  if (!tessWorker) { showToast('OCR-Engine noch nicht bereit', 'error'); return; }
   const reader = new FileReader();
   reader.onload = async (ev) => {
     capturedDataURL = ev.target.result;
     await runOCROnDataURL(capturedDataURL);
   };
   reader.readAsDataURL(file);
+}
+
+document.getElementById('file-input').addEventListener('change', e => {
+  handleFileInput(e.target.files[0]);
   e.target.value = '';
 });
+
+document.getElementById('file-input-gallery').addEventListener('change', e => {
+  handleFileInput(e.target.files[0]);
+  e.target.value = '';
+});
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer?.files[0];
+  handleFileInput(file);
+}
 
 // ─── Capture ─────────────────────────────────────────────────────────────────
 async function captureAndScan() {
