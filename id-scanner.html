@@ -731,10 +731,10 @@ setInterval(updateClock, 10000);
 async function initTesseract() {
   setTessStatus('loading', 'OCR-Engine lädt…');
   try {
+    // No explicit corePath → Tesseract auto-detects SIMD support.
+    // Forcing tesseract-core-simd.wasm.js caused null API on iOS < 16.4 and
+    // non-SIMD Android browsers (api stays null → SetImageFile crash).
     tessWorker = await Tesseract.createWorker('eng', 1, {
-      workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/worker.min.js',
-      langPath:   'https://tessdata.projectnaptha.com/4.0.0',
-      corePath:   'https://cdn.jsdelivr.net/npm/tesseract.js-core@4/tesseract-core-simd.wasm.js',
       logger: m => {
         if (m.status === 'loading tesseract core')       setTessStatus('loading', 'Kern lädt…');
         if (m.status === 'loading language traineddata') setTessStatus('loading', 'Sprachdaten lädt…');
@@ -745,8 +745,9 @@ async function initTesseract() {
     setTessStatus('ready', 'OCR bereit');
     document.getElementById('capture-btn').disabled = false;
   } catch (e) {
+    const msg = errMsg(e);
     setTessStatus('error', 'OCR Fehler – Seite neu laden');
-    console.error('Tesseract init error:', e);
+    console.error('Tesseract init error:', msg, e);
   }
 }
 
@@ -885,7 +886,7 @@ async function runOCROnDataURL(dataURL) {
 
   } catch (e) {
     overlay.classList.remove('active');
-    showToast('OCR fehlgeschlagen: ' + e.message, 'error');
+    showToast('OCR fehlgeschlagen: ' + errMsg(e), 'error');
     resetCameraView();
     console.error('OCR error:', e);
   }
@@ -1217,6 +1218,15 @@ async function copyExport() {
     setTimeout(() => { btn.classList.remove('copied'); btn.textContent = 'Kopieren'; }, 2500);
     showToast('Export kopiert ✓', 'success');
   }
+}
+
+// ─── Error helper ─────────────────────────────────────────────────────────────
+// Tesseract sometimes throws non-Error objects → extract a readable message
+function errMsg(e) {
+  if (!e) return 'Unbekannter Fehler';
+  if (typeof e === 'string') return e;
+  if (e.message) return e.message;
+  try { return JSON.stringify(e); } catch (_) { return String(e); }
 }
 
 // ─── Toast ─────────────────────────────────────────────────────────────────────
