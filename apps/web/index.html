@@ -291,66 +291,133 @@
     /* ── Process ──────────────────────────────────────────────────────────── */
     .process-bg { background: var(--cream); }
     /* ── Process (treasure map) ──────────────────────────────────────────── */
-    .pm-map { margin-top: 44px; }
-    .pm-lane {
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      position: relative; gap: 0;
+    /* ── Process – 3 Phases ─────────────────────────────────────────── */
+    .phases-grid {
+      display: grid;
+      grid-template-columns: 1fr 72px 1fr 72px 1fr;
+      gap: 0; margin-top: 48px; align-items: start;
     }
-    .pm-lane-2 { grid-template-columns: 1fr repeat(4, 1fr); }
-    .pm-lane::before {
+    /* Phase cards */
+    .phase-card {
+      border-radius: 20px; padding: 26px 22px 22px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.1);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .phase-card:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(0,0,0,.3); }
+    .phase-1 { background: linear-gradient(148deg, #1558e0 0%, #0c40b8 100%); }
+    .phase-2 { background: linear-gradient(148deg, #0a3266 0%, #030f22 100%); }
+    .phase-3 { background: linear-gradient(148deg, #c01020 0%, #6a0009 100%); }
+    /* Watermark number */
+    .ph-wm {
+      position: absolute; top: -8px; right: 14px;
+      font-size: 108px; font-weight: 900;
+      font-family: Impact, sans-serif;
+      color: rgba(255,255,255,.055);
+      line-height: 1; pointer-events: none; user-select: none;
+    }
+    /* Phase header */
+    .ph-head {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 16px; margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .ph-head-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,255,255,.13);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ph-head-icon svg {
+      width: 22px; height: 22px; stroke: rgba(255,255,255,.95);
+      fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .ph-head-text { flex: 1; min-width: 0; }
+    .ph-head-tag {
+      font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
+      text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 3px;
+    }
+    .ph-head-name {
+      font-size: 15px; font-weight: 800; color: #fff; line-height: 1.15;
+    }
+    .ph-head-flags { display: flex; gap: 4px; flex-shrink: 0; }
+    .ph-head-flag {
+      width: 24px; height: 24px; border-radius: 50%;
+      object-fit: cover; border: 2px solid rgba(255,255,255,.22);
+    }
+    /* Steps */
+    .ph-steps { display: flex; flex-direction: column; }
+    .ph-step {
+      display: flex; align-items: flex-start; gap: 11px;
+      padding: 11px 8px; border-radius: 10px;
+      transition: background .15s; position: relative; cursor: default;
+    }
+    .ph-step:not(:last-child)::after {
       content: ''; position: absolute;
-      top: 34px; left: 52px; right: 52px; height: 3px; z-index: 0;
-      background: repeating-linear-gradient(90deg,
-        rgba(14,75,180,.3) 0, rgba(14,75,180,.3) 8px,
-        transparent 8px, transparent 16px);
+      left: 54px; bottom: 0; right: 8px; height: 1px;
+      background: rgba(255,255,255,.07);
     }
-    .pm-step {
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; position: relative; z-index: 1; padding: 0 6px;
-    }
-    .pm-bubble {
-      width: 68px; height: 68px; border-radius: 50%;
+    .ph-step:hover { background: rgba(255,255,255,.06); }
+    .ph-step-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(255,255,255,.12);
       display: flex; align-items: center; justify-content: center;
-      position: relative; flex-shrink: 0;
-      box-shadow: 0 6px 20px rgba(0,0,0,.22);
-      transition: transform .22s ease, box-shadow .22s ease;
+      flex-shrink: 0; position: relative;
     }
-    .pm-step:hover .pm-bubble { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,.32); }
-    .pm-bubble svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .pm-num {
+    .ph-step-icon svg {
+      width: 17px; height: 17px; stroke: #fff; fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .ph-step-num {
       position: absolute; top: -5px; right: -5px;
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--accent); color: #fff;
-      font-size: 10px; font-weight: 900;
+      width: 15px; height: 15px; border-radius: 50%;
+      font-size: 7.5px; font-weight: 900; color: #fff;
+      background: rgba(0,0,0,.38);
+      border: 1.5px solid rgba(255,255,255,.35);
       display: flex; align-items: center; justify-content: center;
-      border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25);
     }
-    .pm-title {
-      margin-top: 12px; font-size: 12.5px; font-weight: 800;
-      color: var(--primary); line-height: 1.2; max-width: 92px;
+    .ph-step-text { flex: 1; min-width: 0; }
+    .ph-step-title {
+      font-size: 12.5px; font-weight: 800;
+      color: #fff; line-height: 1.2; margin-bottom: 3px;
     }
-    .pm-desc {
-      margin-top: 5px; font-size: 11px; color: var(--muted);
-      line-height: 1.5; max-width: 92px;
+    .ph-step-desc { font-size: 11px; color: rgba(255,255,255,.62); line-height: 1.45; }
+    /* Connectors */
+    .phase-conn {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding-top: 90px; position: relative; gap: 8px;
     }
-    .pm-spacer { visibility: hidden; pointer-events: none; }
-    .pm-turn {
-      display: flex; justify-content: flex-end; align-items: center;
-      padding: 2px 52px 2px 0; position: relative; height: 56px;
-    }
-    .pm-turn::before {
+    .phase-conn::before {
       content: ''; position: absolute;
-      right: 52px; top: 0; height: 100%; width: 3px;
+      top: 0; bottom: 0; left: 50%; width: 2px;
       background: repeating-linear-gradient(180deg,
-        rgba(206,17,38,.5) 0, rgba(206,17,38,.5) 8px,
-        transparent 8px, transparent 16px);
+        rgba(14,60,160,.25) 0, rgba(14,60,160,.25) 7px,
+        transparent 7px, transparent 14px);
+      transform: translateX(-50%);
     }
-    .pm-turn-arrow {
-      position: absolute; right: 30px; bottom: 2px;
-      color: var(--accent); font-size: 18px; line-height: 1;
+    .pc-bubble {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+      box-shadow: 0 4px 14px rgba(0,0,0,.12);
     }
+    .pc-bubble svg {
+      width: 22px; height: 22px; stroke: var(--primary); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .pc-label {
+      position: relative; z-index: 1;
+      font-size: 8.5px; font-weight: 800; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      text-align: center; line-height: 1.35;
+      background: var(--bg); padding: 2px 6px; border-radius: 4px;
+    }
+    @keyframes shipBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .pc-ship { animation: shipBob 2.8s ease-in-out infinite; }
+    /* Process tagline */
     .process-tagline {
-      margin-top: 44px; text-align: center;
+      margin-top: 40px; text-align: center;
       background: linear-gradient(135deg, #001a4a 0%, #003280 50%, #001a4a 100%);
       border-radius: var(--radius); padding: 22px 32px;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px;
@@ -361,19 +428,19 @@
       font-size: 14px; font-weight: 900; letter-spacing: 1.2px;
       padding: 7px 20px; border-radius: 6px; white-space: nowrap;
     }
-    @media (max-width: 760px) {
-      .pm-lane, .pm-lane-2 { grid-template-columns: 1fr; }
-      .pm-lane::before { display: none; }
-      .pm-step {
-        flex-direction: row; align-items: flex-start; text-align: left;
-        padding: 16px 0; gap: 16px; border-bottom: 1px dashed var(--border);
+    @media (max-width: 960px) {
+      .phases-grid { grid-template-columns: 1fr; gap: 0; }
+      .phase-conn {
+        flex-direction: row; padding-top: 0;
+        height: 56px; justify-content: center; gap: 12px;
       }
-      .pm-step:last-child { border-bottom: none; }
-      .pm-title, .pm-desc { max-width: none; margin-top: 0; }
-      .pm-title { margin-bottom: 3px; }
-      .pm-bubble { flex-shrink: 0; }
-      .pm-turn { display: none; }
-      .pm-spacer { display: none; }
+      .phase-conn::before {
+        top: 50%; left: 0; right: 0; bottom: auto;
+        width: auto; height: 2px; transform: none;
+        background: repeating-linear-gradient(90deg,
+          rgba(14,60,160,.25) 0, rgba(14,60,160,.25) 7px,
+          transparent 7px, transparent 14px);
+      }
     }
 
     /* ── Products ─────────────────────────────────────────────────────────── */
@@ -912,106 +979,179 @@
       <p class="section-sub" style="margin:14px auto 0" data-i18n="process_sub">Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.</p>
     </div>
 
-    <div class="pm-map fade-in">
+    <div class="phases-grid fade-in">
 
-      <!-- ── ROW 1: Steps 1–5 ──────────────────────────────────────────── -->
-      <div class="pm-lane">
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#1d6fef,#0d47c7)">
-            <span class="pm-num">1</span>
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
-          </div>
-          <div class="pm-title" data-i18n="pf1">Contáctanos</div>
-          <div class="pm-desc" data-i18n="pf1d">Escríbenos por WhatsApp. Te asesoramos sin compromiso.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#1a5de0,#0c3db0)">
-            <span class="pm-num">2</span>
-            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          </div>
-          <div class="pm-title" data-i18n="pf2">Llevamos</div>
-          <div class="pm-desc" data-i18n="pf2d">Te entregamos cajas o barriles vacíos en tu domicilio suizo.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#154fc2,#0a3498)">
-            <span class="pm-num">3</span>
-            <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M5 8h14"/><path d="M5 16h8"/></svg>
-          </div>
-          <div class="pm-title" data-i18n="pf3">Recogemos</div>
-          <div class="pm-desc" data-i18n="pf3d">Pasamos a recoger tu mercancía ya lista y embalada.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#113fa8,#082880)">
-            <span class="pm-num">4</span>
+      <!-- ══════════════════════════════════════════════════════════════════
+           PHASE 1 — EN SUIZA  (Steps 1–3)
+      ══════════════════════════════════════════════════════════════════ -->
+      <div class="phase-card phase-1">
+        <div class="ph-wm" aria-hidden="true">1</div>
+        <div class="ph-head">
+          <div class="ph-head-icon">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
-          <div class="pm-title" data-i18n="pf4">Almacenamos</div>
-          <div class="pm-desc" data-i18n="pf4d">Tu envío llega a nuestro almacén en Suiza, listo para el barco.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#0b4a90,#052d60)">
-            <span class="pm-num">5</span>
-            <svg viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M12 2v10"/><path d="M8 8l4-4 4 4"/><path d="M2 16s2-2 6-2 8 2 14 2"/></svg>
+          <div class="ph-head-text">
+            <div class="ph-head-tag" data-i18n="phase1_tag">FASE 1 · SUIZA</div>
+            <div class="ph-head-name" data-i18n="phase1_name">Antes del Envío</div>
           </div>
-          <div class="pm-title" data-i18n="pf5">Despachamos</div>
-          <div class="pm-desc" data-i18n="pf5d">Embarcamos en el contenedor mensual con rumbo a RD.</div>
+          <div class="ph-head-flags">
+            <img src="/flags/ch.svg" alt="CH" class="ph-head-flag"/>
+          </div>
         </div>
-
+        <div class="ph-steps">
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">1</span>
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf1">Contáctanos</div>
+              <div class="ph-step-desc" data-i18n="pf1d">Escríbenos por WhatsApp. Te asesoramos sin compromiso.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">2</span>
+              <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf2">Llevamos</div>
+              <div class="ph-step-desc" data-i18n="pf2d">Te entregamos cajas o barriles vacíos en tu domicilio suizo.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">3</span>
+              <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M5 8h14"/><path d="M5 16h8"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf3">Recogemos</div>
+              <div class="ph-step-desc" data-i18n="pf3d">Pasamos a recoger tu mercancía ya lista y embalada.</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- ── TURN (path curves down on right) ──────────────────────────── -->
-      <div class="pm-turn">
-        <span class="pm-turn-arrow">↙</span>
+      <!-- Connector 1: Truck -->
+      <div class="phase-conn" aria-hidden="true">
+        <div class="pc-bubble">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="pc-label" data-i18n="conn1">1–2 días</div>
       </div>
 
-      <!-- ── ROW 2: Steps 6–9 (right-aligned) ──────────────────────────── -->
-      <div class="pm-lane pm-lane-2">
-
-        <div class="pm-spacer pm-step" aria-hidden="true"></div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#0b4a90,#052d60)">
-            <span class="pm-num">6</span>
-            <svg viewBox="0 0 24 24"><path d="M4 22V12M20 22V12M2 22h20M2 12h20M12 12V2M7 12V7M17 12V7M7 7h10"/></svg>
+      <!-- ══════════════════════════════════════════════════════════════════
+           PHASE 2 — EN TRÁNSITO  (Steps 4–6)
+      ══════════════════════════════════════════════════════════════════ -->
+      <div class="phase-card phase-2">
+        <div class="ph-wm" aria-hidden="true">2</div>
+        <div class="ph-head">
+          <div class="ph-head-icon">
+            <svg viewBox="0 0 24 24" class="pc-ship"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M12 2v10"/><path d="M8 8l4-4 4 4"/><path d="M2 16s2-2 6-2 8 2 14 2"/></svg>
           </div>
-          <div class="pm-title" data-i18n="pf6">Aduanas</div>
-          <div class="pm-desc" data-i18n="pf6d">Gestionamos todos los trámites aduaneros sin que te preocupes.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#0d6b8a,#094e68)">
-            <span class="pm-num">7</span>
-            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <div class="ph-head-text">
+            <div class="ph-head-tag" data-i18n="phase2_tag">FASE 2 · OCÉANO</div>
+            <div class="ph-head-name" data-i18n="phase2_name">En Tránsito</div>
           </div>
-          <div class="pm-title" data-i18n="pf7">Almacenamos</div>
-          <div class="pm-desc" data-i18n="pf7d">La mercancía llega a nuestro almacén en República Dominicana.</div>
-        </div>
-
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#d06000,#9c4700)">
-            <span class="pm-num">8</span>
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.4 11.5 7.7 11.8a.5.5 0 0 0 .6 0C12.6 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+          <div class="ph-head-flags">
+            <img src="/flags/ch.svg" alt="CH" class="ph-head-flag"/>
+            <img src="/flags/do.svg" alt="DO" class="ph-head-flag"/>
           </div>
-          <div class="pm-title" data-i18n="pf8">Distribuimos<br>y Entregamos</div>
-          <div class="pm-desc" data-i18n="pf8d">Organizamos la distribución y entrega local en toda RD.</div>
         </div>
+        <div class="ph-steps">
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">4</span>
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf4">Almacenamos CH</div>
+              <div class="ph-step-desc" data-i18n="pf4d">Tu envío llega a nuestro almacén en Suiza, listo para el barco.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">5</span>
+              <svg viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M12 2v10"/><path d="M8 8l4-4 4 4"/><path d="M2 16s2-2 6-2 8 2 14 2"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf5">Despachamos</div>
+              <div class="ph-step-desc" data-i18n="pf5d">Embarcamos en el contenedor mensual con rumbo a RD.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">6</span>
+              <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf6">Aduanas</div>
+              <div class="ph-step-desc" data-i18n="pf6d">Gestionamos todos los trámites aduaneros sin que te preocupes.</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="pm-step">
-          <div class="pm-bubble" style="background:linear-gradient(135deg,#CE1126,#8e0a1a)">
-            <span class="pm-num" style="background:#001a4a">9</span>
+      <!-- Connector 2: Ship animated -->
+      <div class="phase-conn" aria-hidden="true">
+        <div class="pc-bubble">
+          <svg viewBox="0 0 24 24" class="pc-ship"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M12 2v10"/><path d="M8 8l4-4 4 4"/><path d="M2 16s2-2 6-2 8 2 14 2"/></svg>
+        </div>
+        <div class="pc-label" data-i18n="conn2">3–4 sem.</div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PHASE 3 — EN REPÚBLICA DOMINICANA  (Steps 7–9)
+      ══════════════════════════════════════════════════════════════════ -->
+      <div class="phase-card phase-3">
+        <div class="ph-wm" aria-hidden="true">3</div>
+        <div class="ph-head">
+          <div class="ph-head-icon">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="9 11 11 13 15 9" stroke-width="2.2"/></svg>
           </div>
-          <div class="pm-title" style="color:var(--accent);font-weight:900" data-i18n="pf9">¡Cliente Satisfecho!</div>
-          <div class="pm-desc" data-i18n="pf9d">Tu familia recibe todo directamente en la puerta de su hogar.</div>
+          <div class="ph-head-text">
+            <div class="ph-head-tag" data-i18n="phase3_tag">FASE 3 · ENTREGA</div>
+            <div class="ph-head-name" data-i18n="phase3_name">En República Dominicana</div>
+          </div>
+          <div class="ph-head-flags">
+            <img src="/flags/do.svg" alt="DO" class="ph-head-flag"/>
+          </div>
         </div>
-
+        <div class="ph-steps">
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">7</span>
+              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf7">Almacenamos DO</div>
+              <div class="ph-step-desc" data-i18n="pf7d">La mercancía llega a nuestro almacén en República Dominicana.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">8</span>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.4 11.5 7.7 11.8a.5.5 0 0 0 .6 0C12.6 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf8">Distribuimos y Entregamos</div>
+              <div class="ph-step-desc" data-i18n="pf8d">Organizamos la distribución y entrega local en toda RD.</div>
+            </div>
+          </div>
+          <div class="ph-step">
+            <div class="ph-step-icon">
+              <span class="ph-step-num">9</span>
+              <svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4" stroke-width="2.2"/></svg>
+            </div>
+            <div class="ph-step-text">
+              <div class="ph-step-title" data-i18n="pf9">¡Cliente Satisfecho!</div>
+              <div class="ph-step-desc" data-i18n="pf9d">Tu familia recibe todo directamente en la puerta de su hogar.</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+    </div><!-- /phases-grid -->
 
     <div class="process-tagline fade-in">
       <p class="tagline-text" data-i18n="process_tagline">"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"</p>
@@ -1474,6 +1614,10 @@ const T = {
     pf7:'Almacenamos', pf7d:'La mercancía llega a nuestro almacén en República Dominicana.',
     pf8:'Distribuimos y Entregamos', pf8d:'Organizamos la distribución y entrega local en toda RD.',
     pf9:'¡Cliente Satisfecho!', pf9d:'Tu familia recibe todo directamente en la puerta de su hogar.',
+    phase1_tag:'FASE 1 · SUIZA', phase1_name:'Antes del Envío',
+    phase2_tag:'FASE 2 · OCÉANO', phase2_name:'En Tránsito',
+    phase3_tag:'FASE 3 · ENTREGA', phase3_name:'En República Dominicana',
+    conn1:'1–2 días', conn2:'3–4 sem.',
     process_tagline:'"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"',
     process_badge:'SIEMPRE DISPUESTOS',
     gallery_label:'Enviamos Contenedores Mensuales', gallery_title:'Así trabaja nuestro equipo',
@@ -1557,6 +1701,10 @@ const T = {
     pf7:'Einlagerung DO', pf7d:'Die Ware kommt in unser Depot in der Dominikanischen Republik.',
     pf8:'Verteilung &amp; Zustellung', pf8d:'Wir organisieren die lokale Verteilung und Hauszustellung.',
     pf9:'Zufriedener Kunde!', pf9d:'Ihre Familie empfängt alles direkt an der Haustür.',
+    phase1_tag:'PHASE 1 · SCHWEIZ', phase1_name:'Vor dem Versand',
+    phase2_tag:'PHASE 2 · OZEAN', phase2_name:'Auf dem Weg',
+    phase3_tag:'PHASE 3 · ZUSTELLUNG', phase3_name:'In der Dominikanischen Republik',
+    conn1:'1–2 Tage', conn2:'3–4 Wochen',
     process_tagline:'"Weil wir Ihren Bedarf verstehen, arbeiten wir mit voller Kapazität"',
     process_badge:'IMMER BEREIT',
     gallery_label:'Monatliche Container', gallery_title:'So arbeitet unser Team',
@@ -1638,6 +1786,10 @@ const T = {
     pf7:'Storage DO', pf7d:'Goods arrive at our depot in the Dominican Republic.',
     pf8:'Distribution &amp; Delivery', pf8d:'We coordinate local distribution and home delivery.',
     pf9:'Happy Customer!', pf9d:'Your family receives everything straight at their front door.',
+    phase1_tag:'PHASE 1 · SWITZERLAND', phase1_name:'Before Shipment',
+    phase2_tag:'PHASE 2 · OCEAN', phase2_name:'In Transit',
+    phase3_tag:'PHASE 3 · DELIVERY', phase3_name:'In the Dominican Republic',
+    conn1:'1–2 days', conn2:'3–4 weeks',
     process_tagline:'"Because we understand your needs, we work at full capacity"',
     process_badge:'ALWAYS READY',
     gallery_label:'Monthly Containers', gallery_title:'Our team in action',
