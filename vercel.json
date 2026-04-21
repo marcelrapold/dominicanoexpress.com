@@ -1,4 +1,5 @@
 {
+  "outputDirectory": ".",
   "routes": [
     { "src": "/js/(.*)",               "dest": "/apps/web/js/$1" },
     { "src": "/css/(.*)",              "dest": "/apps/web/css/$1" },
