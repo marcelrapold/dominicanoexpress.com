@@ -1,0 +1,20 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/scan",        "destination": "/apps/scan/index.html" },
+    { "source": "/scan/:path*", "destination": "/apps/scan/:path*"     },
+    { "source": "/",            "destination": "/apps/web/index.html"  },
+    { "source": "/:path*",      "destination": "/apps/web/:path*"      }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options",        "value": "DENY"    },
+        { "key": "X-XSS-Protection",       "value": "1; mode=block" }
+      ]
+    }
+  ]
+}

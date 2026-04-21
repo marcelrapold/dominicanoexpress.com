@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dominicano Express</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f; color: #f1f5f9;
+      min-height: 100dvh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px 20px;
+    }
+    .logo { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .logo span { color: #2563eb; }
+    .tagline { font-size: 16px; color: #64748b; margin-bottom: 48px; text-align: center; }
+    .soon { font-size: 13px; color: #475569; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 32px; }
+    .link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      background: #2563eb; color: #fff;
+      font-size: 14px; font-weight: 600;
+      text-decoration: none; transition: background .15s;
+    }
+    .link:hover { background: #1d4ed8; }
+    .link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+  </style>
+</head>
+<body>
+  <div class="logo">Dominicano<span>Express</span></div>
+  <p class="tagline">Plattform in Entwicklung</p>
+  <div class="soon">Coming Soon</div>
+  <a href="/scan" class="link">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2"/>
+      <circle cx="8" cy="11" r="2"/><path d="M14 9h4M14 13h3"/>
+    </svg>
+    ID Scanner öffnen
+  </a>
+</body>
+</html>
