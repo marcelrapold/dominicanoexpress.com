@@ -3,8 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "build:box": "esbuild apps/web/js/box-illustration-src.mjs --bundle --format=esm --outfile=apps/web/js/box-illustration.js --platform=browser"
+  },
   "dependencies": {
     "@vercel/og": "^0.6.3",
     "resend": "^4.8.0"
+  },
+  "devDependencies": {
+    "@elchininet/isometric": "^4.0.0",
+    "esbuild": "^0.28.0"
   }
 }

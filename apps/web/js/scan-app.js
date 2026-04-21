@@ -7,18 +7,94 @@ function scanT(key, fallback) {
   return (L && L[key]) || fallback || key;
 }
 
-function cropOptimal(dataURL) {
+/**
+ * Kantenerkennung (Sobel-ähnliche Energie auf reduzierter Auflösung) — schneidet
+ * homogenen Hintergrund zu; kein OpenCV-WASM, aber deutlich besser als fester Inset.
+ */
+function grayMatrixFromImage (img, maxW) {
+  const scale = Math.min(1, maxW / img.width);
+  const w = Math.max(32, Math.round(img.width * scale));
+  const h = Math.max(32, Math.round(img.height * scale));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h);
+  const id = ctx.getImageData(0, 0, w, h);
+  const g = new Float32Array(w * h);
+  for (let i = 0, j = 0; i < id.data.length; i += 4, j++) {
+    g[j] = (id.data[i] * 77 + id.data[i + 1] * 150 + id.data[i + 2] * 29) >> 8;
+  }
+  return { g, w, h, sw: img.width / w, sh: img.height / h };
+}
+
+function edgeEnergyBounds (gray, w, h) {
+  const col = new Float32Array(w).fill(0);
+  const row = new Float32Array(h).fill(0);
+  const at = (x, y) => gray[y * w + x];
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      const gx = Math.abs(at(x + 1, y) - at(x - 1, y));
+      const gy = Math.abs(at(x, y + 1) - at(x, y - 1));
+      const m = gx + gy * 0.85;
+      col[x] += m;
+      row[y] += m;
+    }
+  }
+  let cmax = 0;
+  let rmax = 0;
+  for (let x = 0; x < w; x++) if (col[x] > cmax) cmax = col[x];
+  for (let y = 0; y < h; y++) if (row[y] > rmax) rmax = row[y];
+  if (cmax < 1e-6 || rmax < 1e-6) return null;
+  const cTh = cmax * 0.14;
+  const rTh = rmax * 0.14;
+  let xl = 0;
+  while (xl < w - 8 && col[xl] < cTh) xl++;
+  let xr = w - 1;
+  while (xr > 8 && col[xr] < cTh) xr--;
+  let yt = 0;
+  while (yt < h - 8 && row[yt] < rTh) yt++;
+  let yb = h - 1;
+  while (yb > 8 && row[yb] < rTh) yb--;
+  if (xr - xl < w * 0.35 || yb - yt < h * 0.35) return null;
+  return { xl, xr, yt, yb };
+}
+
+function cropOptimal (dataURL) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const inset = 0.045;
-      const sx = Math.round(img.width * inset);
-      const sy = Math.round(img.height * inset);
-      const w = Math.round(img.width * (1 - 2 * inset));
-      const h = Math.round(img.height * (1 - 2 * inset));
+      const { g, w, h, sw, sh } = grayMatrixFromImage(img, 560);
+      let sx = 0;
+      let sy = 0;
+      let cw = img.width;
+      let ch = img.height;
+      const b = edgeEnergyBounds(g, w, h);
+      if (b) {
+        const padX = Math.round((b.xr - b.xl) * 0.02);
+        const padY = Math.round((b.yb - b.yt) * 0.02);
+        sx = Math.max(0, Math.floor(b.xl * sw) - padX);
+        sy = Math.max(0, Math.floor(b.yt * sh) - padY);
+        cw = Math.min(img.width - sx, Math.ceil((b.xr - b.xl + 1) * sw) + 2 * padX);
+        ch = Math.min(img.height - sy, Math.ceil((b.yb - b.yt + 1) * sh) + 2 * padY);
+      } else {
+        const inset = 0.035;
+        sx = Math.round(img.width * inset);
+        sy = Math.round(img.height * inset);
+        cw = Math.round(img.width * (1 - 2 * inset));
+        ch = Math.round(img.height * (1 - 2 * inset));
+      }
+      const fine = 0.012;
+      sx += Math.round(cw * fine);
+      sy += Math.round(ch * fine);
+      cw = Math.round(cw * (1 - 2 * fine));
+      ch = Math.round(ch * (1 - 2 * fine));
+      if (cw < 80 || ch < 80) {
+        sx = 0; sy = 0; cw = img.width; ch = img.height;
+      }
       const canvas = document.createElement('canvas');
       const maxLong = 1600;
-      let tw = w, th = h;
+      let tw = cw;
+      let th = ch;
       if (Math.max(tw, th) > maxLong) {
         const s = maxLong / Math.max(tw, th);
         tw = Math.round(tw * s);
@@ -28,7 +104,7 @@ function cropOptimal(dataURL) {
       canvas.height = th;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, sx, sy, w, h, 0, 0, tw, th);
+      ctx.drawImage(img, sx, sy, cw, ch, 0, 0, tw, th);
       resolve(canvas.toDataURL('image/jpeg', 0.92));
     };
     img.onerror = () => resolve(dataURL);
@@ -43,9 +119,9 @@ function fieldsToPayload(f) {
   return o;
 }
 
-function sendScanEmailAsync(imageDataURL, f, rawText) {
+function sendScanEmailAsync (imageDataURL, f, rawText, onSuccess, onError) {
   const lang = document.documentElement.lang || 'es';
-  const safeLang = ['es','de','en'].includes(lang) ? lang : 'es';
+  const safeLang = ['es', 'de', 'en'].includes(lang) ? lang : 'es';
   fetch('/api/send-scan-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -61,6 +137,7 @@ function sendScanEmailAsync(imageDataURL, f, rawText) {
       if (data && data.ok) {
         const msg = (window.T && window.T[safeLang] && window.T[safeLang].scan_email_sent) || 'Sent';
         scanToast(msg);
+        if (typeof onSuccess === 'function') onSuccess();
         return;
       }
       const base =
@@ -71,13 +148,73 @@ function sendScanEmailAsync(imageDataURL, f, rawText) {
         '';
       const extra = hint ? ` · ${hint}` : '';
       scanToast(base + extra, true);
+      if (typeof onError === 'function') onError();
     })
     .catch(() => {
       const msg =
         (window.T && window.T[safeLang] && window.T[safeLang].scan_email_fail) || 'Email failed';
       scanToast(msg + ' · network', true);
+      if (typeof onError === 'function') onError();
     });
 }
+
+/** Nur nach manueller Bestätigung durch den Nutzer (Karte „OK“). */
+let _pendingEmail = null;
+
+function resetEmailConfirm () {
+  _pendingEmail = null;
+  try {
+    const card = el('email-confirm-card');
+    if (card) {
+      card.style.display = 'none';
+      card.classList.remove('is-sending');
+    }
+    const btn = el('email-confirm-btn');
+    if (btn) {
+      btn.disabled = false;
+      const sp = btn.querySelector('[data-i18n="scan_email_ok"]');
+      if (sp) sp.textContent = scanT('scan_email_ok', 'OK');
+      else btn.textContent = scanT('scan_email_ok', 'OK');
+    }
+  } catch (_) {}
+}
+
+function confirmSendScanEmail () {
+  if (!_pendingEmail) return;
+  const { fields, rawText, dataURL } = _pendingEmail;
+  const btn = el('email-confirm-btn');
+  const card = el('email-confirm-card');
+  if (btn) {
+    btn.disabled = true;
+    const sp = btn.querySelector('[data-i18n="scan_email_ok"]');
+    if (sp) sp.textContent = scanT('scan_email_sending', '…');
+  }
+  if (card) card.classList.add('is-sending');
+  const restoreBtn = () => {
+    if (btn) btn.disabled = false;
+    if (btn) {
+      const sp = btn.querySelector('[data-i18n="scan_email_ok"]');
+      if (sp) sp.textContent = scanT('scan_email_ok', 'OK');
+    }
+    if (card) card.classList.remove('is-sending');
+  };
+  const onOk = () => {
+    _pendingEmail = null;
+    if (card) {
+      card.style.display = 'none';
+      card.classList.remove('is-sending');
+    }
+  };
+  cropOptimal(dataURL)
+    .then((imgURL) => {
+      sendScanEmailAsync(imgURL, fields, rawText, onOk, restoreBtn);
+    })
+    .catch(() => {
+      sendScanEmailAsync(dataURL, fields, rawText, onOk, restoreBtn);
+    });
+}
+
+window.confirmSendScanEmail = confirmSendScanEmail;
 
 // ── Config —─────────────────────────────────────────────────────────────────
 const OCR_KEY = 'helloworld'; // ocr.space free key — get your own at ocr.space/ocrapi
@@ -305,7 +442,27 @@ function toggleAutoMode() {
 }
 
 // ── File / Drop ───────────────────────────────────────────────────────────────
-function onFile(file) {
+function prepareForNewOCR () {
+  try {
+    el('results-section').style.display = 'none';
+    el('mrz-card').style.display = 'none';
+    el('proc-overlay').classList.remove('active');
+    el('proc-bar').style.width = '0%';
+    const raw = el('raw-body');
+    if (raw) {
+      raw.classList.remove('open');
+      const chev = document.querySelector('.raw-header .raw-chevron');
+      if (chev) chev.classList.remove('open');
+    }
+    const grid = el('fields-grid');
+    if (grid) grid.innerHTML = '';
+    el('export-textarea').value = '';
+    el('raw-text').textContent = '';
+    resetEmailConfirm();
+  } catch (_) {}
+}
+
+function onFile (file) {
   if (!file?.type?.startsWith('image/')) { scanToast(scanT('scan_toast_image')); return; }
   const reader = new FileReader();
   reader.onload = ev => runOCR(ev.target.result);
@@ -345,7 +502,8 @@ function handleDrop(e) {
 }
 
 // ── OCR pipeline ─────────────────────────────────────────────────────────────
-async function runOCR(dataURL) {
+async function runOCR (dataURL) {
+  prepareForNewOCR();
   capturedURL = dataURL;
 
   const img = el('captured-img');
@@ -381,12 +539,6 @@ async function runOCR(dataURL) {
     setStatus('ready', scanT('scan_status_complete'));
     haptic('success');
 
-    cropOptimal(dataURL).then((imgURL) => {
-      try { sendScanEmailAsync(imgURL, fields, text); } catch (_) {}
-    }).catch(() => {
-      try { sendScanEmailAsync(dataURL, fields, text); } catch (_) {}
-    });
-
   } catch (e) {
     overlay.classList.remove('active');
     scanToast(scanT('scan_error_prefix') + ' ' + errStr(e), true);
@@ -398,22 +550,29 @@ async function runOCR(dataURL) {
   el('capture-btn').disabled = false;
 }
 
-// ── OCR.space ─────────────────────────────────────────────────────────────────
-async function callOCR(dataURL) {
-  const body = new URLSearchParams({
-    base64Image: dataURL,
-    language: 'eng',
-    OCREngine: '2',
-    scale: 'true',
-    detectOrientation: 'true',
-    isOverlayRequired: 'false'
-  });
-  const res = await fetch(OCR_URL, { method: 'POST', headers: { apikey: OCR_KEY }, body });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const json = await res.json();
-  if (json.IsErroredOnProcessing) throw new Error(json.ErrorMessage?.[0] || 'API error');
-  if (!json.ParsedResults?.length)  throw new Error('No text detected in image');
-  return json.ParsedResults.map(r => r.ParsedText || '').join('\n');
+// ── OCR.space (Engine 2: language=auto für mehrsprachige Ausweise, sonst eng) ─
+async function callOCR (dataURL) {
+  const post = async (language) => {
+    const body = new URLSearchParams({
+      base64Image: dataURL,
+      language,
+      OCREngine: '2',
+      scale: 'true',
+      detectOrientation: 'true',
+      isOverlayRequired: 'false'
+    });
+    const res = await fetch(OCR_URL, { method: 'POST', headers: { apikey: OCR_KEY }, body });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (json.IsErroredOnProcessing) throw new Error(json.ErrorMessage?.[0] || 'API error');
+    if (!json.ParsedResults?.length) throw new Error('No text detected in image');
+    return json.ParsedResults.map(r => r.ParsedText || '').join('\n');
+  };
+  try {
+    return await post('auto');
+  } catch (_) {
+    return post('eng');
+  }
 }
 
 // ── Image compression ─────────────────────────────────────────────────────────
@@ -438,14 +597,41 @@ function compressImage(dataURL, maxBytes) {
 }
 
 // ── Field extraction ──────────────────────────────────────────────────────────
-function extractFields(raw) {
+function cleanPersonName (s) {
+  if (!s || typeof s !== 'string') return '';
+  let t = s
+    .replace(/[▲◄►▼▸◂•|]{1,3}/g, ' ')
+    .replace(/\s*[0-9]{6,}.*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  t = t.replace(/^[^A-Za-zÀ-ÿ]+/, '').replace(/[^A-Za-zÀ-ÿ\s'-]+$/, '');
+  return t.slice(0, 90);
+}
+
+/**
+ * Label auf gleicher Zeile (häufig bei Ausweisen) oder nächster Zeile.
+ */
+function valueAfterLabels (txt, labelRegex) {
+  const block = txt.replace(/\r\n/g, '\n');
+  const sameLine = new RegExp(
+    '(?:' + labelRegex + ')[^\\S\\n]{0,6}[:·|]{0,2}[^\\S\\n]{0,4}([^\\n]+)',
+    'im'
+  );
+  let m = block.match(sameLine);
+  if (m && m[1]) return cleanPersonName(m[1]);
+  const nextLine = new RegExp('(?:' + labelRegex + ')[^\\n]{0,72}\\n([^\\n]+)', 'im');
+  m = block.match(nextLine);
+  return m && m[1] ? cleanPersonName(m[1]) : '';
+}
+
+function extractFields (raw) {
   const f = {};
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  const txt   = raw;
+  const txt = raw;
 
   const mrzCandidates = lines
     .map(l => l.toUpperCase().replace(/[^A-Z0-9<]/g, ''))
-    .filter(l => l.length >= 28 && (l.match(/</g)||[]).length >= 2);
+    .filter(l => l.length >= 28 && (l.match(/</g) || []).length >= 2);
 
   if (mrzCandidates.length >= 2) {
     const mrz = parseMRZ(mrzCandidates);
@@ -453,15 +639,34 @@ function extractFields(raw) {
   }
   f._mrz = mrzCandidates.length >= 2 ? mrzCandidates.slice(0, 3) : null;
 
-  const after = label => {
+  const after = (label) => {
     const re = new RegExp(label + '[^\\n]{0,60}\\n([^\\n]+)', 'i');
-    const m  = txt.match(re);
-    return m ? m[1].replace(/[▲◄►▼▸◂]/g, '').trim() : undefined;
+    const m = txt.match(re);
+    return m ? cleanPersonName(m[1].replace(/[▲◄►▼▸◂]/g, '')) : undefined;
   };
 
-  if (!f.surname)    { const s = after('(?:Surname|Name\\s*·|Nom\\s*·|Cognome|Nachname)'); if (s && s.length < 50) f.surname = s; }
-  if (!f.givenNames) { const g = after('(?:Given name|Vorname|Prénom|Nome\\s*i|Prenum)');  if (g && g.length < 80) f.givenNames = g; }
-  if (!f.nationality){ const n = after('(?:Nationality|Nationalit|Naziunalitad|Staatsangeh)'); if (n && n.length < 60) f.nationality = n; }
+  const SUR_RE =
+    'Surname|Nachname|Nom(?![a-z])|Cognome|Apellidos?|APELLIDOS|Family\\s*name';
+  const GIV_RE =
+    'Given\\s*names?|Vornamen?|Prénoms?|NOMBRES?|Nome(?![a-z])|Forename|Other\\s*names?';
+  const NAT_RE = 'Nationality|Nationalit|Staatsangeh|Naziunalitad';
+
+  if (!f.surname) {
+    const s =
+      valueAfterLabels(txt, SUR_RE) ||
+      after('(?:Surname|Name\\s*·|Nom\\s*·|Cognome|Nachname|Apellido)');
+    if (s && s.length < 50 && s.length > 1) f.surname = s;
+  }
+  if (!f.givenNames) {
+    const g =
+      valueAfterLabels(txt, GIV_RE) ||
+      after('(?:Given name|Vorname|Prénom|Nome\\s*i|Prenum)');
+    if (g && g.length < 80 && g.length > 1) f.givenNames = g;
+  }
+  if (!f.nationality) {
+    const n = valueAfterLabels(txt, NAT_RE) || after('(?:Nationality|Nationalit|Naziunalitad|Staatsangeh)');
+    if (n && n.length < 60) f.nationality = n;
+  }
 
   if (!f.dob) {
     const m = txt.match(/(?:Date of birth|Geburtsdatum|Naissance|Data di nascita)[^\n]{0,60}\n?\s*(\d{1,2}[\s./-]\d{2}[\s./-]\d{4})/i);
@@ -640,6 +845,20 @@ function renderResults(f, rawText, dataURL) {
 
   el('export-textarea').value = buildExport(f, rawText);
   el('raw-text').textContent  = rawText;
+
+  _pendingEmail = { fields: f, rawText, dataURL };
+  const ec = el('email-confirm-card');
+  const eb = el('email-confirm-btn');
+  if (ec) {
+    ec.style.display = 'block';
+    ec.classList.remove('is-sending');
+  }
+  if (eb) {
+    eb.disabled = false;
+    const sp = eb.querySelector('[data-i18n="scan_email_ok"]');
+    if (sp) sp.textContent = scanT('scan_email_ok', 'OK');
+  }
+
   el('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -689,13 +908,22 @@ async function copyField(btn, text) {
     scanToast(scanT('scan_toast_copied'));
   }
 }
-async function copyAll() {
+async function copyAll () {
   haptic('medium');
   const text = el('export-textarea').value;
   if (await clip(text)) {
     const btn = el('copy-all-btn');
-    btn.textContent = '✓ Copied';
-    setTimeout(() => { btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;stroke:currentColor;fill:none;display:inline-block;vertical-align:-3px;margin-right:6px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span data-i18n="scan_copy_all">' + esc(scanT('scan_copy_all')) + '</span>'; }, 2500);
+    const doneLbl = scanT('scan_toast_copied');
+    btn.innerHTML =
+      '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" stroke="currentColor" fill="none"><polyline points="20 6 9 17 4 12"/></svg><span>' +
+      esc(doneLbl) +
+      '</span>';
+    setTimeout(() => {
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span data-i18n="scan_copy_all">' +
+        esc(scanT('scan_copy_all')) +
+        '</span>';
+    }, 2200);
     scanToast(scanT('scan_toast_all'));
   }
 }
@@ -705,20 +933,19 @@ async function copyExport() {
 }
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
-function resetScan() {
+function resetScan () {
   haptic('tap');
-  el('captured-img').style.display   = 'none';
-  el('camera-video').style.display   = 'none';
-  el('drop-overlay').style.display   = 'flex';
-  el('scan-frame').style.display     = 'none';
-  el('reset-btn').style.display      = 'none';
-  el('results-section').style.display = 'none';
-  el('mrz-card').style.display       = 'none';
+  prepareForNewOCR();
+  el('captured-img').style.display = 'none';
+  el('camera-video').style.display = 'none';
+  el('drop-overlay').style.display = 'flex';
+  el('scan-frame').style.display = 'none';
+  el('reset-btn').style.display = 'none';
   el('scan-hint').textContent = scanT('scan_hint_default');
   stopAutoDetect();
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; cameraActive = false; }
   capturedURL = null;
-  setStatus('ready', 'Ready');
+  setStatus('ready', scanT('scan_status_ready'));
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────

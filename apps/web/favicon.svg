@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Switzerland and Dominican Republic">
+  <title>CH + DO — Dominicano Express</title>
+  <defs>
+    <clipPath id="ch-clip"><circle cx="24" cy="32" r="19"/></clipPath>
+    <clipPath id="do-clip"><circle cx="40" cy="32" r="19"/></clipPath>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <!-- Switzerland: red field, white cross -->
+  <circle cx="24" cy="32" r="19" fill="#CC1422"/>
+  <g clip-path="url(#ch-clip)">
+    <rect x="8" y="28.5" width="32" height="7" rx="0.5" fill="#ffffff"/>
+    <rect x="20.5" y="16" width="7" height="32" rx="0.5" fill="#ffffff"/>
+  </g>
+  <circle cx="24" cy="32" r="19" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- Dominican Republic: quarters + white cross (simplified, no coat of arms) -->
+  <g clip-path="url(#do-clip)">
+    <rect x="21" y="13" width="19" height="19" fill="#002D62"/>
+    <rect x="40" y="13" width="19" height="19" fill="#CE1126"/>
+    <rect x="21" y="32" width="19" height="19" fill="#CE1126"/>
+    <rect x="40" y="32" width="19" height="19" fill="#002D62"/>
+    <rect x="21" y="29" width="38" height="6" fill="#ffffff"/>
+    <rect x="37" y="13" width="6" height="38" fill="#ffffff"/>
+  </g>
+  <circle cx="40" cy="32" r="19" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+</svg>

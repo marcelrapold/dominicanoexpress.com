@@ -48,9 +48,10 @@
   <meta name="geo.position"  content="47.5977;8.5944" />
   <meta name="ICBM"          content="47.5977, 8.5944" />
 
-  <!-- ── Icons / PWA ──────────────────────────────────────────────────── -->
-  <link rel="icon"             href="/logo.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <!-- ── Icons / PWA (Favicon: CH + DO kombiniert → favicon.svg) ──────── -->
+  <link rel="icon"             href="/favicon.svg" type="image/svg+xml" />
+  <link rel="alternate icon"   href="/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
   <link rel="manifest"         href="/site.webmanifest" />
   <link rel="stylesheet" href="/css/scan-app.css" />
 
@@ -461,6 +462,14 @@
       border: 1px solid rgba(255,255,255,.1);
     }
     .hero-product-strip img:hover { opacity: 1; }
+    .hero-product-strip .box-illustration-root {
+      height: 72px; border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.04);
+    }
+    .hero-product-strip .box-illustration-root svg { width: 100%; height: auto; max-height: 72px; opacity: .92; }
+    .hero-product-strip .box-illustration-root:hover svg { opacity: 1; }
     .stat-item {
       background: rgba(255,255,255,.06); border-radius: 10px;
       padding: 14px; text-align: center;
@@ -707,7 +716,13 @@
       width: 100%; height: 100%; object-fit: cover;
       transition: transform .35s ease;
     }
-    .product-card:hover .product-img img { transform: scale(1.04); }
+    .product-img .box-illustration-root {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      padding: 8px; box-sizing: border-box;
+    }
+    .product-img .box-illustration-root svg { width: 100%; max-width: 280px; height: auto; transition: transform .35s ease; overflow: visible; }
+    .product-card:hover .product-img img,
+    .product-card:hover .product-img .box-illustration-root svg { transform: scale(1.04); }
     .product-body { padding: 18px; }
     .product-name { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
     .product-size { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
@@ -1336,9 +1351,9 @@
             </div>
           </div>
           <div class="hero-product-strip">
-            <img src="/img/products/box-mediana.png" alt="Caja" loading="lazy" />
+            <div data-box-model="mediana" data-box-variant="hero" role="img" data-i18n-aria="prod_med_aria"></div>
             <img src="/img/products/barriles.png" alt="Barril" loading="lazy" />
-            <img src="/img/products/box-jumbo.png" alt="Jumbo" loading="lazy" />
+            <div data-box-model="jumbo" data-box-variant="hero" role="img" data-i18n-aria="prod_jum_aria"></div>
           </div>
         </div>
       </div>
@@ -1554,44 +1569,44 @@
       <div class="products-grid">
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="/img/products/box-mediana.png" alt="Caja Mediana" loading="lazy" />
+            <div data-box-model="mediana" data-box-variant="card" role="img" data-i18n-aria="prod_med_aria"></div>
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_med_name">Caja Mediana</div>
-            <div class="product-size">70 × 50 × 50 cm</div>
+            <div class="product-size" data-i18n="prod_med_size">70 × 50 × 50 cm</div>
             <div class="product-desc" data-i18n="prod_med_desc">Fabricada con el cartón más resistente de nuestra línea. Ideal para ropa, zapatos, alimentos secos y artículos delicados. Resiste humedad y mantiene su forma en todo el trayecto.</div>
             <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20la%20Caja%20Mediana" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
           </div>
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="/img/products/box-jumbo.png" alt="Caja Jumbo" loading="lazy" />
+            <div data-box-model="jumbo" data-box-variant="card" role="img" data-i18n-aria="prod_jum_aria"></div>
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_jum_name">Caja Jumbo</div>
-            <div class="product-size" data-i18n="prod_jum_size">Tamaño grande</div>
+            <div class="product-size" data-i18n="prod_jum_size">85 × 60 × 60 cm</div>
             <div class="product-desc" data-i18n="prod_jum_desc">Cartón de muy alta resistencia, ideal para enviar mayor cantidad de mercancía sin perder seguridad. Perfecta para artículos pesados o voluminosos.</div>
             <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20la%20Caja%20Jumbo" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
           </div>
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="/img/products/box-maxi.png" alt="Caja Maxi" loading="lazy" />
+            <div data-box-model="maxi" data-box-variant="card" role="img" data-i18n-aria="prod_max_aria"></div>
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_max_name">Caja Maxi</div>
-            <div class="product-size" data-i18n="prod_max_size">Máxima capacidad</div>
+            <div class="product-size" data-i18n="prod_max_size">100 × 70 × 70 cm</div>
             <div class="product-desc" data-i18n="prod_max_desc">Diseñada para quienes necesitan más espacio. Permite enviar más ropa, artículos del hogar, juguetes y mercancía variada en una sola caja.</div>
             <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20la%20Caja%20Maxi" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
           </div>
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="/img/products/box-mega.png" alt="Caja Mega" loading="lazy" />
+            <div data-box-model="mega" data-box-variant="card" role="img" data-i18n-aria="prod_meg_aria"></div>
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_meg_name">Caja Mega</div>
-            <div class="product-size" data-i18n="prod_meg_size">Nuestra opción más grande</div>
+            <div class="product-size" data-i18n="prod_meg_size">120 × 85 × 85 cm</div>
             <div class="product-desc" data-i18n="prod_meg_desc">Ideal para grandes cantidades o artículos voluminosos. Ropa, electrodomésticos pequeños, utensilios y textiles viajan seguros en la caja más espaciosa de nuestra línea.</div>
             <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20la%20Caja%20Mega" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
           </div>
@@ -2127,6 +2142,9 @@ const T = {
     scan_email_sent:'Solicitud enviada por correo',
     scan_email_fail:'No se pudo enviar el correo (revisa la configuración)',
     scan_popup_close:'Cerrar',
+    scan_email_prompt:'Revisa que los datos (sobre todo nombres y apellidos) sean correctos; luego envía una copia a nuestro equipo.',
+    scan_email_ok:'OK — enviar',
+    scan_email_sending:'Enviando…',
     process_label:'Así Funcionamos', process_title:'9 pasos, de puerta a puerta',
     process_sub:'Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.',
     pf1:'Contáctanos', pf1d:'Escríbenos por WhatsApp. Te asesoramos sin compromiso.',
@@ -2161,10 +2179,18 @@ const T = {
     products_label:'Productos', products_title:'Cajas y barriles para cada necesidad',
     products_sub:'Materiales resistentes para larga distancia marítima. Todos los tamaños disponibles.',
     tab_cajas:'📦 Cajas', tab_barriles:'🛢️ Barriles',
-    prod_med_name:'Caja Mediana', prod_med_desc:'Fabricada con el cartón más resistente. Ideal para ropa, zapatos, alimentos secos y artículos delicados.',
-    prod_jum_name:'Caja Jumbo', prod_jum_size:'Tamaño grande', prod_jum_desc:'Alta resistencia para mayor cantidad de mercancía. Perfecta para artículos pesados o voluminosos.',
-    prod_max_name:'Caja Maxi', prod_max_size:'Máxima capacidad', prod_max_desc:'Para quienes necesitan más espacio. Ropa, artículos del hogar, juguetes y mercancía variada.',
-    prod_meg_name:'Caja Mega', prod_meg_size:'Nuestra opción más grande', prod_meg_desc:'Ideal para grandes cantidades. Ropa, electrodomésticos pequeños, utensilios y textiles.',
+    prod_med_name:'Caja Mediana', prod_med_size:'70 × 50 × 50 cm',
+    prod_med_aria:'Ilustración vectorial Caja Mediana — medidas en cm (alto × fondo × ancho en la figura)',
+    prod_med_desc:'Fabricada con el cartón más resistente. Ideal para ropa, zapatos, alimentos secos y artículos delicados.',
+    prod_jum_name:'Caja Jumbo', prod_jum_size:'85 × 60 × 60 cm',
+    prod_jum_aria:'Ilustración vectorial Caja Jumbo — medidas en cm',
+    prod_jum_desc:'Alta resistencia para mayor cantidad de mercancía. Perfecta para artículos pesados o voluminosos.',
+    prod_max_name:'Caja Maxi', prod_max_size:'100 × 70 × 70 cm',
+    prod_max_aria:'Ilustración vectorial Caja Maxi — medidas en cm',
+    prod_max_desc:'Para quienes necesitan más espacio. Ropa, artículos del hogar, juguetes y mercancía variada.',
+    prod_meg_name:'Caja Mega', prod_meg_size:'120 × 85 × 85 cm',
+    prod_meg_aria:'Ilustración vectorial Caja Mega — medidas en cm',
+    prod_meg_desc:'Ideal para grandes cantidades. Ropa, electrodomésticos pequeños, utensilios y textiles.',
     prod_cta:'Cotizar →', barril_type:'Barril', zafacon_type:'Zafacón',
     barril_intro:'Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.',
     barril_footer:'Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo.',
@@ -2288,6 +2314,9 @@ const T = {
     scan_email_sent:'E-Mail wurde gesendet',
     scan_email_fail:'E-Mail konnte nicht gesendet werden',
     scan_popup_close:'Schließen',
+    scan_email_prompt:'Bitte prüfen Sie die Angaben (insbesondere Namen). Wenn alles stimmt, senden Sie die Daten an unser Team.',
+    scan_email_ok:'OK — senden',
+    scan_email_sending:'Wird gesendet…',
     process_label:'So funktioniert es', process_title:'9 Schritte, Tür zu Tür',
     process_sub:'Von der Anfrage bis zur Haustür — wir kümmern uns um absolut alles.',
     pf1:'Kontakt', pf1d:'Schreiben Sie uns auf WhatsApp. Kostenlose Beratung.',
@@ -2322,10 +2351,18 @@ const T = {
     products_label:'Produkte', products_title:'Kisten und Fässer für jeden Bedarf',
     products_sub:'Robuste Materialien für lange Seefrachtwege. Alle Grössen verfügbar.',
     tab_cajas:'📦 Kisten', tab_barriles:'🛢️ Fässer',
-    prod_med_name:'Kiste Mediana', prod_med_desc:'Aus dem robustesten Karton unseres Sortiments. Ideal für Kleider, Schuhe, Haushaltswaren und empfindliche Artikel.',
-    prod_jum_name:'Kiste Jumbo', prod_jum_size:'Grosse Grösse', prod_jum_desc:'Hochwiderstandsfähiger Karton für grössere Sendungen. Perfekt für schwere oder voluminöse Artikel.',
-    prod_max_name:'Kiste Maxi', prod_max_size:'Maximale Kapazität', prod_max_desc:'Für Kund:innen, die mehr Volumen brauchen. Kleider, Haushaltswaren, Spielzeug und gemischte Ware.',
-    prod_meg_name:'Kiste Mega', prod_meg_size:'Unsere grösste Option', prod_meg_desc:'Für grosse Mengen oder voluminöse Artikel. Kleider, Kleingeräte, Haushaltsware reisen sicher.',
+    prod_med_name:'Kiste Mediana', prod_med_size:'70 × 50 × 50 cm',
+    prod_med_aria:'Vektorillustration Kiste Mediana — Angaben in cm',
+    prod_med_desc:'Aus dem robustesten Karton unseres Sortiments. Ideal für Kleider, Schuhe, Haushaltswaren und empfindliche Artikel.',
+    prod_jum_name:'Kiste Jumbo', prod_jum_size:'85 × 60 × 60 cm',
+    prod_jum_aria:'Vektorillustration Kiste Jumbo — Angaben in cm',
+    prod_jum_desc:'Hochwiderstandsfähiger Karton für grössere Sendungen. Perfekt für schwere oder voluminöse Artikel.',
+    prod_max_name:'Kiste Maxi', prod_max_size:'100 × 70 × 70 cm',
+    prod_max_aria:'Vektorillustration Kiste Maxi — Angaben in cm',
+    prod_max_desc:'Für Kund:innen, die mehr Volumen brauchen. Kleider, Haushaltswaren, Spielzeug und gemischte Ware.',
+    prod_meg_name:'Kiste Mega', prod_meg_size:'120 × 85 × 85 cm',
+    prod_meg_aria:'Vektorillustration Kiste Mega — Angaben in cm',
+    prod_meg_desc:'Für grosse Mengen oder voluminöse Artikel. Kleider, Kleingeräte, Haushaltsware reisen sicher.',
     prod_cta:'Anfragen →', barril_type:'Fass', zafacon_type:'Tonne',
     barril_intro:'Robust und sicher für grosse Volumen. In verschiedenen Kapazitäten verfügbar.',
     barril_footer:'Aus robusten Materialien, beständig gegen Gewicht, Feuchtigkeit und intensive Handhabung.',
@@ -2447,6 +2484,9 @@ const T = {
     scan_email_sent:'Email sent',
     scan_email_fail:'Could not send email',
     scan_popup_close:'Close',
+    scan_email_prompt:'Check that the details (especially names) are correct, then send a copy to our team.',
+    scan_email_ok:'OK — send',
+    scan_email_sending:'Sending…',
     process_label:'How it works', process_title:'9 steps, door to door',
     process_sub:'From the first message to delivery — we handle absolutely everything.',
     pf1:'Contact us', pf1d:'Message us on WhatsApp. Free consultation, no commitment.',
@@ -2481,10 +2521,18 @@ const T = {
     products_label:'Products', products_title:'Boxes and barrels for every need',
     products_sub:'Durable materials for long-distance ocean freight. All sizes available.',
     tab_cajas:'📦 Boxes', tab_barriles:'🛢️ Barrels',
-    prod_med_name:'Mediana Box', prod_med_desc:'Made from the most durable cardboard in our range. Ideal for clothing, shoes, dry food and fragile goods.',
-    prod_jum_name:'Jumbo Box', prod_jum_size:'Large size', prod_jum_desc:'High-strength cardboard for larger shipments without compromising safety. Ideal for heavy or bulky items.',
-    prod_max_name:'Maxi Box', prod_max_size:'Maximum capacity', prod_max_desc:'Built for customers who need more space. More clothing, household items, toys and mixed goods.',
-    prod_meg_name:'Mega Box', prod_meg_size:'Our largest option', prod_meg_desc:'Perfect for big volumes or bulky items. Clothes, small appliances, utensils and textiles travel safely.',
+    prod_med_name:'Mediana Box', prod_med_size:'70 × 50 × 50 cm',
+    prod_med_aria:'Vector illustration — Mediana box dimensions in cm',
+    prod_med_desc:'Made from the most durable cardboard in our range. Ideal for clothing, shoes, dry food and fragile goods.',
+    prod_jum_name:'Jumbo Box', prod_jum_size:'85 × 60 × 60 cm',
+    prod_jum_aria:'Vector illustration — Jumbo box dimensions in cm',
+    prod_jum_desc:'High-strength cardboard for larger shipments without compromising safety. Ideal for heavy or bulky items.',
+    prod_max_name:'Maxi Box', prod_max_size:'100 × 70 × 70 cm',
+    prod_max_aria:'Vector illustration — Maxi box dimensions in cm',
+    prod_max_desc:'Built for customers who need more space. More clothing, household items, toys and mixed goods.',
+    prod_meg_name:'Mega Box', prod_meg_size:'120 × 85 × 85 cm',
+    prod_meg_aria:'Vector illustration — Mega box dimensions in cm',
+    prod_meg_desc:'Perfect for big volumes or bulky items. Clothes, small appliances, utensils and textiles travel safely.',
     prod_cta:'Get quote →', barril_type:'Barrel', zafacon_type:'Wheelie bin',
     barril_intro:'Robust and secure for large volumes. Available in different capacities.',
     barril_footer:'Strong, durable materials handle weight, humidity and heavy maritime handling.',
@@ -2588,6 +2636,11 @@ function setLang(lang, save = true) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (T[lang]?.[key] !== undefined) el.innerHTML = T[lang][key];
+  });
+
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria');
+    if (T[lang]?.[key] !== undefined) el.setAttribute('aria-label', T[lang][key]);
   });
 
   // Update rotating tagline for new language
@@ -2985,6 +3038,13 @@ function galleryHeroClick() {
           </div>
           <div class="fields-grid results-animate" id="s-fields-grid"></div>
 
+          <div class="email-confirm-card results-animate" id="s-email-confirm-card" style="display:none" aria-live="polite">
+            <p class="email-confirm-text" data-i18n="scan_email_prompt">…</p>
+            <button type="button" class="btn-email-confirm" id="s-email-confirm-btn" onclick="confirmSendScanEmail()">
+              <span data-i18n="scan_email_ok">OK</span>
+            </button>
+          </div>
+
           <div class="mrz-card results-animate" id="s-mrz-card" style="display:none">
             <div class="mrz-label" data-i18n="scan_mrz">MRZ</div>
             <div id="s-mrz-lines"></div>
@@ -3084,6 +3144,7 @@ function galleryHeroClick() {
 })();
 </script>
 
+<script type="module" src="/js/box-illustration.js"></script>
 <script src="/js/scan-app.js" defer></script>
 </body>
 </html>
