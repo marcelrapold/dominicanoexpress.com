@@ -600,6 +600,56 @@
       border: 1px dashed #fbbf24; border-radius: 4px;
       font-size: 11px; font-weight: 700; padding: 1px 6px;
     }
+
+    /* ── Lightbox ──────────────────────────────────────────────────────────── */
+    [data-lb] { cursor: zoom-in; }
+    #lb {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.92); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    #lb.lb-open { opacity: 1; pointer-events: all; }
+    #lb-inner {
+      position: relative; max-width: min(90vw, 900px); max-height: 90vh;
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+    }
+    #lb-img {
+      max-width: 100%; max-height: 78vh; border-radius: 10px;
+      object-fit: contain; display: block;
+      transform: scale(.94); opacity: 0;
+      transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .28s ease;
+      box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    }
+    #lb.lb-open #lb-img { transform: scale(1); opacity: 1; }
+    #lb-img.lb-loading { opacity: .3; }
+    #lb-footer {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 4px 0;
+    }
+    #lb-cap { font-size: 13px; color: rgba(255,255,255,.75); font-weight: 500; }
+    #lb-count { font-size: 12px; color: rgba(255,255,255,.4); font-variant-numeric: tabular-nums; }
+    #lb-close, #lb-prev, #lb-next {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px); flex-shrink: 0;
+      transition: background .15s, transform .15s;
+    }
+    #lb-close:hover, #lb-prev:hover, #lb-next:hover { background: rgba(255,255,255,.22); transform: scale(1.08); }
+    #lb-close { position: absolute; top: -48px; right: 0; width: 36px; height: 36px; }
+    #lb-close svg { width: 18px; height: 18px; }
+    #lb-prev, #lb-next { width: 44px; height: 44px; }
+    #lb-prev svg, #lb-next svg { width: 22px; height: 22px; }
+    #lb-prev { margin-right: 4px; }
+    #lb-next { margin-left: 4px; }
+    @media (max-width: 600px) {
+      #lb-prev, #lb-next { position: absolute; top: 50%; transform: translateY(-50%); margin: 0; }
+      #lb-prev { left: 8px; }
+      #lb-next { right: 8px; }
+      #lb-inner { max-width: 100vw; }
+    }
   </style>
 </head>
 <body>
@@ -914,7 +964,7 @@
       <div class="products-grid">
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" data-lb data-lb-cap="Caja Mediana — 70×50×50 cm" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_med_name">Caja Mediana</div>
@@ -925,7 +975,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" data-lb data-lb-cap="Caja Jumbo — Alta resistencia" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_jum_name">Caja Jumbo</div>
@@ -936,7 +986,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" data-lb data-lb-cap="Caja Maxi — Máxima capacidad" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_max_name">Caja Maxi</div>
@@ -947,7 +997,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" data-lb data-lb-cap="Caja Mega — Nuestra opción más grande" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_meg_name">Caja Mega</div>
@@ -962,7 +1012,7 @@
     <div id="tab-barriles" class="tab-panel">
       <div class="barril-hero fade-in">
         <div class="barril-hero-img">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/rs=w:800,cg:true" alt="Barriles Dominicano Express" loading="lazy" />
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/rs=w:800,cg:true" alt="Barriles Dominicano Express" loading="lazy" data-lb data-lb-cap="Barriles — 120L, 150L, 220L y Zafacones" />
         </div>
         <div>
           <p class="section-sub" style="margin-bottom:24px" data-i18n="barril_intro">Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.</p>
@@ -1017,7 +1067,7 @@
         </div>
       </div>
       <div class="flags-display fade-in" style="display:block; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,.12);">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:700,cg:true" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:700,cg:true" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" data-lb data-lb-cap="Embalaje profesional — Dominicano Express GmbH" />
         <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
           <div style="text-align:center">
             <img src="/flags/ch.svg" alt="CH" class="flag-img flag-about" />
@@ -1576,6 +1626,94 @@ const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// ── Lightbox ────────────────────────────────────────────────────────────────────
+(function() {
+  const lb      = document.getElementById('lb');
+  const lbImg   = document.getElementById('lb-img');
+  const lbCap   = document.getElementById('lb-cap');
+  const lbCount = document.getElementById('lb-count');
+  let items = [], cur = 0, startX = 0;
+
+  function collectItems() {
+    items = Array.from(document.querySelectorAll('[data-lb]')).map(el => ({
+      src: el.dataset.lbSrc || el.src || el.querySelector('img')?.src,
+      cap: el.dataset.lbCap || el.alt || el.querySelector('img')?.alt || ''
+    }));
+  }
+
+  function open(idx) {
+    collectItems();
+    cur = ((idx % items.length) + items.length) % items.length;
+    const item = items[cur];
+    lbImg.src = '';
+    lbImg.classList.add('lb-loading');
+    lbImg.onload = () => lbImg.classList.remove('lb-loading');
+    lbImg.src = item.src.replace(/\/rs=w:\d+/, '/rs=w:1200');
+    lbCap.textContent = item.cap;
+    lbCount.textContent = `${cur + 1} / ${items.length}`;
+    lb.classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lb.classList.remove('lb-open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  function prev() { open(cur - 1); }
+  function next() { open(cur + 1); }
+
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.getElementById('lb-close').addEventListener('click', close);
+  document.getElementById('lb-prev').addEventListener('click', prev);
+  document.getElementById('lb-next').addEventListener('click', next);
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('lb-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  lb.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+  }, { passive: true });
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-lb]');
+    if (!el) return;
+    e.preventDefault();
+    collectItems();
+    const idx = Array.from(document.querySelectorAll('[data-lb]')).indexOf(el);
+    open(idx);
+  });
+
+  window.lbOpen = open;
+})();
 </script>
+
+<!-- ── Lightbox overlay ───────────────────────────────────────────────────────── -->
+<div id="lb" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button id="lb-close" aria-label="Schliessen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button id="lb-prev" aria-label="Vorheriges Bild">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div id="lb-inner">
+    <img id="lb-img" alt="" />
+    <div id="lb-footer">
+      <span id="lb-cap"></span>
+      <span id="lb-count"></span>
+    </div>
+  </div>
+  <button id="lb-next" aria-label="Nächstes Bild">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
 </body>
 </html>
