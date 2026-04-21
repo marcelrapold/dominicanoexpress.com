@@ -2702,9 +2702,18 @@ function startTaglineRotation(lang) {
 // ── Auto-init: detect & apply language on page load ───────────────────────────
 (function initLang() {
   const lang = getInitialLang();
-  // setLang applies everything; save=true writes cookie even on auto-detection
-  // so next visit uses the detected preference without re-detecting
+  /* setLang muss zweimal laufen:
+     1× sofort — inline-Script liegt mitten im HTML; alle Elemente oberhalb
+        werden direkt übersetzt und der User sieht keinen Flash-of-Default-Text.
+     2× nach DOMContentLoaded — zu diesem Zeitpunkt läuft der Parser und
+        das darunter liegende Markup (u.a. Scanner-Popup, Footer) existiert
+        noch nicht. Ohne den zweiten Lauf blieben diese Elemente auf ihrem
+        HTML-Default („Schliessen“, „…“) hängen. save=false, weil das Cookie
+        im ersten Lauf bereits gesetzt wurde. */
   setLang(lang, true);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setLang(lang, false), { once: true });
+  }
   // Clean ?lang= from URL without reload (keeps URL clean)
   if (new URLSearchParams(window.location.search).has('lang')) {
     const clean = window.location.pathname + window.location.hash;
