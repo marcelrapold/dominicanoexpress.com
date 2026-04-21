@@ -1,17 +1,22 @@
 {
   "routes": [
-    { "src": "/scan/?$",          "dest": "/apps/scan/index.html" },
-    { "src": "/scan/(.*)",        "dest": "/apps/scan/$1" },
-    { "src": "/flags/(.*)",       "dest": "/apps/web/flags/$1" },
-    { "src": "/logo\\.svg",         "dest": "/apps/web/logo.svg" },
-    { "src": "/logo-white\\.svg",   "dest": "/apps/web/logo-white.svg" },
+    { "src": "/scan/?$",               "dest": "/apps/scan/index.html" },
+    { "src": "/scan/(.*)",             "dest": "/apps/scan/$1" },
+    { "src": "/og-image\\.png",        "dest": "/api/og" },
+    { "src": "/flags/(.*)",            "dest": "/apps/web/flags/$1" },
+    { "src": "/logo\\.svg",            "dest": "/apps/web/logo.svg" },
+    { "src": "/logo-white\\.svg",      "dest": "/apps/web/logo-white.svg" },
+    { "src": "/site\\.webmanifest",    "dest": "/apps/web/site.webmanifest" },
+    { "src": "/apple-touch-icon\\.png","dest": "/apps/web/logo.svg" },
     {
       "src": "/(.*)",
       "dest": "/apps/web/index.html",
       "headers": {
         "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "X-XSS-Protection": "1; mode=block"
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
       }
     }
   ]

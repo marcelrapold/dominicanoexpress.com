@@ -1,0 +1,13 @@
+{
+  "name": "Dominicano Express GmbH",
+  "short_name": "Dominicano Express",
+  "description": "Envíos marítimos mensuales Suiza ↔ República Dominicana. Puerta a puerta, seguro incluido.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#00205B",
+  "theme_color": "#00205B",
+  "lang": "es",
+  "icons": [
+    { "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
