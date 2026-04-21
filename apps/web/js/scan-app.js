@@ -860,6 +860,13 @@ function renderResults(f, rawText, dataURL) {
   }
 
   el('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (ec) {
+    requestAnimationFrame(() => {
+      try {
+        ec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (_) {}
+    });
+  }
 }
 
 // ── Export builder ────────────────────────────────────────────────────────────
