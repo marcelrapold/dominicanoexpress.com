@@ -1087,7 +1087,7 @@
 <div class="cookie-banner" id="cookie-banner">
   <p class="cookie-text" data-i18n="cookie_text">
     Utilizamos cookies esenciales para el funcionamiento del sitio. 
-    <a href="#" data-i18n-href="datenschutz">Política de privacidad</a>
+    <a href="/datenschutz" data-i18n="cookie_privacy_link">Política de privacidad</a>
   </p>
   <div class="cookie-actions">
     <button class="cookie-btn cookie-decline" onclick="dismissCookie(false)" data-i18n="cookie_decline">Rechazar</button>
@@ -1850,27 +1850,23 @@
       <div class="footer-col">
         <h4 data-i18n="footer_col3">Legal</h4>
         <ul>
-          <li><a href="#impressum" data-i18n="footer_impressum">Impressum</a></li>
-          <li><a href="#datenschutz" data-i18n="footer_privacy">Datenschutz</a></li>
-          <li><a href="#agb" data-i18n="footer_agb">AGB</a></li>
+          <li><a href="/impressum" data-i18n="footer_impressum">Impressum</a></li>
+          <li><a href="/datenschutz" data-i18n="footer_privacy">Datenschutz</a></li>
+          <li><a href="/agb" data-i18n="footer_agb">AGB</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Dominicano Express GmbH · Embrach, Schweiz · UID: <span class="todo-client">TODO_CLIENT</span></p>
       <div class="footer-legal">
-        <a href="#impressum" data-i18n="footer_impressum">Impressum</a>
-        <a href="#datenschutz" data-i18n="footer_privacy">Datenschutz</a>
-        <a href="#agb" data-i18n="footer_agb">AGB</a>
+        <a href="/impressum" data-i18n="footer_impressum">Impressum</a>
+        <a href="/datenschutz" data-i18n="footer_privacy">Datenschutz</a>
+        <a href="/agb" data-i18n="footer_agb">AGB</a>
       </div>
     </div>
   </div>
 </footer>
 
-<!-- ── Legal placeholders (anchor targets) ────────────────────────────────── -->
-<div id="impressum" style="display:none"></div>
-<div id="datenschutz" style="display:none"></div>
-<div id="agb" style="display:none"></div>
 
 <script>
 // ── Translations ─────────────────────────────────────────────────────────────
@@ -1959,8 +1955,9 @@ const T = {
     footer_desc:'Envíos marítimos mensuales entre Suiza y República Dominicana.',
     footer_col1:'Servicios', footer_col2:'Herramientas', footer_col3:'Legal',
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
-    footer_impressum:'Impressum', footer_privacy:'Datenschutz', footer_agb:'AGB',
-    cookie_text:'Utilizamos cookies esenciales.', cookie_accept:'Aceptar', cookie_decline:'Rechazar',
+    footer_impressum:'Aviso legal', footer_privacy:'Privacidad', footer_agb:'Condiciones',
+    cookie_text:'Usamos cookies esenciales.', cookie_accept:'Aceptar', cookie_decline:'Rechazar',
+    cookie_privacy_link:'Política de privacidad',
   },
   de: {
     nav_proceso:'Ablauf', nav_productos:'Produkte', nav_afiliacion:'Partner',
@@ -2046,6 +2043,7 @@ const T = {
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
     footer_impressum:'Impressum', footer_privacy:'Datenschutz', footer_agb:'AGB',
     cookie_text:'Wir verwenden notwendige Cookies.', cookie_accept:'Akzeptieren', cookie_decline:'Ablehnen',
+    cookie_privacy_link:'Datenschutzhinweis',
   },
   en: {
     nav_proceso:'Process', nav_productos:'Products', nav_afiliacion:'Partners',
@@ -2129,8 +2127,9 @@ const T = {
     footer_desc:'Monthly ocean freight between Switzerland and the Dominican Republic.',
     footer_col1:'Services', footer_col2:'Tools', footer_col3:'Legal',
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
-    footer_impressum:'Legal notice', footer_privacy:'Privacy policy', footer_agb:'Terms',
+    footer_impressum:'Legal notice', footer_privacy:'Privacy', footer_agb:'Terms',
     cookie_text:'We use essential cookies.', cookie_accept:'Accept', cookie_decline:'Decline',
+    cookie_privacy_link:'Privacy policy',
   }
 };
 

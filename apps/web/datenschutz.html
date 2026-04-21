@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00205B" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Datenschutz · Privacidad · Privacy — Dominicano Express GmbH</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00205B; --accent: #CE1126;
+      --ink: #0C1021; --muted: #6B7280; --border: #E5E7EB;
+      --cream: #FDF8F0; --white: #ffffff;
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--cream); font-size: 16px; line-height: 1.7; }
+
+    header {
+      background: var(--primary); border-bottom: 1px solid rgba(255,255,255,.1);
+      padding: 0 24px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 18px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500;
+      text-decoration: none; transition: color .18s;
+    }
+    .back-link:hover { color: rgba(255,255,255,.9); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .hdiv { width: 1px; height: 22px; background: rgba(255,255,255,.15); }
+    .logo-img { height: 28px; width: auto; opacity: .9; }
+
+    .lang-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px;
+    }
+    .lang-tab {
+      padding: 12px 18px; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border: none;
+      background: none; border-bottom: 2.5px solid transparent;
+      transition: color .15s, border-color .15s; margin-bottom: -1px;
+    }
+    .lang-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+    .lang-tab:hover:not(.active) { color: var(--ink); }
+
+    .legal-wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 80px; }
+    .lang-section { display: none; }
+    .lang-section.active { display: block; }
+
+    .legal-hero {
+      background: var(--primary); color: #fff;
+      border-radius: 16px; padding: 40px 48px; margin-bottom: 48px;
+    }
+    .legal-hero-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.8px;
+      text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 10px;
+    }
+    .legal-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -.5px; }
+    .legal-hero p { font-size: 15px; color: rgba(255,255,255,.7); margin-top: 10px; }
+    .hero-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-chip { font-size: 12px; background: rgba(255,255,255,.12); border-radius: 20px; padding: 5px 14px; }
+
+    .legal-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 36px 40px; margin-bottom: 20px;
+    }
+    h2 { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px; }
+    h3 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 10px; margin-top: 28px; }
+    h3:first-child { margin-top: 0; }
+    p { color: var(--muted); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+    ul { color: var(--muted); margin: 8px 0 14px 20px; }
+    ul li { margin-bottom: 6px; }
+    a { color: var(--primary); }
+    strong { color: var(--ink); font-weight: 600; }
+
+    .info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 0; }
+    .ig-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .ig-val { font-size: 15px; color: var(--ink); padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .ig-label:last-of-type, .ig-val:last-child { border-bottom: none; }
+
+    .rights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+    .right-chip {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .right-chip strong { display: block; font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .right-chip span { font-size: 13px; color: var(--muted); }
+
+    .legal-footer {
+      background: var(--primary); color: rgba(255,255,255,.5);
+      text-align: center; padding: 24px; font-size: 12px; margin-top: 40px;
+    }
+    .legal-footer a { color: rgba(255,255,255,.6); text-decoration: none; margin: 0 8px; }
+    .legal-footer a:hover { color: #fff; }
+
+    @media (max-width: 600px) {
+      .legal-hero { padding: 28px 24px; }
+      .legal-card  { padding: 24px 20px; }
+      .legal-hero h1 { font-size: 24px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .ig-label { border-bottom: none; padding-bottom: 2px; }
+      .rights-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Zurück
+    </a>
+    <div class="hdiv"></div>
+    <img src="/logo-white.svg" alt="Dominicano Express" class="logo-img" width="150" height="26" />
+  </div>
+</header>
+
+<div class="lang-bar">
+  <button class="lang-tab active" onclick="switchLang('de', this)">Deutsch</button>
+  <button class="lang-tab" onclick="switchLang('es', this)">Español</button>
+  <button class="lang-tab" onclick="switchLang('en', this)">English</button>
+</div>
+
+<div class="legal-wrap">
+
+  <!-- ═══ DEUTSCH ═══ -->
+  <div class="lang-section active" id="sec-de">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Rechtliche Angaben</div>
+      <h1>Datenschutzerklärung</h1>
+      <p>Informationen zum Umgang mit Ihren personenbezogenen Daten gemäss revidiertem Datenschutzgesetz (revDSG) der Schweiz.</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Stand: April 2026</span>
+        <span class="hero-chip">revDSG konform</span>
+        <span class="hero-chip">DSGVO-kompatibel</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>1. Verantwortliche Stelle</h2>
+      <div class="info-grid">
+        <span class="ig-label">Unternehmen</span><span class="ig-val">Dominicano Express GmbH</span>
+        <span class="ig-label">Adresse</span><span class="ig-val">Tannenstrasse 98, 8424 Embrach, Schweiz</span>
+        <span class="ig-label">E-Mail</span><span class="ig-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span>
+        <span class="ig-label">Telefon</span><span class="ig-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>2. Erhobene Daten &amp; Zwecke</h2>
+
+      <h3>Kontaktaufnahme (Formular / WhatsApp)</h3>
+      <p>Wenn Sie uns über das Kontaktformular oder WhatsApp kontaktieren, erheben wir Name, Vorname, Telefonnummer und Nachrichteninhalt. Diese Daten werden ausschliesslich zur Bearbeitung Ihrer Anfrage und Auftragsabwicklung verwendet.</p>
+      <ul>
+        <li><strong>Rechtsgrundlage:</strong> Art. 31 Abs. 2 lit. a revDSG (Vertragserfüllung / berechtigtes Interesse)</li>
+        <li><strong>Aufbewahrung:</strong> 10 Jahre (gesetzliche Aufbewahrungspflicht OR)</li>
+      </ul>
+
+      <h3>Server-Logfiles</h3>
+      <p>Beim Aufruf unserer Website übermittelt Ihr Browser automatisch technische Daten: IP-Adresse, Browsertyp, Betriebssystem, Referrer-URL, Uhrzeit des Zugriffs. Diese Daten werden von Vercel, Inc. als Hosting-Anbieter verarbeitet und nicht mit anderen Daten verknüpft.</p>
+      <ul>
+        <li><strong>Rechtsgrundlage:</strong> berechtigtes Interesse (technischer Betrieb)</li>
+        <li><strong>Aufbewahrung:</strong> max. 30 Tage</li>
+      </ul>
+
+      <h3>Cookies</h3>
+      <p>Wir setzen ausschliesslich technisch notwendige Cookies ein:</p>
+      <ul>
+        <li><strong>pref_lang</strong> – Speichert Ihre Sprachpräferenz (365 Tage, 1st-party, kein Tracking)</li>
+        <li><strong>cookie_consent</strong> – Merkt sich Ihre Zustimmung zum Cookie-Banner (365 Tage, 1st-party)</li>
+      </ul>
+      <p>Analyse- oder Marketing-Cookies werden nicht verwendet. Eine Einwilligung ist für diese technisch notwendigen Cookies nach revDSG nicht zwingend erforderlich.</p>
+
+      <h3>Google Fonts</h3>
+      <p>Diese Website lädt Schriftarten von Google Fonts (Google LLC, USA). Dabei wird Ihre IP-Adresse an Google übermittelt. Um den Datentransfer zu minimieren, werden die Fonts mit dem Parameter <code>display=swap</code> geladen und ein <code>preconnect</code>-Link verwendet.</p>
+      <ul>
+        <li><strong>Drittanbieter:</strong> Google LLC, Gordon House, Barrow Street, Dublin 4, Irland</li>
+        <li><strong>Datenschutz:</strong> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></li>
+      </ul>
+
+      <h3>WhatsApp Business</h3>
+      <p>Klicken Sie auf unsere WhatsApp-Links, werden Sie zu WhatsApp (Meta Platforms Ireland Limited) weitergeleitet. Dabei werden Daten ausserhalb der Schweiz verarbeitet. Die Nutzung erfolgt auf Ihre eigene Initiative.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>3. Datenweitergabe &amp; Drittländer</h2>
+      <p>Wir geben Ihre Daten nicht an Dritte weiter, ausser dies ist zur Vertragserfüllung erforderlich (z. B. Transportunternehmen, Zollbehörden Dominikanische Republik) oder gesetzlich vorgeschrieben.</p>
+      <p>Unser Hosting-Anbieter <strong>Vercel, Inc.</strong> (San Francisco, USA) verarbeitet technische Daten auf seinen Servern. Vercel ist nach dem EU-US Data Privacy Framework zertifiziert und bietet geeignete Garantien gemäss Art. 16 revDSG.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>4. Ihre Rechte</h2>
+      <p>Sie haben gegenüber uns folgende Rechte gemäss revDSG (Art. 25–27):</p>
+      <div class="rights-grid">
+        <div class="right-chip"><strong>Auskunft</strong><span>Informationen über Ihre bei uns gespeicherten Daten</span></div>
+        <div class="right-chip"><strong>Berichtigung</strong><span>Korrektur unrichtiger personenbezogener Daten</span></div>
+        <div class="right-chip"><strong>Löschung</strong><span>Löschung Ihrer Daten, soweit keine Aufbewahrungspflicht besteht</span></div>
+        <div class="right-chip"><strong>Widerspruch</strong><span>Widerspruch gegen die Bearbeitung bei berechtigten Gründen</span></div>
+        <div class="right-chip"><strong>Datenportabilität</strong><span>Übertragung Ihrer Daten in maschinenlesbarem Format</span></div>
+        <div class="right-chip"><strong>Beschwerde</strong><span>Beschwerde beim EDÖB (Eidg. Datenschutzbeauftragter)</span></div>
+      </div>
+      <p style="margin-top:20px">Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></p>
+    </div>
+
+    <div class="legal-card">
+      <h2>5. Aufsichtsbehörde</h2>
+      <p>Zuständige Aufsichtsbehörde für den Datenschutz in der Schweiz:</p>
+      <p><strong>Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter (EDÖB)</strong><br/>
+      Feldeggweg 1, 3003 Bern, Schweiz<br/>
+      <a href="https://www.edoeb.admin.ch" target="_blank" rel="noopener">www.edoeb.admin.ch</a></p>
+    </div>
+
+    <div class="legal-card">
+      <h2>6. Änderungen dieser Erklärung</h2>
+      <p>Wir behalten uns vor, diese Datenschutzerklärung jederzeit zu aktualisieren. Die aktuelle Version ist stets auf dieser Seite abrufbar. Stand: April 2026.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ESPAÑOL ═══ -->
+  <div class="lang-section" id="sec-es">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Información Legal</div>
+      <h1>Política de Privacidad</h1>
+      <p>Información sobre el tratamiento de sus datos personales conforme a la ley suiza de protección de datos (revDSG).</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Actualizado: Abril 2026</span>
+        <span class="hero-chip">Conforme revDSG</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>1. Responsable del tratamiento</h2>
+      <div class="info-grid">
+        <span class="ig-label">Empresa</span><span class="ig-val">Dominicano Express GmbH</span>
+        <span class="ig-label">Dirección</span><span class="ig-val">Tannenstrasse 98, 8424 Embrach, Suiza</span>
+        <span class="ig-label">E-Mail</span><span class="ig-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span>
+        <span class="ig-label">Teléfono</span><span class="ig-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>2. Datos recopilados y finalidades</h2>
+
+      <h3>Contacto (formulario / WhatsApp)</h3>
+      <p>Cuando nos contacta a través del formulario de contacto o WhatsApp, recopilamos su nombre, apellido, número de teléfono y el contenido del mensaje. Estos datos se utilizan exclusivamente para tramitar su consulta y gestionar pedidos.</p>
+      <ul>
+        <li><strong>Base jurídica:</strong> cumplimiento de contrato / interés legítimo</li>
+        <li><strong>Retención:</strong> 10 años (obligación legal suiza OR)</li>
+      </ul>
+
+      <h3>Cookies</h3>
+      <p>Utilizamos únicamente cookies técnicamente necesarias:</p>
+      <ul>
+        <li><strong>pref_lang</strong> – Guarda su preferencia de idioma (365 días, sin rastreo)</li>
+        <li><strong>cookie_consent</strong> – Registra su consentimiento al aviso de cookies (365 días)</li>
+      </ul>
+      <p>No utilizamos cookies de análisis ni de marketing.</p>
+
+      <h3>Google Fonts</h3>
+      <p>Este sitio web carga tipografías de Google Fonts (Google LLC, EE.UU.), lo que implica la transferencia de su dirección IP a Google.</p>
+
+      <h3>WhatsApp Business</h3>
+      <p>Al hacer clic en nuestros enlaces de WhatsApp, será redirigido a WhatsApp (Meta Platforms). El procesamiento de datos tiene lugar fuera de Suiza a iniciativa propia del usuario.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>3. Sus derechos</h2>
+      <p>Según la ley suiza de protección de datos (revDSG), usted tiene derecho a:</p>
+      <div class="rights-grid">
+        <div class="right-chip"><strong>Acceso</strong><span>Información sobre los datos que tenemos almacenados sobre usted</span></div>
+        <div class="right-chip"><strong>Rectificación</strong><span>Corrección de datos personales inexactos</span></div>
+        <div class="right-chip"><strong>Supresión</strong><span>Eliminación de sus datos cuando no exista obligación de conservación</span></div>
+        <div class="right-chip"><strong>Oposición</strong><span>Oposición al tratamiento por motivos justificados</span></div>
+      </div>
+      <p style="margin-top:20px">Para ejercer sus derechos, contáctenos en: <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></p>
+    </div>
+  </div>
+
+  <!-- ═══ ENGLISH ═══ -->
+  <div class="lang-section" id="sec-en">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Legal Information</div>
+      <h1>Privacy Policy</h1>
+      <p>Information on the processing of your personal data pursuant to the Swiss revised Data Protection Act (revDSG).</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Updated: April 2026</span>
+        <span class="hero-chip">revDSG compliant</span>
+        <span class="hero-chip">GDPR compatible</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>1. Data Controller</h2>
+      <div class="info-grid">
+        <span class="ig-label">Company</span><span class="ig-val">Dominicano Express GmbH</span>
+        <span class="ig-label">Address</span><span class="ig-val">Tannenstrasse 98, 8424 Embrach, Switzerland</span>
+        <span class="ig-label">E-Mail</span><span class="ig-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span>
+        <span class="ig-label">Phone</span><span class="ig-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>2. Data Collected &amp; Purposes</h2>
+
+      <h3>Contact (form / WhatsApp)</h3>
+      <p>When you contact us via the contact form or WhatsApp, we collect your first name, last name, phone number and message content. This data is used exclusively to process your inquiry and handle orders.</p>
+      <ul>
+        <li><strong>Legal basis:</strong> contract performance / legitimate interest</li>
+        <li><strong>Retention:</strong> 10 years (Swiss statutory obligation OR)</li>
+      </ul>
+
+      <h3>Cookies</h3>
+      <p>We use only technically necessary cookies:</p>
+      <ul>
+        <li><strong>pref_lang</strong> – Stores your language preference (365 days, no tracking)</li>
+        <li><strong>cookie_consent</strong> – Stores your cookie banner consent (365 days)</li>
+      </ul>
+
+      <h3>Google Fonts &amp; Third Parties</h3>
+      <p>Fonts are loaded from Google Fonts (Google LLC, USA), which involves transmitting your IP address to Google. Hosting is provided by Vercel, Inc. (San Francisco, USA), certified under the EU-US Data Privacy Framework.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>3. Your Rights</h2>
+      <p>Under the Swiss revDSG (Art. 25–27), you have the right to access, rectification, erasure, objection, and data portability regarding your personal data. You may also lodge a complaint with the FDPIC (Federal Data Protection and Information Commissioner).</p>
+      <p>To exercise your rights: <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></p>
+      <p style="margin-top:16px"><strong>Supervisory authority:</strong><br/>
+      Federal Data Protection and Information Commissioner (FDPIC)<br/>
+      <a href="https://www.edoeb.admin.ch/en" target="_blank" rel="noopener">www.edoeb.admin.ch</a></p>
+    </div>
+  </div>
+
+</div>
+
+<footer class="legal-footer">
+  <p>© 2026 Dominicano Express GmbH · Embrach, Schweiz</p>
+  <p style="margin-top:8px">
+    <a href="/impressum">Impressum</a>
+    <a href="/datenschutz">Datenschutz</a>
+    <a href="/agb">AGB</a>
+    <a href="/">← Zur Startseite</a>
+  </p>
+</footer>
+
+<script>
+function switchLang(lang, btn) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec-' + lang).classList.add('active');
+  btn.classList.add('active');
+  document.documentElement.lang = lang;
+}
+(function(){
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)pref_lang=([^;]*)/);
+    const l = m ? m[1] : navigator.language?.slice(0,2) || 'de';
+    const valid = ['de','es','en'];
+    const lang = valid.includes(l) ? l : 'de';
+    if (lang !== 'de') {
+      const btn = document.querySelector(`.lang-tab:nth-child(${valid.indexOf(lang)+1})`);
+      if (btn) switchLang(lang, btn);
+    }
+  } catch(_) {}
+})();
+</script>
+</body>
+</html>

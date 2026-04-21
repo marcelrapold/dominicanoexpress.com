@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00205B" />
+  <meta name="robots" content="noindex, follow" />
+  <title>AGB · Condiciones Generales · Terms — Dominicano Express GmbH</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00205B; --accent: #CE1126;
+      --ink: #0C1021; --muted: #6B7280; --border: #E5E7EB;
+      --cream: #FDF8F0; --white: #ffffff;
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--cream); font-size: 16px; line-height: 1.7; }
+
+    header {
+      background: var(--primary); border-bottom: 1px solid rgba(255,255,255,.1);
+      padding: 0 24px; height: 58px;
+      display: flex; align-items: center;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 18px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500;
+      text-decoration: none; transition: color .18s;
+    }
+    .back-link:hover { color: rgba(255,255,255,.9); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .hdiv { width: 1px; height: 22px; background: rgba(255,255,255,.15); }
+    .logo-img { height: 28px; width: auto; opacity: .9; }
+
+    .lang-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px;
+    }
+    .lang-tab {
+      padding: 12px 18px; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border: none;
+      background: none; border-bottom: 2.5px solid transparent;
+      transition: color .15s, border-color .15s; margin-bottom: -1px;
+    }
+    .lang-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+    .lang-tab:hover:not(.active) { color: var(--ink); }
+
+    .legal-wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 80px; }
+    .lang-section { display: none; }
+    .lang-section.active { display: block; }
+
+    .legal-hero {
+      background: var(--primary); color: #fff;
+      border-radius: 16px; padding: 40px 48px; margin-bottom: 48px;
+    }
+    .legal-hero-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.8px;
+      text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 10px;
+    }
+    .legal-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -.5px; }
+    .legal-hero p { font-size: 15px; color: rgba(255,255,255,.7); margin-top: 10px; }
+    .hero-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-chip { font-size: 12px; background: rgba(255,255,255,.12); border-radius: 20px; padding: 5px 14px; }
+
+    .legal-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 36px 40px; margin-bottom: 20px;
+    }
+    h2 { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px; }
+    h3 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 10px; margin-top: 28px; }
+    h3:first-child { margin-top: 0; }
+    p { color: var(--muted); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+    ol { color: var(--muted); margin: 8px 0 14px 20px; counter-reset: none; }
+    ol li { margin-bottom: 8px; }
+    ul { color: var(--muted); margin: 8px 0 14px 20px; }
+    ul li { margin-bottom: 6px; }
+    a { color: var(--primary); }
+    strong { color: var(--ink); font-weight: 600; }
+    .warning-box {
+      background: #fef3c7; border: 1px solid #fbbf24; border-radius: 10px;
+      padding: 16px 20px; margin-top: 16px;
+    }
+    .warning-box strong { color: #92400e; display: block; margin-bottom: 6px; font-size: 13px; }
+    .warning-box p { color: #78350f; font-size: 14px; margin: 0; }
+
+    .legal-footer {
+      background: var(--primary); color: rgba(255,255,255,.5);
+      text-align: center; padding: 24px; font-size: 12px; margin-top: 40px;
+    }
+    .legal-footer a { color: rgba(255,255,255,.6); text-decoration: none; margin: 0 8px; }
+    .legal-footer a:hover { color: #fff; }
+
+    @media (max-width: 600px) {
+      .legal-hero { padding: 28px 24px; }
+      .legal-card  { padding: 24px 20px; }
+      .legal-hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Zurück
+    </a>
+    <div class="hdiv"></div>
+    <img src="/logo-white.svg" alt="Dominicano Express" class="logo-img" width="150" height="26" />
+  </div>
+</header>
+
+<div class="lang-bar">
+  <button class="lang-tab active" onclick="switchLang('de', this)">Deutsch</button>
+  <button class="lang-tab" onclick="switchLang('es', this)">Español</button>
+  <button class="lang-tab" onclick="switchLang('en', this)">English</button>
+</div>
+
+<div class="legal-wrap">
+
+  <!-- ═══ DEUTSCH ═══ -->
+  <div class="lang-section active" id="sec-de">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Rechtliche Grundlagen</div>
+      <h1>Allgemeine Geschäftsbedingungen</h1>
+      <p>Bedingungen für Seefrachtversand Schweiz ↔ Dominikanische Republik</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Stand: April 2026</span>
+        <span class="hero-chip">Schweizer Recht</span>
+        <span class="hero-chip">Seefrachtversand</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 1 Geltungsbereich</h2>
+      <p>Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Versandaufträge zwischen Kunden (nachfolgend «Auftraggeber») und Dominicano Express GmbH, Tannenstrasse 98, 8424 Embrach, Schweiz (nachfolgend «DE GmbH»).</p>
+      <p>Abweichende Bedingungen des Auftraggebers werden nicht anerkannt, es sei denn, DE GmbH stimmt ihrer Geltung ausdrücklich schriftlich zu.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 2 Leistungen</h2>
+      <h3>Monatliche Containertransporte</h3>
+      <p>DE GmbH organisiert monatliche Seefrachtcontainer von der Schweiz (Zürich-Region) in die Dominikanische Republik. Die Lieferung erfolgt Tür-zu-Tür innerhalb der Dominikanischen Republik.</p>
+      <h3>Eingeschlossene Leistungen</h3>
+      <ul>
+        <li>Abholung beim Auftraggeber in der Schweiz (nach Absprache)</li>
+        <li>Seetransport im Container</li>
+        <li>Zollabfertigung (Import Dominikanische Republik – Standardgüter)</li>
+        <li>Zustellung zum Empfänger</li>
+        <li>Basisversicherung gemäss § 6</li>
+      </ul>
+      <h3>Nicht eingeschlossene Leistungen</h3>
+      <ul>
+        <li>Zollgebühren und Einfuhrsteuern (gehen zu Lasten des Empfängers)</li>
+        <li>Lagergebühren bei verspäteter Abholung</li>
+        <li>Spezialhandling für Gefahrgut oder überdimensionierte Güter</li>
+      </ul>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 3 Verbotene Güter</h2>
+      <p>Folgende Güter sind vom Transport ausgeschlossen:</p>
+      <ul>
+        <li>Geld, Wertpapiere, Edelmetalle, Edelsteine</li>
+        <li>Gefahrgut (gemäss IMDG-Code): Explosivstoffe, entflammbare Flüssigkeiten, Druckgase etc.</li>
+        <li>Illegale Substanzen, Betäubungsmittel</li>
+        <li>Lebende Tiere und Pflanzen</li>
+        <li>Verderbliche Lebensmittel ohne ausdrückliche Vereinbarung</li>
+        <li>Waffen und Munition</li>
+        <li>Gegenstände, die in der Schweiz oder der Dominikanischen Republik einem Exportverbot unterliegen</li>
+      </ul>
+      <div class="warning-box">
+        <strong>⚠ Wichtig</strong>
+        <p>Das Einschmuggeln verbotener Güter kann zur sofortigen Beschlagnahme, Strafverfolgung und zivilrechtlichen Schadensersatzforderungen führen. DE GmbH behält sich das Recht vor, jede Sendung zu kontrollieren.</p>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 4 Verpackung &amp; Kennzeichnung</h2>
+      <p>Der Auftraggeber ist verantwortlich für eine sachgemässe, seetransportgerechte Verpackung. Güter, die aufgrund unzureichender Verpackung beschädigt werden, begründen keinen Haftungsanspruch gegenüber DE GmbH.</p>
+      <ul>
+        <li>Fässer und Barrels müssen fachgerecht verschlossen und für Seetransport geeignet sein</li>
+        <li>Jede Sendungseinheit ist mit Absender- und Empfängerangaben zu kennzeichnen</li>
+        <li>Zerbrechliche Güter sind entsprechend zu deklarieren und zu polstern</li>
+      </ul>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 5 Preise &amp; Zahlung</h2>
+      <p>Die gültigen Preise werden individuell nach Gewicht, Volumen (ldm = laufende Dezimalmeter) und Art der Sendung vereinbart. Alle Preise verstehen sich in CHF inkl. MwSt., sofern nicht anders angegeben.</p>
+      <h3>Zahlungsbedingungen</h3>
+      <ul>
+        <li>Vorauszahlung oder Zahlung bei Auftragserteilung, sofern nicht schriftlich anders vereinbart</li>
+        <li>Akzeptierte Zahlungsmittel: Banküberweisung, TWINT, Barzahlung</li>
+        <li>Bei Zahlungsverzug werden Verzugszinsen von 5 % p.a. gemäss OR Art. 104 geschuldet</li>
+      </ul>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 6 Versicherung &amp; Haftung</h2>
+      <h3>Basisversicherung</h3>
+      <p>Jede Sendung ist im Rahmen einer Transportversicherung gegen Totalverlust versichert. Der Versicherungswert basiert auf dem vom Auftraggeber angegebenen Warenwert.</p>
+      <h3>Haftungsbeschränkung</h3>
+      <p>Die Haftung von DE GmbH für Beschädigungen, Verluste oder Verzögerungen ist begrenzt auf den tatsächlichen Warenwert gemäss Deklaration, maximal CHF 5'000 pro Sendungseinheit, sofern keine erweiterte Versicherung vereinbart wurde.</p>
+      <p>DE GmbH haftet nicht für Schäden, die durch höhere Gewalt (Naturkatastrophen, Streiks, behördliche Massnahmen), unzureichende Verpackung oder verbotene Güter entstehen.</p>
+      <h3>Reklamationen</h3>
+      <p>Schadensmeldungen sind innerhalb von <strong>7 Tagen</strong> nach Zustellung schriftlich an <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a> zu richten.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 7 Laufzeiten &amp; Abholtermine</h2>
+      <p>Die Verschiffungstermine werden im Voraus kommuniziert. Sendungen müssen bis zum definierten Annahmeschluss übergeben werden. Verspätete Sendungen werden auf den nächsten Container verschoben, ohne dass hieraus Schadensersatzansprüche entstehen.</p>
+      <p>Für typische Transitzeiten gilt (ohne Gewähr): <strong>4–8 Wochen</strong> von Abholung in der Schweiz bis Zustellung in der Dominikanischen Republik.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 8 Anwendbares Recht &amp; Gerichtsstand</h2>
+      <p>Diese AGB und alle daraus entstehenden Streitigkeiten unterliegen ausschliesslich <strong>Schweizer Recht</strong> unter Ausschluss des UN-Kaufrechts (CISG).</p>
+      <p>Ausschliesslicher Gerichtsstand für Streitigkeiten aus oder im Zusammenhang mit diesen AGB ist <strong>Embrach, Kanton Zürich, Schweiz</strong>.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 9 Schlussbestimmungen</h2>
+      <p>Sollten einzelne Bestimmungen dieser AGB unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. Mündliche Nebenabreden bedürfen der schriftlichen Bestätigung durch DE GmbH. Änderungen dieser AGB werden auf der Website veröffentlicht und gelten für Aufträge, die nach Veröffentlichung erteilt werden.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ESPAÑOL ═══ -->
+  <div class="lang-section" id="sec-es">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Condiciones Legales</div>
+      <h1>Condiciones Generales de Contratación</h1>
+      <p>Condiciones para el transporte marítimo Suiza ↔ República Dominicana</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Actualizado: Abril 2026</span>
+        <span class="hero-chip">Derecho Suizo</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 1 Ámbito de aplicación</h2>
+      <p>Las presentes Condiciones Generales de Contratación (CGC) se aplican a todos los pedidos de envío entre clientes («Remitente») y Dominicano Express GmbH, Tannenstrasse 98, 8424 Embrach, Suiza («DE GmbH»).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 2 Servicios</h2>
+      <p>DE GmbH organiza contenedores de carga marítima mensuales desde Suiza (región de Zúrich) hacia la República Dominicana, con entrega puerta a puerta.</p>
+      <p><strong>Incluido:</strong> recogida en Suiza, transporte marítimo, despacho aduanero (bienes estándar) y entrega al destinatario.</p>
+      <p><strong>No incluido:</strong> aranceles de importación (a cargo del destinatario), tasas de almacenamiento por recogida tardía.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 3 Mercancías prohibidas</h2>
+      <p>Quedan excluidos del transporte: dinero, valores, metales preciosos, mercancías peligrosas (código IMDG), sustancias ilegales, animales vivos, armas y munición, y artículos sujetos a prohibición de exportación.</p>
+      <div class="warning-box">
+        <strong>⚠ Importante</strong>
+        <p>El envío de mercancías prohibidas puede dar lugar a confiscación inmediata, acciones penales y reclamaciones civiles. DE GmbH se reserva el derecho de inspeccionar cualquier envío.</p>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 4 Precios y pago</h2>
+      <p>Los precios se acuerdan individualmente según peso y volumen, en CHF. Condiciones de pago: pago anticipado o al realizar el pedido. En caso de retraso, se aplicarán intereses de mora del 5% anual (Art. 104 OR suizo).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 5 Seguro y responsabilidad</h2>
+      <p>Cada envío cuenta con seguro básico contra pérdida total. La responsabilidad de DE GmbH se limita al valor declarado de la mercancía, con un máximo de CHF 5.000 por unidad de envío.</p>
+      <p>Las reclamaciones por daños deben comunicarse por escrito en un plazo de <strong>7 días</strong> tras la entrega a <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a>.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 6 Plazos de tránsito</h2>
+      <p>Los plazos de embarque se comunican con antelación. El tiempo de tránsito habitual es de <strong>4–8 semanas</strong> desde la recogida en Suiza hasta la entrega en República Dominicana (sin garantía).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 7 Ley aplicable y jurisdicción</h2>
+      <p>Las presentes CGC se rigen exclusivamente por el <strong>derecho suizo</strong>. El fuero exclusivo para cualquier controversia es <strong>Embrach, Cantón de Zúrich, Suiza</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ENGLISH ═══ -->
+  <div class="lang-section" id="sec-en">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Legal Conditions</div>
+      <h1>General Terms &amp; Conditions</h1>
+      <p>Terms for maritime freight Switzerland ↔ Dominican Republic</p>
+      <div class="hero-meta">
+        <span class="hero-chip">Updated: April 2026</span>
+        <span class="hero-chip">Swiss Law</span>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 1 Scope</h2>
+      <p>These General Terms and Conditions (GTC) apply to all shipment orders between customers («Client») and Dominicano Express GmbH, Tannenstrasse 98, 8424 Embrach, Switzerland («DE GmbH»).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 2 Services</h2>
+      <p>DE GmbH organises monthly sea freight containers from Switzerland (Zurich region) to the Dominican Republic, with door-to-door delivery.</p>
+      <p><strong>Included:</strong> collection in Switzerland, sea transport, customs clearance (standard goods), delivery to recipient.</p>
+      <p><strong>Not included:</strong> import duties (borne by recipient), storage fees for late collection.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 3 Prohibited Goods</h2>
+      <p>The following are excluded from transport: cash, securities, precious metals, hazardous materials (IMDG code), illegal substances, live animals, weapons, and items subject to export bans.</p>
+      <div class="warning-box">
+        <strong>⚠ Important</strong>
+        <p>Smuggling prohibited goods may result in immediate confiscation, criminal prosecution, and civil damage claims. DE GmbH reserves the right to inspect any shipment.</p>
+      </div>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 4 Pricing &amp; Payment</h2>
+      <p>Prices are agreed individually by weight and volume, in CHF. Payment terms: advance payment or payment at order placement. Late payment incurs interest of 5% p.a. (Art. 104 Swiss OR).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 5 Insurance &amp; Liability</h2>
+      <p>Each shipment is covered by basic insurance against total loss. DE GmbH's liability is limited to the declared value of the goods, up to a maximum of CHF 5,000 per shipment unit.</p>
+      <p>Damage claims must be submitted in writing within <strong>7 days</strong> of delivery to <a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a>.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 6 Transit Times</h2>
+      <p>Shipping dates are communicated in advance. Typical transit time: <strong>4–8 weeks</strong> from collection in Switzerland to delivery in the Dominican Republic (without guarantee).</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>§ 7 Governing Law &amp; Jurisdiction</h2>
+      <p>These GTC are governed exclusively by <strong>Swiss law</strong>. The exclusive place of jurisdiction for any disputes is <strong>Embrach, Canton of Zurich, Switzerland</strong>.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer class="legal-footer">
+  <p>© 2026 Dominicano Express GmbH · Embrach, Schweiz</p>
+  <p style="margin-top:8px">
+    <a href="/impressum">Impressum</a>
+    <a href="/datenschutz">Datenschutz</a>
+    <a href="/agb">AGB</a>
+    <a href="/">← Zur Startseite</a>
+  </p>
+</footer>
+
+<script>
+function switchLang(lang, btn) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec-' + lang).classList.add('active');
+  btn.classList.add('active');
+  document.documentElement.lang = lang;
+}
+(function(){
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)pref_lang=([^;]*)/);
+    const l = m ? m[1] : navigator.language?.slice(0,2) || 'de';
+    const valid = ['de','es','en'];
+    const lang = valid.includes(l) ? l : 'de';
+    if (lang !== 'de') {
+      const btn = document.querySelector(`.lang-tab:nth-child(${valid.indexOf(lang)+1})`);
+      if (btn) switchLang(lang, btn);
+    }
+  } catch(_) {}
+})();
+</script>
+</body>
+</html>

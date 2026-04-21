@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00205B" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Impressum · Legal Notice · Aviso Legal — Dominicano Express GmbH</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #00205B; --accent: #CE1126;
+      --ink: #0C1021; --muted: #6B7280; --border: #E5E7EB;
+      --cream: #FDF8F0; --white: #ffffff;
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--cream); font-size: 16px; line-height: 1.7; }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary); border-bottom: 1px solid rgba(255,255,255,.1);
+      padding: 0 24px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 18px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500;
+      text-decoration: none; transition: color .18s;
+    }
+    .back-link:hover { color: rgba(255,255,255,.9); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .hdiv { width: 1px; height: 22px; background: rgba(255,255,255,.15); }
+    .logo-img { height: 28px; width: auto; opacity: .9; }
+
+    /* ── Lang tabs ── */
+    .lang-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0;
+      padding: 0 24px;
+    }
+    .lang-tab {
+      padding: 12px 18px; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border: none;
+      background: none; border-bottom: 2.5px solid transparent;
+      transition: color .15s, border-color .15s; margin-bottom: -1px;
+    }
+    .lang-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+    .lang-tab:hover:not(.active) { color: var(--ink); }
+
+    /* ── Content ── */
+    .legal-wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 80px; }
+    .lang-section { display: none; }
+    .lang-section.active { display: block; }
+
+    .legal-hero {
+      background: var(--primary); color: #fff;
+      border-radius: 16px; padding: 40px 48px;
+      margin-bottom: 48px;
+    }
+    .legal-hero-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.8px;
+      text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 10px;
+    }
+    .legal-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -.5px; }
+    .legal-hero p { font-size: 15px; color: rgba(255,255,255,.7); margin-top: 10px; }
+
+    .legal-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 36px 40px; margin-bottom: 20px;
+    }
+    h2 { font-size: 14px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px; }
+    h3 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 10px; margin-top: 24px; }
+    h3:first-child { margin-top: 0; }
+    p { color: var(--muted); margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--primary); }
+    .info-row { display: flex; gap: 16px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; min-width: 160px; flex-shrink: 0; }
+    .info-val { font-size: 15px; font-weight: 500; color: var(--ink); }
+    .info-val a { color: var(--primary); text-decoration: none; }
+    .placeholder { background: #fef9c3; border: 1px dashed #fbbf24; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 700; color: #854d0e; }
+
+    /* ── Footer ── */
+    .legal-footer {
+      background: var(--primary); color: rgba(255,255,255,.5);
+      text-align: center; padding: 24px;
+      font-size: 12px; margin-top: 40px;
+    }
+    .legal-footer a { color: rgba(255,255,255,.6); text-decoration: none; margin: 0 8px; }
+    .legal-footer a:hover { color: #fff; }
+
+    @media (max-width: 600px) {
+      .legal-hero { padding: 28px 24px; }
+      .legal-card  { padding: 24px 20px; }
+      .legal-hero h1 { font-size: 24px; }
+      .info-row { flex-direction: column; gap: 4px; }
+      .info-label { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Zurück
+    </a>
+    <div class="hdiv"></div>
+    <img src="/logo-white.svg" alt="Dominicano Express" class="logo-img" width="150" height="26" />
+  </div>
+</header>
+
+<!-- Language tabs -->
+<div class="lang-bar">
+  <button class="lang-tab active" onclick="switchLang('de', this)">Deutsch</button>
+  <button class="lang-tab" onclick="switchLang('es', this)">Español</button>
+  <button class="lang-tab" onclick="switchLang('en', this)">English</button>
+</div>
+
+<div class="legal-wrap">
+
+  <!-- ═══ DEUTSCH ═══ -->
+  <div class="lang-section active" id="sec-de">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Rechtliche Angaben</div>
+      <h1>Impressum</h1>
+      <p>Angaben gemäss Art. 3 lit. s UWG sowie Art. 13 DSG (Schweiz)</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>Unternehmensangaben</h2>
+      <div class="info-row"><span class="info-label">Firma</span><span class="info-val">Dominicano Express GmbH</span></div>
+      <div class="info-row"><span class="info-label">Rechtsform</span><span class="info-val">Gesellschaft mit beschränkter Haftung (GmbH) nach Schweizer Recht</span></div>
+      <div class="info-row"><span class="info-label">Adresse</span><span class="info-val">Tannenstrasse 98<br/>8424 Embrach, Kanton Zürich<br/>Schweiz</span></div>
+      <div class="info-row"><span class="info-label">Telefon</span><span class="info-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span></div>
+      <div class="info-row"><span class="info-label">E-Mail</span><span class="info-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span></div>
+      <div class="info-row"><span class="info-label">Website</span><span class="info-val"><a href="https://dominicanoexpress.rapold.io">dominicanoexpress.rapold.io</a></span></div>
+      <div class="info-row"><span class="info-label">UID</span><span class="info-val"><span class="placeholder">CHE-XXX.XXX.XXX</span> <em style="font-size:12px;color:var(--muted)">(vom Kunden einzutragen)</em></span></div>
+      <div class="info-row"><span class="info-label">Handelsregister</span><span class="info-val">Handelsregister Kanton Zürich</span></div>
+    </div>
+
+    <div class="legal-card">
+      <h2>Verantwortliche Person</h2>
+      <div class="info-row"><span class="info-label">Geschäftsführer</span><span class="info-val"><span class="placeholder">Vollständiger Name</span> <em style="font-size:12px;color:var(--muted)">(vom Kunden einzutragen)</em></span></div>
+      <div class="info-row"><span class="info-label">Inhaltl. verantwortlich</span><span class="info-val">Dominicano Express GmbH, Tannenstrasse 98, 8424 Embrach</span></div>
+    </div>
+
+    <div class="legal-card">
+      <h2>Haftungsausschluss</h2>
+      <h3>Haftung für Inhalte</h3>
+      <p>Die Inhalte dieser Website wurden mit grösster Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir keine Gewähr übernehmen. Als Diensteanbieter sind wir für eigene Inhalte auf dieser Website nach Massgabe des Schweizer Rechts verantwortlich.</p>
+      <h3>Haftung für Links</h3>
+      <p>Unsere Website enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte verlinkter Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+      <h3>Urheberrecht</h3>
+      <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem Schweizer Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung ausserhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>Streitschlichtung</h2>
+      <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ESPAÑOL ═══ -->
+  <div class="lang-section" id="sec-es">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Información Legal</div>
+      <h1>Aviso Legal</h1>
+      <p>Información de la empresa según la legislación suiza</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>Datos de la empresa</h2>
+      <div class="info-row"><span class="info-label">Empresa</span><span class="info-val">Dominicano Express GmbH</span></div>
+      <div class="info-row"><span class="info-label">Forma jurídica</span><span class="info-val">Sociedad de responsabilidad limitada (GmbH) según derecho suizo</span></div>
+      <div class="info-row"><span class="info-label">Dirección</span><span class="info-val">Tannenstrasse 98<br/>8424 Embrach, Cantón de Zúrich<br/>Suiza</span></div>
+      <div class="info-row"><span class="info-label">Teléfono</span><span class="info-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span></div>
+      <div class="info-row"><span class="info-label">E-Mail</span><span class="info-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span></div>
+      <div class="info-row"><span class="info-label">UID Suiza</span><span class="info-val"><span class="placeholder">CHE-XXX.XXX.XXX</span></span></div>
+    </div>
+
+    <div class="legal-card">
+      <h2>Exención de responsabilidad</h2>
+      <h3>Responsabilidad del contenido</h3>
+      <p>Los contenidos de este sitio web han sido elaborados con el mayor cuidado posible. Sin embargo, no podemos garantizar la exactitud, integridad y actualidad de los contenidos. Como prestador de servicios, somos responsables de los contenidos propios de este sitio web de acuerdo con la legislación suiza vigente.</p>
+      <h3>Derechos de autor</h3>
+      <p>Los contenidos y obras creados en este sitio web por los operadores del sitio están sujetos al derecho de autor suizo. La reproducción, el procesamiento, la distribución y cualquier tipo de explotación fuera de los límites del derecho de autor requieren el consentimiento escrito del respectivo autor o creador.</p>
+    </div>
+  </div>
+
+  <!-- ═══ ENGLISH ═══ -->
+  <div class="lang-section" id="sec-en">
+    <div class="legal-hero">
+      <div class="legal-hero-label">Legal Information</div>
+      <h1>Legal Notice</h1>
+      <p>Company information pursuant to Swiss law</p>
+    </div>
+
+    <div class="legal-card">
+      <h2>Company Information</h2>
+      <div class="info-row"><span class="info-label">Company</span><span class="info-val">Dominicano Express GmbH</span></div>
+      <div class="info-row"><span class="info-label">Legal form</span><span class="info-val">Limited liability company (GmbH) under Swiss law</span></div>
+      <div class="info-row"><span class="info-label">Address</span><span class="info-val">Tannenstrasse 98<br/>8424 Embrach, Canton of Zurich<br/>Switzerland</span></div>
+      <div class="info-row"><span class="info-label">Phone</span><span class="info-val"><a href="tel:+41791999393">+41 79 199 93 93</a></span></div>
+      <div class="info-row"><span class="info-label">E-Mail</span><span class="info-val"><a href="mailto:info@dominicanoexpress.com">info@dominicanoexpress.com</a></span></div>
+      <div class="info-row"><span class="info-label">UID</span><span class="info-val"><span class="placeholder">CHE-XXX.XXX.XXX</span></span></div>
+    </div>
+
+    <div class="legal-card">
+      <h2>Disclaimer</h2>
+      <h3>Liability for Content</h3>
+      <p>The contents of this website have been created with the greatest possible care. However, we cannot guarantee the accuracy, completeness and topicality of the contents. As a service provider, we are responsible for our own content on this website in accordance with Swiss law.</p>
+      <h3>Copyright</h3>
+      <p>The content and works created on this website by the operators of the site are subject to Swiss copyright law. Duplication, processing, distribution and any form of exploitation outside the limits of copyright law require the written consent of the respective author or creator.</p>
+    </div>
+  </div>
+
+</div><!-- /legal-wrap -->
+
+<footer class="legal-footer">
+  <p>© 2026 Dominicano Express GmbH · Embrach, Schweiz</p>
+  <p style="margin-top:8px">
+    <a href="/impressum">Impressum</a>
+    <a href="/datenschutz">Datenschutz</a>
+    <a href="/agb">AGB</a>
+    <a href="/">← Zur Startseite</a>
+  </p>
+</footer>
+
+<script>
+function switchLang(lang, btn) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec-' + lang).classList.add('active');
+  btn.classList.add('active');
+  document.documentElement.lang = lang;
+}
+// Auto-detect from cookie or browser
+(function(){
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)pref_lang=([^;]*)/);
+    const l = m ? m[1] : navigator.language?.slice(0,2) || 'de';
+    const valid = ['de','es','en'];
+    const lang = valid.includes(l) ? l : 'de';
+    if (lang !== 'de') {
+      const btn = document.querySelector(`.lang-tab:nth-child(${valid.indexOf(lang)+1})`);
+      if (btn) switchLang(lang, btn);
+    }
+  } catch(_) {}
+})();
+</script>
+</body>
+</html>
