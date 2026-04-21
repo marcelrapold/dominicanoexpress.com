@@ -719,7 +719,17 @@
     .barril-type { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 600; letter-spacing: .3px; }
 
     /* ── Trust / About ────────────────────────────────────────────────────── */
-    .about-bg { background: var(--primary); }
+    .about-bg { background: var(--primary); position: relative; overflow: hidden; }
+    .about-video-bg {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%; overflow: hidden; pointer-events: none;
+    }
+    .about-video-bg video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .18; }
+    .about-video-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, var(--primary) 0%, rgba(0,32,91,.7) 50%, var(--primary) 100%);
+    }
+    .about-bg .container { position: relative; z-index: 1; }
     .stats-row {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
       padding: 48px 0; border-bottom: 1px solid rgba(255,255,255,.1);
@@ -1157,7 +1167,7 @@
   <div class="hero-video-bg" aria-hidden="true">
     <video autoplay muted loop playsinline preload="none"
       poster="https://media.gettyimages.com/id/2165710075/video/tablet-shipping-and-hands-of-worker-on-dock-for-inspection-online-logistics-and-warehouse.jpg?b=1&s=640x640&k=20&c=5lEoo18p4C50sUrvmhvMHuLXcuLsmg9dCM9pIyncfLw=">
-      <source src="https://blobby.wsimg.com/getty/videos/2165710075" type="video/mp4" />
+      <source src="/videos/hero.mp4" type="video/mp4" />
     </video>
   </div>
   <div class="container">
@@ -1212,9 +1222,9 @@
             </div>
           </div>
           <div class="hero-product-strip">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:200,cg:true" alt="Caja" loading="lazy" />
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/cr=t:14.11%25,l:0%25,w:100%25,h:71.78%25/rs=w:200,h:100,cg:true" alt="Barril" loading="lazy" />
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:200,cg:true" alt="Jumbo" loading="lazy" />
+            <img src="/img/products/box-mediana.png" alt="Caja" loading="lazy" />
+            <img src="/img/products/barriles.png" alt="Barril" loading="lazy" />
+            <img src="/img/products/box-jumbo.png" alt="Jumbo" loading="lazy" />
           </div>
         </div>
       </div>
@@ -1457,7 +1467,7 @@
       <div class="products-grid">
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" />
+            <img src="/img/products/box-mediana.png" alt="Caja Mediana" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_med_name">Caja Mediana</div>
@@ -1468,7 +1478,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" />
+            <img src="/img/products/box-jumbo.png" alt="Caja Jumbo" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_jum_name">Caja Jumbo</div>
@@ -1479,7 +1489,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" />
+            <img src="/img/products/box-maxi.png" alt="Caja Maxi" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_max_name">Caja Maxi</div>
@@ -1490,7 +1500,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" />
+            <img src="/img/products/box-mega.png" alt="Caja Mega" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_meg_name">Caja Mega</div>
@@ -1505,7 +1515,7 @@
     <div id="tab-barriles" class="tab-panel">
       <div class="barril-hero fade-in">
         <div class="barril-hero-img">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/rs=w:800,cg:true" alt="Barriles Dominicano Express" loading="lazy" data-lb data-lb-cap="Barriles — 120L, 150L, 220L y Zafacones" />
+          <img src="/img/products/barriles.png" alt="Barriles Dominicano Express" loading="lazy" data-lb data-lb-cap="Barriles — 120L, 150L, 220L y Zafacones" />
         </div>
         <div>
           <p class="section-sub" style="margin-bottom:24px" data-i18n="barril_intro">Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.</p>
@@ -1528,6 +1538,11 @@
 
 <!-- ── About / Trust ──────────────────────────────────────────────────────── -->
 <section class="section about-bg" id="nosotros">
+  <div class="about-video-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="none">
+      <source src="/videos/about.mp4" type="video/mp4" />
+    </video>
+  </div>
   <div class="container">
     <div class="stats-row">
       <div class="stat-box fade-in">
@@ -1560,7 +1575,7 @@
         </div>
       </div>
       <div class="flags-display fade-in" style="display:block; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,.12);">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:700,cg:true" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" data-lb data-lb-cap="Embalaje profesional — Dominicano Express GmbH" />
+        <img src="/img/products/packaging.png" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" data-lb data-lb-cap="Embalaje profesional — Dominicano Express GmbH" />
         <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
           <div style="text-align:center">
             <img src="/flags/ch.svg" alt="CH" class="flag-img flag-about" />
@@ -2399,7 +2414,6 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 })();
 
 // ── Gallery Viewer ────────────────────────────────────────────────────────────
-const CDN = 'https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/';
 const GALLERY = [
   { f:'IMG_3634.JPG',                              cap:'Carga de contenedor — Dominicano Express' },
   { f:'b3a7ee22-7acb-4cd9-b647-2b8b4fe9afd2.jpeg', cap:'Envíos listos para el contenedor' },
@@ -2420,8 +2434,8 @@ const GALLERY = [
   { f:'IMG_2545.jpeg',                             cap:'Contenedor en tránsito' },
   { f:'IMG_2305.jpeg',                             cap:'Mercancía organizada — listos para el siguiente envío' },
 ].map(g => ({
-  src: CDN + g.f + '/:/rs=w:1100,cg:true',
-  thumb: CDN + g.f + '/:/rs=w:200,h:150,cg:true',
+  src: '/img/gallery/' + g.f,
+  thumb: '/img/gallery/' + g.f,
   cap: g.cap
 }));
 

@@ -8,6 +8,8 @@
     { "src": "/logo-white\\.svg",      "dest": "/apps/web/logo-white.svg" },
     { "src": "/site\\.webmanifest",    "dest": "/apps/web/site.webmanifest" },
     { "src": "/apple-touch-icon\\.png","dest": "/apps/web/logo.svg" },
+    { "src": "/videos/(.*)",           "dest": "/apps/web/videos/$1" },
+    { "src": "/img/(.*)",              "dest": "/apps/web/img/$1" },
     { "src": "/impressum/?$",          "dest": "/apps/web/impressum.html" },
     { "src": "/datenschutz/?$",        "dest": "/apps/web/datenschutz.html" },
     { "src": "/agb/?$",                "dest": "/apps/web/agb.html" },
