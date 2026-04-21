@@ -149,13 +149,31 @@
 
     /* ── Hero ─────────────────────────────────────────────────────────────── */
     .hero {
-      background: linear-gradient(135deg, #00103a 0%, #00205B 50%, #0a1f5c 100%);
+      background: #00103a;
       padding: 80px 0 64px;
       position: relative; overflow: hidden;
     }
-    .hero::before {
+    .hero-video-bg {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%; overflow: hidden;
+    }
+    .hero-video-bg video {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    .hero-video-bg::after {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 80% at 70% -20%, rgba(206,17,38,.15) 0%, transparent 60%);
+      background: linear-gradient(
+        135deg,
+        rgba(0,16,58,.88) 0%,
+        rgba(0,32,91,.82) 40%,
+        rgba(206,17,38,.25) 80%,
+        rgba(0,16,58,.7) 100%
+      );
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse 80% 80% at 70% -20%, rgba(206,17,38,.1) 0%, transparent 60%);
     }
     .hero-inner {
       position: relative; z-index: 1;
@@ -594,6 +612,47 @@
     }
     .mobile-nav a:last-child { border-bottom: none; }
 
+    /* ── Gallery ──────────────────────────────────────────────────────────── */
+    .gallery-section { background: var(--cream); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 12px; margin-top: 40px;
+    }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr; } }
+    .gallery-featured, .gallery-thumb {
+      position: relative; overflow: hidden; border-radius: 12px;
+      cursor: zoom-in; background: #e0e7ef;
+    }
+    .gallery-featured { min-height: 360px; }
+    .gallery-thumbs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .gallery-thumb { min-height: 170px; }
+    .gallery-featured img, .gallery-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform .45s cubic-bezier(.22,1,.36,1);
+    }
+    .gallery-featured:hover img, .gallery-thumb:hover img { transform: scale(1.06); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 50%);
+      display: flex; align-items: flex-end; padding: 16px;
+      opacity: 0; transition: opacity .25s;
+    }
+    .gallery-featured .gallery-overlay { opacity: 1; }
+    .gallery-thumb:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span {
+      color: #fff; font-size: 13px; font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .gallery-thumb .gallery-overlay span {
+      font-size: 22px; font-weight: 300;
+      margin: auto; padding-bottom: 8px;
+    }
+
     /* TODO_CLIENT indicator */
     .todo-client {
       display: inline-block; background: #fef9c3; color: #854d0e;
@@ -723,6 +782,12 @@
 
 <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
 <section class="hero" id="hero">
+  <div class="hero-video-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="none"
+      poster="https://media.gettyimages.com/id/2165710075/video/tablet-shipping-and-hands-of-worker-on-dock-for-inspection-online-logistics-and-warehouse.jpg?b=1&s=640x640&k=20&c=5lEoo18p4C50sUrvmhvMHuLXcuLsmg9dCM9pIyncfLw=">
+      <source src="https://blobby.wsimg.com/getty/videos/2165710075" type="video/mp4" />
+    </video>
+  </div>
   <div class="container">
     <div class="hero-inner">
       <div class="hero-content fade-in">
@@ -1084,6 +1149,41 @@
   </div>
 </section>
 
+<!-- ── Gallery ────────────────────────────────────────────────────────────── -->
+<section class="section gallery-section" id="galeria">
+  <div class="container">
+    <div class="fade-in" style="text-align:center">
+      <div class="section-label" data-i18n="gallery_label">Enviamos Contenedores Mensuales</div>
+      <h2 class="section-title" data-i18n="gallery_title">Así trabaja nuestro equipo</h2>
+      <p class="section-sub" data-i18n="gallery_sub">Fotos reales de nuestras operaciones — de Suiza a la puerta de tu familia.</p>
+    </div>
+    <div class="gallery-grid fade-in">
+      <div class="gallery-featured" data-lb data-lb-cap="Envíos preparados para contenedor">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2545.jpeg/:/rs=w:900,cg:true" alt="Envíos preparados para contenedor" loading="lazy" />
+        <div class="gallery-overlay"><span data-i18n="gallery_zoom">Ver foto →</span></div>
+      </div>
+      <div class="gallery-thumbs">
+        <div class="gallery-thumb" data-lb data-lb-cap="Recogida de mercancía — Suiza">
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0442.jpeg/:/rs=w:500,cg:true" alt="Recogida de mercancía" loading="lazy" />
+          <div class="gallery-overlay"><span>+</span></div>
+        </div>
+        <div class="gallery-thumb" data-lb data-lb-cap="Preparación de envíos — almacén Suiza">
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2305.jpeg/:/rs=w:500,cg:true" alt="Preparación de envíos" loading="lazy" />
+          <div class="gallery-overlay"><span>+</span></div>
+        </div>
+        <div class="gallery-thumb" data-lb data-lb-cap="Carga de contenedor — lista para República Dominicana">
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_4489.jpeg/:/rs=w:500,cg:true" alt="Carga de contenedor" loading="lazy" />
+          <div class="gallery-overlay"><span>+</span></div>
+        </div>
+        <div class="gallery-thumb" data-lb data-lb-cap="Embalaje profesional — cajas listas">
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:500,cg:true" alt="Embalaje profesional" loading="lazy" />
+          <div class="gallery-overlay"><span>+</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ── Affiliate ───────────────────────────────────────────────────────────── -->
 <section class="section" id="afiliacion">
   <div class="container">
@@ -1361,6 +1461,9 @@ const T = {
     pf5:'Despachamos', pf6:'Aduanas', pf7:'Almacenamos', pf8:'Distribuimos y Entregamos', pf9:'Cliente Satisfecho ✓',
     process_tagline:'"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"',
     process_badge:'SIEMPRE DISPUESTOS',
+    gallery_label:'Enviamos Contenedores Mensuales', gallery_title:'Así trabaja nuestro equipo',
+    gallery_sub:'Fotos reales de nuestras operaciones — de Suiza a la puerta de tu familia.',
+    gallery_zoom:'Ver foto →',
     products_label:'Productos', products_title:'Cajas y barriles para cada necesidad',
     products_sub:'Materiales resistentes para larga distancia marítima. Todos los tamaños disponibles.',
     tab_cajas:'📦 Cajas', tab_barriles:'🛢️ Barriles',
@@ -1434,6 +1537,9 @@ const T = {
     pf5:'Versand', pf6:'Zoll', pf7:'Einlagerung DO', pf8:'Verteilung &amp; Zustellung', pf9:'Zufriedener Kunde ✓',
     process_tagline:'"Weil wir Ihren Bedarf verstehen, arbeiten wir mit voller Kapazität"',
     process_badge:'IMMER BEREIT',
+    gallery_label:'Monatliche Container', gallery_title:'So arbeitet unser Team',
+    gallery_sub:'Echte Fotos unserer Operationen — von der Schweiz bis zur Haustür Ihrer Familie.',
+    gallery_zoom:'Foto ansehen →',
     products_label:'Produkte', products_title:'Kisten und Fässer für jeden Bedarf',
     products_sub:'Robuste Materialien für lange Seefrachtwege. Alle Grössen verfügbar.',
     tab_cajas:'📦 Kisten', tab_barriles:'🛢️ Fässer',
@@ -1505,6 +1611,9 @@ const T = {
     pf5:'We ship', pf6:'Customs', pf7:'Storage DO', pf8:'Distribution &amp; Delivery', pf9:'Happy Customer ✓',
     process_tagline:'"Because we understand your needs, we work at full capacity"',
     process_badge:'ALWAYS READY',
+    gallery_label:'Monthly Containers', gallery_title:'Our team in action',
+    gallery_sub:'Real photos of our operations — from Switzerland to your family\'s doorstep.',
+    gallery_zoom:'View photo →',
     products_label:'Products', products_title:'Boxes and barrels for every need',
     products_sub:'Durable materials for long-distance ocean freight. All sizes available.',
     tab_cajas:'📦 Boxes', tab_barriles:'🛢️ Barrels',
