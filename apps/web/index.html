@@ -215,6 +215,16 @@
       font-size: 20px; line-height: 1;
     }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .hero-product-strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-top: 20px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 18px;
+    }
+    .hero-product-strip img {
+      width: 100%; height: 72px; object-fit: cover;
+      border-radius: 10px; opacity: .85; transition: opacity .2s;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .hero-product-strip img:hover { opacity: 1; }
     .stat-item {
       background: rgba(255,255,255,.06); border-radius: 10px;
       padding: 14px; text-align: center;
@@ -321,10 +331,15 @@
     }
     .product-card:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(206,17,38,.1); }
     .product-img {
-      height: 140px; background: var(--cream);
+      height: 200px; background: var(--cream);
+      overflow: hidden; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: 52px; border-bottom: 1px solid var(--border);
     }
+    .product-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .35s ease;
+    }
+    .product-card:hover .product-img img { transform: scale(1.04); }
     .product-body { padding: 18px; }
     .product-name { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
     .product-size { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
@@ -337,16 +352,26 @@
     }
     .product-cta:hover { background: #fee2e2; }
 
-    .barril-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .barril-hero {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+      align-items: center; margin-bottom: 32px;
+    }
+    @media (max-width: 640px) { .barril-hero { grid-template-columns: 1fr; } }
+    .barril-hero-img {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1.5px solid var(--border); height: 280px;
+    }
+    .barril-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+    .barril-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
     .barril-card {
       background: var(--cream); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 24px; text-align: center;
-      transition: border-color .2s; cursor: default;
+      border-radius: var(--radius); padding: 18px 12px; text-align: center;
+      transition: border-color .2s, background .2s; cursor: default;
     }
-    .barril-card:hover { border-color: var(--primary); }
-    .barril-icon { font-size: 40px; margin-bottom: 12px; }
-    .barril-vol { font-size: 22px; font-weight: 900; color: var(--primary); }
-    .barril-type { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; letter-spacing: .3px; }
+    .barril-card:hover { border-color: var(--primary); background: #eff6ff; }
+    .barril-icon { font-size: 32px; margin-bottom: 8px; }
+    .barril-vol { font-size: 18px; font-weight: 900; color: var(--primary); }
+    .barril-type { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 600; letter-spacing: .3px; }
 
     /* ── Trust / About ────────────────────────────────────────────────────── */
     .about-bg { background: var(--primary); }
@@ -676,6 +701,11 @@
               <span class="stat-label" data-i18n="stat_door">Puerta a puerta</span>
             </div>
           </div>
+          <div class="hero-product-strip">
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:200,cg:true" alt="Caja" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/cr=t:14.11%25,l:0%25,w:100%25,h:71.78%25/rs=w:200,h:100,cg:true" alt="Barril" loading="lazy" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:200,cg:true" alt="Jumbo" loading="lazy" />
+          </div>
         </div>
       </div>
     </div>
@@ -764,7 +794,9 @@
     <div id="tab-cajas" class="tab-panel active">
       <div class="products-grid">
         <div class="product-card fade-in">
-          <div class="product-img">📦</div>
+          <div class="product-img">
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" />
+          </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_med_name">Caja Mediana</div>
             <div class="product-size">70 × 50 × 50 cm</div>
@@ -773,7 +805,9 @@
           </div>
         </div>
         <div class="product-card fade-in">
-          <div class="product-img">📦</div>
+          <div class="product-img">
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" />
+          </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_jum_name">Caja Jumbo</div>
             <div class="product-size" data-i18n="prod_jum_size">Tamaño grande</div>
@@ -782,7 +816,9 @@
           </div>
         </div>
         <div class="product-card fade-in">
-          <div class="product-img">📦</div>
+          <div class="product-img">
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" />
+          </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_max_name">Caja Maxi</div>
             <div class="product-size" data-i18n="prod_max_size">Máxima capacidad</div>
@@ -791,7 +827,9 @@
           </div>
         </div>
         <div class="product-card fade-in">
-          <div class="product-img">📦</div>
+          <div class="product-img">
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" />
+          </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_meg_name">Caja Mega</div>
             <div class="product-size" data-i18n="prod_meg_size">Nuestra opción más grande</div>
@@ -803,15 +841,25 @@
     </div>
 
     <div id="tab-barriles" class="tab-panel">
-      <p class="section-sub fade-in" style="margin-bottom:28px" data-i18n="barril_intro">Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.</p>
-      <div class="barril-grid">
-        <div class="barril-card fade-in"><div class="barril-icon">🛢️</div><div class="barril-vol">120 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-        <div class="barril-card fade-in"><div class="barril-icon">🛢️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-        <div class="barril-card fade-in"><div class="barril-icon">🛢️</div><div class="barril-vol">220 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-        <div class="barril-card fade-in"><div class="barril-icon">🗑️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
-        <div class="barril-card fade-in"><div class="barril-icon">🗑️</div><div class="barril-vol">240 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
+      <div class="barril-hero fade-in">
+        <div class="barril-hero-img">
+          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/3D0085DD-3DC2-46F5-8AB6-F8ABDC18EF26.png/:/rs=w:800,cg:true" alt="Barriles Dominicano Express" loading="lazy" />
+        </div>
+        <div>
+          <p class="section-sub" style="margin-bottom:24px" data-i18n="barril_intro">Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.</p>
+          <div class="barril-grid">
+            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">120 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
+            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
+            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">220 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
+            <div class="barril-card"><div class="barril-icon">🗑️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
+            <div class="barril-card"><div class="barril-icon">🗑️</div><div class="barril-vol">240 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
+          </div>
+          <p style="margin-top:20px; font-size:13px; color:var(--muted); line-height:1.7" data-i18n="barril_footer">Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo. Con tapa segura para proteger tu mercancía en todo el trayecto.</p>
+          <div style="margin-top:20px">
+            <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20un%20barril" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
+          </div>
+        </div>
       </div>
-      <p style="margin-top:24px; font-size:14px; color:var(--muted)" data-i18n="barril_footer">Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo. Con tapa segura para proteger tu mercancía en todo el trayecto.</p>
     </div>
   </div>
 </section>
@@ -849,15 +897,18 @@
           </a>
         </div>
       </div>
-      <div class="flags-display fade-in">
-        <div style="text-align:center">
-          <div class="flag-big">🇨🇭</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:8px">Embrach, Schweiz</div>
-        </div>
-        <div class="route-arrow">→</div>
-        <div style="text-align:center">
-          <div class="flag-big">🇩🇴</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:8px">República Dominicana</div>
+      <div class="flags-display fade-in" style="display:block; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,.12);">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:700,cg:true" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+        <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
+          <div style="text-align:center">
+            <div class="flag-big" style="font-size:28px">🇨🇭</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">Embrach, Suiza</div>
+          </div>
+          <div class="route-arrow" style="align-self:center">→</div>
+          <div style="text-align:center">
+            <div class="flag-big" style="font-size:28px">🇩🇴</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">República Dominicana</div>
+          </div>
         </div>
       </div>
     </div>
