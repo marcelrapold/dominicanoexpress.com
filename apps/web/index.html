@@ -758,52 +758,59 @@
 
     /* ── Lightbox ──────────────────────────────────────────────────────────── */
     [data-lb] { cursor: zoom-in; }
+    /* ── Lightbox ──────────────────────────────────────────────────── */
     #lb {
       position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,.92); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center; gap: 12px;
+      background: rgba(0,0,0,.93); backdrop-filter: blur(10px);
       opacity: 0; pointer-events: none;
-      transition: opacity .25s ease;
+      transition: opacity .28s ease;
     }
     #lb.lb-open { opacity: 1; pointer-events: all; }
     #lb-inner {
-      position: relative; max-width: min(90vw, 900px); max-height: 90vh;
-      display: flex; flex-direction: column; align-items: center; gap: 0;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 920px);
+      display: flex; flex-direction: column; align-items: center;
     }
     #lb-img {
-      max-width: 100%; max-height: 78vh; border-radius: 10px;
-      object-fit: contain; display: block;
-      transform: scale(.94); opacity: 0;
-      transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .28s ease;
-      box-shadow: 0 24px 60px rgba(0,0,0,.6);
+      max-width: 100%; max-height: 78vh;
+      border-radius: 12px; object-fit: contain; display: block;
+      transform: scale(.93); opacity: 0;
+      transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .3s ease;
+      box-shadow: 0 30px 80px rgba(0,0,0,.7);
     }
     #lb.lb-open #lb-img { transform: scale(1); opacity: 1; }
-    #lb-img.lb-loading { opacity: .3; }
+    #lb-img.lb-loading { opacity: .2; }
     #lb-footer {
       width: 100%; display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 4px 0;
+      padding: 12px 0 0; gap: 8px;
     }
-    #lb-cap { font-size: 13px; color: rgba(255,255,255,.75); font-weight: 500; }
-    #lb-count { font-size: 12px; color: rgba(255,255,255,.4); font-variant-numeric: tabular-nums; }
-    #lb-close, #lb-prev, #lb-next {
-      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    #lb-cap { flex: 1; font-size: 13px; color: rgba(255,255,255,.75); font-weight: 500; }
+    #lb-count { font-size: 12px; color: rgba(255,255,255,.38); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .lb-btn {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
       color: #fff; border-radius: 50%; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px); flex-shrink: 0;
-      transition: background .15s, transform .15s;
+      backdrop-filter: blur(6px);
+      transition: background .15s, transform .15s; flex-shrink: 0;
     }
-    #lb-close:hover, #lb-prev:hover, #lb-next:hover { background: rgba(255,255,255,.22); transform: scale(1.08); }
-    #lb-close { position: absolute; top: -48px; right: 0; width: 36px; height: 36px; }
+    .lb-btn:hover { background: rgba(255,255,255,.25); transform: scale(1.1); }
+    #lb-close {
+      position: fixed; top: 16px; right: 16px;
+      width: 42px; height: 42px; z-index: 10000;
+    }
     #lb-close svg { width: 18px; height: 18px; }
-    #lb-prev, #lb-next { width: 44px; height: 44px; }
-    #lb-prev svg, #lb-next svg { width: 22px; height: 22px; }
-    #lb-prev { margin-right: 4px; }
-    #lb-next { margin-left: 4px; }
-    @media (max-width: 600px) {
-      #lb-prev, #lb-next { position: absolute; top: 50%; transform: translateY(-50%); margin: 0; }
-      #lb-prev { left: 8px; }
-      #lb-next { right: 8px; }
-      #lb-inner { max-width: 100vw; }
+    #lb-prev, #lb-next {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      width: 52px; height: 52px;
+    }
+    #lb-prev { left: 12px; }
+    #lb-next { right: 12px; }
+    #lb-prev svg, #lb-next svg { width: 24px; height: 24px; }
+    @media (max-width: 540px) {
+      #lb-prev { left: 6px; }
+      #lb-next { right: 6px; }
+      #lb-prev, #lb-next { width: 44px; height: 44px; }
     }
   </style>
 </head>
@@ -1178,7 +1185,7 @@
       <div class="products-grid">
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" data-lb data-lb-cap="Caja Mediana — 70×50×50 cm" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/FADD9013-9E55-4806-9DFC-F1DBE675B15B.png/:/rs=w:600,cg:true" alt="Caja Mediana" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_med_name">Caja Mediana</div>
@@ -1189,7 +1196,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" data-lb data-lb-cap="Caja Jumbo — Alta resistencia" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/50499550-4ABF-43A2-B42E-437EF1F97C4D.png/:/rs=w:600,cg:true" alt="Caja Jumbo" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_jum_name">Caja Jumbo</div>
@@ -1200,7 +1207,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" data-lb data-lb-cap="Caja Maxi — Máxima capacidad" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/F0B0A2FD-5CAD-4F0F-A228-AF8681377E1E.png/:/rs=w:600,cg:true" alt="Caja Maxi" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_max_name">Caja Maxi</div>
@@ -1211,7 +1218,7 @@
         </div>
         <div class="product-card fade-in">
           <div class="product-img">
-            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" data-lb data-lb-cap="Caja Mega — Nuestra opción más grande" />
+            <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/D1C82973-0A98-4E33-94A2-43FFB69398E9.png/:/rs=w:600,cg:true" alt="Caja Mega" loading="lazy" />
           </div>
           <div class="product-body">
             <div class="product-name" data-i18n="prod_meg_name">Caja Mega</div>
@@ -1925,22 +1932,37 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
   const lbCount = document.getElementById('lb-count');
   let items = [], cur = 0, startX = 0;
 
+  function getSrc(el) {
+    // explicit override wins
+    if (el.dataset.lbSrc) return el.dataset.lbSrc;
+    // img element itself
+    if (el.tagName === 'IMG') return el.src;
+    // container with img child
+    const img = el.querySelector('img');
+    return img ? img.src : null;
+  }
+
   function collectItems() {
-    items = Array.from(document.querySelectorAll('[data-lb]')).map(el => ({
-      src: el.dataset.lbSrc || el.src || el.querySelector('img')?.src,
-      cap: el.dataset.lbCap || el.alt || el.querySelector('img')?.alt || ''
-    }));
+    items = Array.from(document.querySelectorAll('[data-lb]'))
+      .map(el => ({ src: getSrc(el), cap: el.dataset.lbCap || el.querySelector('img')?.alt || '' }))
+      .filter(it => !!it.src);
   }
 
   function open(idx) {
     collectItems();
+    if (!items.length) return;
     cur = ((idx % items.length) + items.length) % items.length;
-    const item = items[cur];
-    lbImg.src = '';
+    const { src, cap } = items[cur];
+    // Upscale wsimg CDN images; keep others as-is
+    const hqSrc = src.includes('wsimg.com')
+      ? src.replace(/\/rs=w:\d+[^,]*/, '/rs=w:1400,cg:true')
+      : src;
     lbImg.classList.add('lb-loading');
-    lbImg.onload = () => lbImg.classList.remove('lb-loading');
-    lbImg.src = item.src.replace(/\/rs=w:\d+/, '/rs=w:1200');
-    lbCap.textContent = item.cap;
+    lbImg.onload  = () => lbImg.classList.remove('lb-loading');
+    lbImg.onerror = () => lbImg.classList.remove('lb-loading');
+    lbImg.src = hqSrc;
+    lbImg.alt = cap;
+    lbCap.textContent  = cap;
     lbCount.textContent = `${cur + 1} / ${items.length}`;
     lb.classList.add('lb-open');
     document.body.style.overflow = 'hidden';
@@ -1949,16 +1971,17 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
   function close() {
     lb.classList.remove('lb-open');
     document.body.style.overflow = '';
-    lbImg.src = '';
+    setTimeout(() => { lbImg.src = ''; }, 300);
   }
 
   function prev() { open(cur - 1); }
   function next() { open(cur + 1); }
 
-  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  // Click outside image closes
+  lb.addEventListener('click', e => { if (e.target === lb || e.target === document.getElementById('lb-inner')) close(); });
   document.getElementById('lb-close').addEventListener('click', close);
-  document.getElementById('lb-prev').addEventListener('click', prev);
-  document.getElementById('lb-next').addEventListener('click', next);
+  document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); prev(); });
+  document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); next(); });
 
   document.addEventListener('keydown', e => {
     if (!lb.classList.contains('lb-open')) return;
@@ -1970,16 +1993,19 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
   lb.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
   lb.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
-  }, { passive: true });
+    if (Math.abs(dx) > 48) { e.preventDefault(); dx < 0 ? next() : prev(); }
+  });
 
+  // Delegate click to all [data-lb] elements (works for dynamically added ones too)
   document.addEventListener('click', e => {
     const el = e.target.closest('[data-lb]');
     if (!el) return;
     e.preventDefault();
     collectItems();
-    const idx = Array.from(document.querySelectorAll('[data-lb]')).indexOf(el);
-    open(idx);
+    const all = Array.from(document.querySelectorAll('[data-lb]'))
+      .filter(x => getSrc(x));
+    const idx = all.indexOf(el);
+    open(idx >= 0 ? idx : 0);
   });
 
   window.lbOpen = open;
@@ -1987,11 +2013,11 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
 
 <!-- ── Lightbox overlay ───────────────────────────────────────────────────────── -->
-<div id="lb" role="dialog" aria-modal="true" aria-label="Image viewer">
-  <button id="lb-close" aria-label="Schliessen">
+<div id="lb" role="dialog" aria-modal="true" aria-label="Foto ansehen">
+  <button id="lb-close" class="lb-btn" aria-label="Schliessen">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
-  <button id="lb-prev" aria-label="Vorheriges Bild">
+  <button id="lb-prev" class="lb-btn" aria-label="Zurück">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
   <div id="lb-inner">
@@ -2001,7 +2027,7 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
       <span id="lb-count"></span>
     </div>
   </div>
-  <button id="lb-next" aria-label="Nächstes Bild">
+  <button id="lb-next" class="lb-btn" aria-label="Weiter">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>
