@@ -627,7 +627,7 @@
       border-radius: var(--radius); padding: 22px 32px;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px;
     }
-    .tagline-text { font-size: 15px; font-weight: 600; color: rgba(255,255,255,.88); font-style: italic; }
+    .tagline-text { font-size: 15px; font-weight: 600; color: rgba(255,255,255,.88); font-style: italic; transition: opacity .45s ease; }
     .tagline-badge {
       background: var(--accent); color: #fff;
       font-size: 14px; font-weight: 900; letter-spacing: 1.2px;
@@ -1427,7 +1427,7 @@
     </div><!-- /phases-grid -->
 
     <div class="process-tagline fade-in">
-      <p class="tagline-text" data-i18n="process_tagline">"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"</p>
+      <p class="tagline-text" id="tagline-text">"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"</p>
       <span class="tagline-badge" data-i18n="process_badge">SIEMPRE DISPUESTOS</span>
     </div>
   </div>
@@ -1900,7 +1900,18 @@ const T = {
     phase2_tag:'FASE 2 · OCÉANO', phase2_name:'En Tránsito',
     phase3_tag:'FASE 3 · ENTREGA', phase3_name:'En República Dominicana',
     conn1:'1–2 días', conn2:'3–4 sem.',
-    process_tagline:'"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"',
+    process_tagline:[
+      '"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"',
+      '"Más de 20 años conectando familias entre Suiza y República Dominicana"',
+      '"Tu familia te espera — nosotros nos encargamos del resto"',
+      '"Cada caja, cada barril — con seguro incluido y entrega en tu puerta"',
+      '"Sin complicaciones aduaneras — lo manejamos todo por ti"',
+      '"Un contenedor mensual, cero preocupaciones para ti"',
+      '"Empresa familiar con décadas de confianza en el mar"',
+      '"Puntualidad, transparencia y corazón — así somos nosotros"',
+      '"De Suiza a la puerta de tu hogar — cada mes, sin falta"',
+      '"Tu mercancía viaja segura — de puerta a puerta, garantizado"',
+    ],
     process_badge:'SIEMPRE DISPUESTOS',
     gallery_label:'Enviamos Contenedores Mensuales', gallery_title:'Así trabaja nuestro equipo',
     gallery_sub:'Fotos reales de nuestras operaciones — de Suiza a la puerta de tu familia.',
@@ -1988,7 +1999,18 @@ const T = {
     phase2_tag:'PHASE 2 · OZEAN', phase2_name:'Auf dem Weg',
     phase3_tag:'PHASE 3 · ZUSTELLUNG', phase3_name:'In der Dominikanischen Republik',
     conn1:'1–2 Tage', conn2:'3–4 Wochen',
-    process_tagline:'"Weil wir Ihren Bedarf verstehen, arbeiten wir mit voller Kapazität"',
+    process_tagline:[
+      '"Weil wir Ihren Bedarf verstehen, arbeiten wir mit voller Kapazität"',
+      '"Über 20 Jahre Erfahrung — Ihre Sendung ist bei uns in guten Händen"',
+      '"Jedes Fass. Jede Kiste. Sicher angekommen — mit Versicherung inklusive"',
+      '"Pünktlich, versichert, transparent — so arbeiten wir jeden Monat"',
+      '"Familienunternehmen mit Herzblut — für Ihre Familie in der Dominikanischen Republik"',
+      '"Wir holen ab, verschiffen, verzollen — Sie entspannen sich"',
+      '"Kein Stress mit dem Zoll — wir erledigen alles für Sie"',
+      '"Vertrauen, das auf 20 Jahren Seetransport gewachsen ist"',
+      '"Von der Schweiz bis zur Haustür Ihrer Familie — jeden Monat zuverlässig"',
+      '"Ein Container pro Monat — null Aufwand für Sie"',
+    ],
     process_badge:'IMMER BEREIT',
     gallery_label:'Monatliche Container', gallery_title:'So arbeitet unser Team',
     gallery_sub:'Echte Fotos unserer Operationen — von der Schweiz bis zur Haustür Ihrer Familie.',
@@ -2074,7 +2096,18 @@ const T = {
     phase2_tag:'PHASE 2 · OCEAN', phase2_name:'In Transit',
     phase3_tag:'PHASE 3 · DELIVERY', phase3_name:'In the Dominican Republic',
     conn1:'1–2 days', conn2:'3–4 weeks',
-    process_tagline:'"Because we understand your needs, we work at full capacity"',
+    process_tagline:[
+      '"Because we understand your needs, we work at full capacity"',
+      '"20+ years of trust between Switzerland and the Dominican Republic"',
+      '"Every barrel, every box — insured and delivered to your door"',
+      '"Punctual, transparent, personal — that\'s how we do it every month"',
+      '"Your family is waiting — we handle everything in between"',
+      '"No customs headaches — we take care of it all for you"',
+      '"A family company with decades of maritime expertise"',
+      '"One container a month — zero worry, all handled"',
+      '"Your shipment travels safely, door to door, every single time"',
+      '"From Switzerland to your family\'s front door — reliably, every month"',
+    ],
     process_badge:'ALWAYS READY',
     gallery_label:'Monthly Containers', gallery_title:'Our team in action',
     gallery_sub:'Real photos of our operations — from Switzerland to your family\'s doorstep.',
@@ -2189,6 +2222,9 @@ function setLang(lang, save = true) {
     if (T[lang]?.[key] !== undefined) el.innerHTML = T[lang][key];
   });
 
+  // Update rotating tagline for new language
+  startTaglineRotation(lang);
+
   // Update meta description for current language
   const metaDesc = {
     es: 'Empresa familiar con 20+ años enviando contenedores mensuales de Suiza a la República Dominicana. Servicio puerta a puerta, seguro incluido.',
@@ -2197,6 +2233,47 @@ function setLang(lang, save = true) {
   };
   const md = document.querySelector('meta[name=description]');
   if (md) md.content = metaDesc[lang];
+}
+
+// ── Rotating tagline (Fisher-Yates shuffle queue, high entropy) ──────────────
+let _taglineTimer = null;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startTaglineRotation(lang) {
+  if (_taglineTimer) clearInterval(_taglineTimer);
+  const el = document.getElementById('tagline-text');
+  if (!el) return;
+  const slogans = T[lang]?.process_tagline;
+  if (!Array.isArray(slogans) || slogans.length < 2) {
+    if (slogans) el.textContent = Array.isArray(slogans) ? slogans[0] : slogans;
+    return;
+  }
+  // Build shuffled queue; ensure first item differs from current text
+  let queue = shuffle(slogans);
+  if (queue[0] === el.textContent) queue.push(queue.shift());
+  let idx = 0;
+
+  // Show initial slogan immediately
+  el.textContent = queue[idx];
+
+  _taglineTimer = setInterval(() => {
+    idx++;
+    if (idx >= queue.length) { queue = shuffle(slogans); idx = 0; }
+    // Fade out → swap → fade in
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = queue[idx];
+      el.style.opacity = '1';
+    }, 460);
+  }, 5500);
 }
 
 // ── Auto-init: detect & apply language on page load ───────────────────────────
