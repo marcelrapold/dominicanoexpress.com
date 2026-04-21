@@ -718,44 +718,40 @@
     .mobile-nav a:last-child { border-bottom: none; }
 
     /* ── Gallery ──────────────────────────────────────────────────────────── */
+    /* ── Photo Gallery ────────────────────────────────────────────── */
     .gallery-section { background: var(--cream); }
-    .gallery-grid {
+    .photo-grid {
       display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 12px; margin-top: 40px;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 190px;
+      gap: 10px; margin-top: 32px;
     }
-    @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr; } }
-    .gallery-featured, .gallery-thumb {
-      position: relative; overflow: hidden; border-radius: 12px;
-      cursor: zoom-in; background: #e0e7ef;
+    .photo-item {
+      border-radius: 10px; overflow: hidden;
+      position: relative; cursor: zoom-in;
+      background: #d0dae8;
     }
-    .gallery-featured { min-height: 360px; }
-    .gallery-thumbs {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .photo-item.wide { grid-column: span 2; }
+    .photo-item.tall { grid-row: span 2; }
+    .photo-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .32s ease;
     }
-    .gallery-thumb { min-height: 170px; }
-    .gallery-featured img, .gallery-thumb img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform .45s cubic-bezier(.22,1,.36,1);
-    }
-    .gallery-featured:hover img, .gallery-thumb:hover img { transform: scale(1.06); }
-    .gallery-overlay {
+    .photo-item:hover img { transform: scale(1.07); }
+    .photo-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 50%);
-      display: flex; align-items: flex-end; padding: 16px;
-      opacity: 0; transition: opacity .25s;
+      background: rgba(0,0,0,.28);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s;
     }
-    .gallery-featured .gallery-overlay { opacity: 1; }
-    .gallery-thumb:hover .gallery-overlay { opacity: 1; }
-    .gallery-overlay span {
-      color: #fff; font-size: 13px; font-weight: 700;
-      letter-spacing: .3px;
+    .photo-item:hover .photo-overlay { opacity: 1; }
+    .photo-overlay svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
+    @media (max-width: 840px) {
+      .photo-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 160px; }
     }
-    .gallery-thumb .gallery-overlay span {
-      font-size: 22px; font-weight: 300;
-      margin: auto; padding-bottom: 8px;
+    @media (max-width: 540px) {
+      .photo-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 130px; }
+      .photo-item.tall { grid-row: span 1; }
     }
 
     /* TODO_CLIENT indicator */
@@ -1322,29 +1318,116 @@
       <h2 class="section-title" data-i18n="gallery_title">Así trabaja nuestro equipo</h2>
       <p class="section-sub" data-i18n="gallery_sub">Fotos reales de nuestras operaciones — de Suiza a la puerta de tu familia.</p>
     </div>
-    <div class="gallery-grid fade-in">
-      <div class="gallery-featured" data-lb data-lb-cap="Envíos preparados para contenedor">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2545.jpeg/:/rs=w:900,cg:true" alt="Envíos preparados para contenedor" loading="lazy" />
-        <div class="gallery-overlay"><span data-i18n="gallery_zoom">Ver foto →</span></div>
+    <div class="photo-grid fade-in">
+
+      <!-- 1 — featured wide+tall -->
+      <div class="photo-item wide tall" data-lb data-lb-cap="Carga de contenedor — Dominicano Express">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_3634.JPG/:/rs=w:900,cg:true" alt="Carga de contenedor" loading="eager" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
       </div>
-      <div class="gallery-thumbs">
-        <div class="gallery-thumb" data-lb data-lb-cap="Recogida de mercancía — Suiza">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0442.jpeg/:/rs=w:500,cg:true" alt="Recogida de mercancía" loading="lazy" />
-          <div class="gallery-overlay"><span>+</span></div>
-        </div>
-        <div class="gallery-thumb" data-lb data-lb-cap="Preparación de envíos — almacén Suiza">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2305.jpeg/:/rs=w:500,cg:true" alt="Preparación de envíos" loading="lazy" />
-          <div class="gallery-overlay"><span>+</span></div>
-        </div>
-        <div class="gallery-thumb" data-lb data-lb-cap="Carga de contenedor — lista para República Dominicana">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_4489.jpeg/:/rs=w:500,cg:true" alt="Carga de contenedor" loading="lazy" />
-          <div class="gallery-overlay"><span>+</span></div>
-        </div>
-        <div class="gallery-thumb" data-lb data-lb-cap="Embalaje profesional — cajas listas">
-          <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:500,cg:true" alt="Embalaje profesional" loading="lazy" />
-          <div class="gallery-overlay"><span>+</span></div>
-        </div>
+
+      <!-- 2 -->
+      <div class="photo-item" data-lb data-lb-cap="Envíos listos para el contenedor">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/b3a7ee22-7acb-4cd9-b647-2b8b4fe9afd2.jpeg/:/rs=w:600,cg:true" alt="Envíos listos" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
       </div>
+
+      <!-- 3 -->
+      <div class="photo-item" data-lb data-lb-cap="Verificación de mercancía — Suiza">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8589.jpeg/:/rs=w:600,cg:true" alt="Verificación de mercancía" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 4 -->
+      <div class="photo-item" data-lb data-lb-cap="Paquetes empacados con cuidado">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8590.jpeg/:/rs=w:600,cg:true" alt="Paquetes empacados" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 5 -->
+      <div class="photo-item" data-lb data-lb-cap="Preparación para la carga marítima">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/1b6e3d48-4844-4333-a66c-870c036c81c8.jpeg/:/rs=w:600,cg:true" alt="Preparación carga marítima" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 6 — wide -->
+      <div class="photo-item wide" data-lb data-lb-cap="Apertura de contenedor — llegada en la República Dominicana">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_3607.JPG/:/rs=w:900,cg:true" alt="Apertura de contenedor" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 7 -->
+      <div class="photo-item" data-lb data-lb-cap="Contenedor completamente cargado">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0002.jpeg/:/rs=w:600,cg:true" alt="Contenedor completamente cargado" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 8 -->
+      <div class="photo-item" data-lb data-lb-cap="Almacén logístico — Suiza">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0015.jpeg/:/rs=w:600,cg:true" alt="Almacén logístico Suiza" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 9 -->
+      <div class="photo-item" data-lb data-lb-cap="Mercancía lista para despacho">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_4489.jpeg/:/rs=w:600,cg:true" alt="Mercancía lista para despacho" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 10 -->
+      <div class="photo-item" data-lb data-lb-cap="Recogida domiciliaria — Suiza">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8588.jpeg/:/rs=w:600,cg:true" alt="Recogida domiciliaria Suiza" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 11 -->
+      <div class="photo-item" data-lb data-lb-cap="Centro logístico — organización de envíos">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2437.jpeg/:/rs=w:600,cg:true" alt="Centro logístico" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 12 — wide -->
+      <div class="photo-item wide" data-lb data-lb-cap="Infraestructura de contenedores — Dominicano Express">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/f25bee00-e81b-4c33-9fed-5dbd192877c9.jpeg/:/rs=w:900,cg:true" alt="Infraestructura contenedores" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 13 -->
+      <div class="photo-item" data-lb data-lb-cap="Punto de recogida — organización impecable">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0442.jpeg/:/rs=w:600,cg:true" alt="Punto de recogida" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 14 -->
+      <div class="photo-item" data-lb data-lb-cap="Manipulación profesional de carga">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8586.jpeg/:/rs=w:600,cg:true" alt="Manipulación profesional de carga" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 15 -->
+      <div class="photo-item" data-lb data-lb-cap="Operaciones de carga en el muelle">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/f1f1c206-dc33-44e3-8339-2acc128e1b93.jpeg/:/rs=w:600,cg:true" alt="Operaciones de carga" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 16 -->
+      <div class="photo-item" data-lb data-lb-cap="Revisión final antes del despacho">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_9300.jpeg/:/rs=w:600,cg:true" alt="Revisión final" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 17 -->
+      <div class="photo-item" data-lb data-lb-cap="Contenedor en tránsito — camino a la República Dominicana">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2545.jpeg/:/rs=w:600,cg:true" alt="Contenedor en tránsito" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
+      <!-- 18 — wide to close the row nicely -->
+      <div class="photo-item wide" data-lb data-lb-cap="Mercancía organizada — listos para el siguiente envío">
+        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2305.jpeg/:/rs=w:900,cg:true" alt="Mercancía organizada" loading="lazy" />
+        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      </div>
+
     </div>
   </div>
 </section>
