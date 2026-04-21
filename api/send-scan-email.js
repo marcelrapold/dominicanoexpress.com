@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 export const config = { runtime: 'nodejs', maxDuration: 30 };
 
 /** Beide erhalten die Scan-Mail direkt im Feld „An“. */
-const SCAN_EMAIL_TO = ['marcel@marcerapold.com', 'rapold.ch@hotmail.com'];
+const SCAN_EMAIL_TO = ['marcel@marcelrapold.com', 'rapold.ch@hotmail.com'];
 
 const BRAND = {
   nav: '#00205B',

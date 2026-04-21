@@ -56,19 +56,26 @@ function sendScanEmailAsync(imageDataURL, f, rawText) {
       rawText: rawText || '',
     }),
   })
-    .then((r) => r.json().catch(() => ({})))
-    .then((data) => {
+    .then(async (r) => {
+      const data = await r.json().catch(() => ({}));
       if (data && data.ok) {
         const msg = (window.T && window.T[safeLang] && window.T[safeLang].scan_email_sent) || 'Sent';
         scanToast(msg);
-      } else {
-        const msg = (window.T && window.T[safeLang] && window.T[safeLang].scan_email_fail) || 'Email failed';
-        scanToast(msg, true);
+        return;
       }
+      const base =
+        (window.T && window.T[safeLang] && window.T[safeLang].scan_email_fail) || 'Email failed';
+      const hint =
+        (!r.ok ? `HTTP ${r.status}` : null) ||
+        (data && (data.detail || data.error)) ||
+        '';
+      const extra = hint ? ` · ${hint}` : '';
+      scanToast(base + extra, true);
     })
     .catch(() => {
-      const msg = (window.T && window.T[safeLang] && window.T[safeLang].scan_email_fail) || 'Email failed';
-      scanToast(msg, true);
+      const msg =
+        (window.T && window.T[safeLang] && window.T[safeLang].scan_email_fail) || 'Email failed';
+      scanToast(msg + ' · network', true);
     });
 }
 

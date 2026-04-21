@@ -15,6 +15,7 @@
     { "src": "/impressum/?$",          "dest": "/apps/web/impressum.html" },
     { "src": "/datenschutz/?$",        "dest": "/apps/web/datenschutz.html" },
     { "src": "/agb/?$",                "dest": "/apps/web/agb.html" },
+    { "src": "/api/(.*)",              "dest": "/api/$1" },
     {
       "src": "/(.*)",
       "dest": "/apps/web/index.html",
