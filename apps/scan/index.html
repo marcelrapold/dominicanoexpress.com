@@ -144,7 +144,8 @@
       border-top-color: var(--blue);
       animation: spin .7s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin  { to { transform: rotate(360deg); } }
+    @keyframes blink { from { opacity: 1; } to { opacity: .4; } }
     .proc-label { color: #f1f5f9; font-size: 14px; font-weight: 500; }
     .proc-bar-wrap { width: 200px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.15); }
     .proc-bar { height: 100%; border-radius: 2px; background: var(--blue); width: 0; transition: width .3s; }
@@ -345,6 +346,73 @@
     input[type=file] { display: none; }
     canvas { display: none; }
 
+    /* ── Auto-detect HUD ──────────────────────────────────────────────── */
+    .auto-hud {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 10px 16px;
+      background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 100%);
+      display: none; align-items: center; gap: 10px;
+    }
+    .auto-hud.visible { display: flex; }
+
+    /* Sharpness bar */
+    .sharp-bar-wrap {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,.2);
+    }
+    .sharp-bar {
+      height: 100%; border-radius: 2px;
+      background: var(--muted); width: 0%;
+      transition: width .15s, background .3s;
+    }
+    .sharp-bar.good  { background: #22c55e; }
+    .sharp-bar.great { background: #4ade80; }
+
+    /* Status text */
+    .auto-status {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,.7);
+      white-space: nowrap; letter-spacing: .3px;
+    }
+    .auto-status.ready { color: #86efac; }
+
+    /* Countdown ring */
+    .countdown-ring {
+      width: 36px; height: 36px; flex-shrink: 0;
+      display: none; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .countdown-ring.active { display: flex; }
+    .countdown-ring svg {
+      position: absolute; inset: 0;
+      transform: rotate(-90deg);
+    }
+    .ring-track { fill: none; stroke: rgba(255,255,255,.15); stroke-width: 3; }
+    .ring-fill  { fill: none; stroke: #4ade80; stroke-width: 3;
+                  stroke-dasharray: 100; stroke-dashoffset: 100;
+                  stroke-linecap: round; transition: stroke-dashoffset .1s linear; }
+    .ring-icon  { font-size: 14px; position: relative; z-index: 1; }
+
+    /* Scan-frame states */
+    .scan-frame.sharp .scan-corner  { border-color: #22c55e; transition: border-color .3s; }
+    .scan-frame .scan-corner        { transition: border-color .3s; }
+
+    /* Auto toggle pill */
+    .auto-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 99px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); transition: all .2s; user-select: none;
+    }
+    .auto-toggle.on {
+      background: #f0fdf4; border-color: #bbf7d0; color: var(--green);
+    }
+    .auto-toggle-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--muted); transition: background .2s;
+    }
+    .auto-toggle.on .auto-toggle-dot { background: var(--green); animation: blink .8s ease infinite alternate; }
+
     /* responsive */
     @media (max-width: 480px) {
       .fields-grid { grid-template-columns: 1fr 1fr; }
@@ -416,6 +484,21 @@
         <div class="scan-corner br"></div>
       </div>
 
+      <!-- Auto-detect HUD (bottom of camera view) -->
+      <div class="auto-hud" id="auto-hud">
+        <div class="countdown-ring" id="countdown-ring">
+          <svg viewBox="0 0 36 36">
+            <circle class="ring-track" cx="18" cy="18" r="15.9"/>
+            <circle class="ring-fill"  cx="18" cy="18" r="15.9" id="ring-fill"/>
+          </svg>
+          <span class="ring-icon">📷</span>
+        </div>
+        <div class="sharp-bar-wrap">
+          <div class="sharp-bar" id="sharp-bar"></div>
+        </div>
+        <span class="auto-status" id="auto-status">Ausweis einhalten…</span>
+      </div>
+
       <!-- Processing -->
       <div class="processing-overlay" id="proc-overlay">
         <div class="spinner"></div>
@@ -448,6 +531,10 @@
         Foto aufnehmen
       </button>
       <span class="scan-hint-text" id="scan-hint">Karte vollständig im Bild halten</span>
+      <div class="auto-toggle on" id="auto-toggle" onclick="toggleAutoMode()" title="Auto-Erkennung ein/aus">
+        <div class="auto-toggle-dot"></div>
+        Auto
+      </div>
       <button class="btn btn-sm" id="reset-btn" onclick="resetScan()" style="display:none">↺ Neu</button>
     </div>
   </div>
@@ -519,9 +606,22 @@ const OCR_KEY = 'helloworld'; // ocr.space free key – get own at ocr.space/ocr
 const OCR_URL = 'https://api.ocr.space/parse/image';
 
 // ── State ───────────────────────────────────────────────────────────────────
-let stream      = null;
-let capturedURL = null;
-let cameraActive = false;
+let stream        = null;
+let capturedURL   = null;
+let cameraActive  = false;
+
+// Auto-detect
+let autoMode        = true;
+let analysisRaf     = null;
+let lastAnalysisTs  = 0;
+const ANALYSIS_MS   = 200;       // analyse every 200 ms
+const SHARP_THRESH  = 18;        // Laplacian variance threshold (tune if needed)
+const STABLE_COUNT  = 6;         // need N consecutive sharp frames
+const HOLD_MS       = 1400;      // visual countdown duration
+let sharpnessBuffer = [];
+let countdownStart  = null;      // timestamp when countdown started
+const analysisCanvas = document.createElement('canvas');
+const analysisCtx    = analysisCanvas.getContext('2d', { willReadFrequently: true });
 
 // ── Init ────────────────────────────────────────────────────────────────────
 setStatus('ready', 'Bereit');
@@ -562,10 +662,142 @@ async function captureFromCamera() {
       document.getElementById('scan-frame').style.display = 'block';
       document.getElementById('scan-hint').textContent = 'Kamera aktiv · Karte ausrichten und Scannen drücken';
       cameraActive = true;
+      if (autoMode) startAutoDetect();
       return;
     } catch (_) {}
   }
   document.getElementById('file-camera').click();
+}
+
+// ── Auto-Detect ──────────────────────────────────────────────────────────────
+function computeLaplacian(imageData, w, h) {
+  const d = imageData.data;
+  // Sample the center 60% of the image for better document detection
+  const x0 = Math.floor(w * 0.2), x1 = Math.floor(w * 0.8);
+  const y0 = Math.floor(h * 0.2), y1 = Math.floor(h * 0.8);
+  const step = 2;
+  let sum = 0, count = 0;
+  for (let y = y0 + 1; y < y1 - 1; y += step) {
+    for (let x = x0 + 1; x < x1 - 1; x += step) {
+      const gray  = i => (d[i*4]*77 + d[i*4+1]*150 + d[i*4+2]*29) >> 8;
+      const c  = gray(y*w + x);
+      const t  = gray((y-1)*w + x);
+      const b  = gray((y+1)*w + x);
+      const l  = gray(y*w + (x-1));
+      const r  = gray(y*w + (x+1));
+      const lap = t + b + l + r - 4*c;
+      sum += lap * lap;
+      count++;
+    }
+  }
+  return count > 0 ? Math.sqrt(sum / count) : 0;
+}
+
+function startAutoDetect() {
+  if (analysisRaf) return;
+  document.getElementById('auto-hud').classList.add('visible');
+  sharpnessBuffer = [];
+  countdownStart  = null;
+  analysisRaf = requestAnimationFrame(analyseLoop);
+}
+
+function stopAutoDetect() {
+  if (analysisRaf) { cancelAnimationFrame(analysisRaf); analysisRaf = null; }
+  document.getElementById('auto-hud').classList.remove('visible');
+  document.getElementById('scan-frame').classList.remove('sharp');
+  resetCountdownUI();
+}
+
+function analyseLoop(ts) {
+  if (!cameraActive) return;
+  analysisRaf = requestAnimationFrame(analyseLoop);
+  if (ts - lastAnalysisTs < ANALYSIS_MS) return;
+  lastAnalysisTs = ts;
+
+  const video = document.getElementById('camera-video');
+  if (!video.videoWidth || video.readyState < 2) return;
+
+  // Downsample to 160×90 for speed
+  const AW = 160, AH = Math.round(160 * video.videoHeight / video.videoWidth);
+  analysisCanvas.width  = AW;
+  analysisCanvas.height = AH;
+  analysisCtx.drawImage(video, 0, 0, AW, AH);
+  const imgData = analysisCtx.getImageData(0, 0, AW, AH);
+  const sharpness = computeLaplacian(imgData, AW, AH);
+
+  sharpnessBuffer.push(sharpness);
+  if (sharpnessBuffer.length > STABLE_COUNT + 2) sharpnessBuffer.shift();
+
+  const recent = sharpnessBuffer.slice(-STABLE_COUNT);
+  const isSharp  = recent.length >= STABLE_COUNT && recent.every(v => v >= SHARP_THRESH);
+  const maxVal   = Math.max(1, SHARP_THRESH * 2.5);
+  const pct      = Math.min(100, Math.round(sharpness / maxVal * 100));
+  updateSharpUI(pct, isSharp, sharpness);
+
+  if (isSharp) {
+    if (!countdownStart) countdownStart = performance.now();
+    const elapsed = performance.now() - countdownStart;
+    const progress = Math.min(1, elapsed / HOLD_MS);
+    updateCountdownUI(progress);
+    if (progress >= 1) {
+      triggerAutoCapture();
+    }
+  } else {
+    if (countdownStart) { countdownStart = null; resetCountdownUI(); }
+  }
+}
+
+function updateSharpUI(pct, isSharp, rawVal) {
+  const bar    = document.getElementById('sharp-bar');
+  const status = document.getElementById('auto-status');
+  const frame  = document.getElementById('scan-frame');
+  bar.style.width = pct + '%';
+  bar.className   = 'sharp-bar' + (pct > 70 ? ' great' : pct > 45 ? ' good' : '');
+  if (isSharp) {
+    status.textContent = 'Scharf · Halte ruhig…';
+    status.className   = 'auto-status ready';
+    frame.classList.add('sharp');
+  } else {
+    status.textContent = pct > 40 ? 'Fast scharf…' : 'Ausweis einhalten…';
+    status.className   = 'auto-status';
+    frame.classList.remove('sharp');
+  }
+}
+
+function updateCountdownUI(progress) {
+  const ring = document.getElementById('countdown-ring');
+  const fill = document.getElementById('ring-fill');
+  ring.classList.add('active');
+  // stroke-dashoffset goes from 100 → 0
+  fill.style.strokeDashoffset = (100 * (1 - progress)).toFixed(1);
+}
+
+function resetCountdownUI() {
+  document.getElementById('countdown-ring').classList.remove('active');
+  document.getElementById('ring-fill').style.strokeDashoffset = '100';
+}
+
+function triggerAutoCapture() {
+  stopAutoDetect();
+  cameraActive = false;
+  const video  = document.getElementById('camera-video');
+  const canvas = document.getElementById('capture-canvas');
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  capturedURL = canvas.toDataURL('image/jpeg', 0.95);
+  runOCR(capturedURL);
+}
+
+function toggleAutoMode() {
+  autoMode = !autoMode;
+  const toggle = document.getElementById('auto-toggle');
+  toggle.className = 'auto-toggle' + (autoMode ? ' on' : '');
+  toggle.innerHTML = `<div class="auto-toggle-dot"></div>${autoMode ? 'Auto' : 'Manuell'}`;
+  if (cameraActive) {
+    if (autoMode)  startAutoDetect();
+    else           stopAutoDetect();
+  }
 }
 
 // ── File / Drop ──────────────────────────────────────────────────────────────
@@ -602,7 +834,8 @@ async function runOCR(dataURL) {
   document.getElementById('scan-frame').style.display = 'none';
   document.getElementById('reset-btn').style.display = 'inline-flex';
 
-  // Stop camera stream
+  // Stop camera stream and auto-detect
+  stopAutoDetect();
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; cameraActive = false; }
 
   // Show processing
@@ -987,6 +1220,7 @@ function resetScan() {
   document.getElementById('results-section').style.display = 'none';
   document.getElementById('mrz-card').style.display = 'none';
   document.getElementById('scan-hint').textContent = 'Karte vollständig im Bild halten';
+  stopAutoDetect();
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; cameraActive = false; }
   capturedURL = null;
   setStatus('ready', 'Bereit');
