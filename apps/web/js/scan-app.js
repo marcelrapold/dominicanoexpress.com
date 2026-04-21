@@ -45,8 +45,8 @@ function edgeEnergyBounds (gray, w, h) {
   for (let x = 0; x < w; x++) if (col[x] > cmax) cmax = col[x];
   for (let y = 0; y < h; y++) if (row[y] > rmax) rmax = row[y];
   if (cmax < 1e-6 || rmax < 1e-6) return null;
-  const cTh = cmax * 0.14;
-  const rTh = rmax * 0.14;
+  const cTh = cmax * 0.11;
+  const rTh = rmax * 0.11;
   let xl = 0;
   while (xl < w - 8 && col[xl] < cTh) xl++;
   let xr = w - 1;
@@ -55,7 +55,7 @@ function edgeEnergyBounds (gray, w, h) {
   while (yt < h - 8 && row[yt] < rTh) yt++;
   let yb = h - 1;
   while (yb > 8 && row[yb] < rTh) yb--;
-  if (xr - xl < w * 0.35 || yb - yt < h * 0.35) return null;
+  if (xr - xl < w * 0.26 || yb - yt < h * 0.26) return null;
   return { xl, xr, yt, yb };
 }
 
@@ -76,14 +76,38 @@ function cropOptimal (dataURL) {
         sy = Math.max(0, Math.floor(b.yt * sh) - padY);
         cw = Math.min(img.width - sx, Math.ceil((b.xr - b.xl + 1) * sw) + 2 * padX);
         ch = Math.min(img.height - sy, Math.ceil((b.yb - b.yt + 1) * sh) + 2 * padY);
+        /* Wenn der gefundene Rahmen fast das ganze Bild ist, zusätzlich enger schneiden */
+        if (cw > img.width * 0.88 || ch > img.height * 0.88) {
+          const inset = 0.06;
+          sx = Math.round(img.width * inset);
+          sy = Math.round(img.height * inset);
+          cw = Math.round(img.width * (1 - 2 * inset));
+          ch = Math.round(img.height * (1 - 2 * inset));
+        }
       } else {
-        const inset = 0.035;
-        sx = Math.round(img.width * inset);
-        sy = Math.round(img.height * inset);
-        cw = Math.round(img.width * (1 - 2 * inset));
-        ch = Math.round(img.height * (1 - 2 * inset));
+        /* Kein Kantenfund (z. B. helles Sofa): typische ID-1-Landschaft im Zentrum (~85,6×54 mm) */
+        const arDoc = 85.6 / 53.98;
+        const iw = img.width;
+        const ih = img.height;
+        const m = 0.06;
+        if (iw / ih >= arDoc * 0.85) {
+          ch = Math.round(ih * (1 - 2 * m));
+          cw = Math.round(ch * arDoc);
+          if (cw > iw * (1 - 2 * m)) {
+            cw = Math.round(iw * (1 - 2 * m));
+            ch = Math.round(cw / arDoc);
+          }
+          sx = Math.round((iw - cw) / 2);
+          sy = Math.round((ih - ch) / 2);
+        } else {
+          const inset = 0.1;
+          sx = Math.round(iw * inset);
+          sy = Math.round(ih * inset);
+          cw = Math.round(iw * (1 - 2 * inset));
+          ch = Math.round(ih * (1 - 2 * inset));
+        }
       }
-      const fine = 0.012;
+      const fine = 0.01;
       sx += Math.round(cw * fine);
       sy += Math.round(ch * fine);
       cw = Math.round(cw * (1 - 2 * fine));
@@ -205,13 +229,15 @@ function confirmSendScanEmail () {
       card.classList.remove('is-sending');
     }
   };
-  cropOptimal(dataURL)
-    .then((imgURL) => {
-      sendScanEmailAsync(imgURL, fields, rawText, onOk, restoreBtn);
-    })
-    .catch(() => {
-      sendScanEmailAsync(dataURL, fields, rawText, onOk, restoreBtn);
-    });
+  /* Gleiches zugeschnittenes Bild wie in der UI; bei > ~2 MB API-Limit zusätzlich komprimieren */
+  const send = (url) => sendScanEmailAsync(url, fields, rawText, onOk, restoreBtn);
+  if (dataUrlApproxByteSize(dataURL) > 1.9 * 1024 * 1024) {
+    compressImage(dataURL, 1.75 * 1024 * 1024)
+      .then(send)
+      .catch(() => send(dataURL));
+  } else {
+    send(dataURL);
+  }
 }
 
 window.confirmSendScanEmail = confirmSendScanEmail;
@@ -504,7 +530,6 @@ function handleDrop(e) {
 // ── OCR pipeline ─────────────────────────────────────────────────────────────
 async function runOCR (dataURL) {
   prepareForNewOCR();
-  capturedURL = dataURL;
 
   const img = el('captured-img');
   img.src = dataURL;
@@ -524,7 +549,11 @@ async function runOCR (dataURL) {
   el('capture-btn').disabled = true;
 
   try {
-    const compressed = await compressImage(dataURL, 900 * 1024);
+    const croppedDataURL = await cropOptimal(dataURL);
+    capturedURL = croppedDataURL;
+    el('captured-img').src = croppedDataURL;
+
+    const compressed = await compressImage(croppedDataURL, 900 * 1024);
     setProc(scanT('scan_proc_sending'), 35);
 
     const text = await callOCR(compressed);
@@ -535,7 +564,7 @@ async function runOCR (dataURL) {
 
     await delay(300);
     overlay.classList.remove('active');
-    renderResults(fields, text, dataURL);
+    renderResults(fields, text, croppedDataURL);
     setStatus('ready', scanT('scan_status_complete'));
     haptic('success');
 
@@ -573,6 +602,13 @@ async function callOCR (dataURL) {
   } catch (_) {
     return post('eng');
   }
+}
+
+function dataUrlApproxByteSize (u) {
+  if (!u || typeof u !== 'string') return 0;
+  const p = u.indexOf('base64,');
+  if (p < 0) return u.length;
+  return Math.floor((u.length - p - 7) * 0.75);
 }
 
 // ── Image compression ─────────────────────────────────────────────────────────
