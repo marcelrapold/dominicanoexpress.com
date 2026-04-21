@@ -1,19 +1,15 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/scan",        "destination": "/apps/scan/index.html" },
-    { "source": "/scan/:path*", "destination": "/apps/scan/:path*"     },
-    { "source": "/(.*)",        "destination": "/apps/web/index.html"  }
-  ],
-  "headers": [
+  "routes": [
+    { "src": "/scan/?$",  "dest": "/apps/scan/index.html" },
+    { "src": "/scan/(.*)", "dest": "/apps/scan/$1" },
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options",        "value": "DENY"    },
-        { "key": "X-XSS-Protection",       "value": "1; mode=block" }
-      ]
+      "src": "/(.*)",
+      "dest": "/apps/web/index.html",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block"
+      }
     }
   ]
 }
