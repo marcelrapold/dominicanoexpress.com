@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" role="img" aria-label="Dominicano Express">
+  <title>Dominicano Express  Envíos Suiza ” República Dominicana</title>
+  <defs>
+    <!-- Clip circles for flag badges -->
+    <clipPath id="chcp"><circle cx="109" cy="169" r="30"/></clipPath>
+    <clipPath id="docp"><circle cx="550" cy="169" r="30"/></clipPath>
+  </defs>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+       SWOOSH GROUP (red feather · silver strokes · blue slash)
+  PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- Red feather (leftmost, tapers from lower-left to upper-right) -->
+  <path fill="#CC1422"
+    d="M 46,153 C 92,72 248,8 396,48 C 387,60 378,67 362,63 C 228,24 98,84 40,168 Z"/>
+
+  <!-- Silver/gray parallel strokes -->
+  <path fill="#8899AC"
+    d="M 108,122 C 210,38 368,10 486,50 L 480,59 C 362,16 204,46 102,131 Z"/>
+  <path fill="#AABACA"
+    d="M 130,113 C 232,32 392,6 508,46 L 502,55 C 384,12 226,38 122,122 Z"/>
+  <path fill="#C2D0DC"
+    d="M 150,105 C 252,26 412,4 528,44 L 522,53 C 404,10 246,32 142,114 Z"/>
+  <path fill="#D6E0EA" opacity=".82"
+    d="M 168,98 C 270,20 430,2 544,42 L 538,51 C 422,8 264,26 160,107 Z"/>
+  <path fill="#E4EAF2" opacity=".6"
+    d="M 185,92 C 286,15 446,0 558,38 L 552,48 C 438,4 280,20 177,101 Z"/>
+
+  <!-- Blue swoosh (right side, sharp angle) -->
+  <path fill="#1B3A8A"
+    d="M 272,76 C 368,28 472,20 554,56 L 548,72 C 464,34 362,44 264,92 Z"/>
+  <path fill="#2A50A8" opacity=".72"
+    d="M 300,68 C 394,22 496,16 570,50 L 564,67 C 488,30 386,38 292,84 Z"/>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+       DOMINICANO  (D + [CH] + MINICAN + [DO])
+       Layout: x=20, each segment forced via textLength for pixel-perfect
+       flag-circle sizing. Total: 20+55+4+60+4+373+4+60+20 = 600 px
+  PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+
+  <!-- "D" -->
+  <text
+    font-family="Impact,'Arial Narrow',Arial,sans-serif"
+    font-size="88" fill="#0D0D0D"
+    x="20" y="200"
+    textLength="55" lengthAdjust="spacingAndGlyphs">D</text>
+
+  <!-- "MINICAN" (between the two flag circles) -->
+  <text
+    font-family="Impact,'Arial Narrow',Arial,sans-serif"
+    font-size="88" fill="#0D0D0D"
+    x="143" y="200"
+    textLength="373" lengthAdjust="spacingAndGlyphs">MINICAN</text>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+       SWISS FLAG  (O¹ position · cx=109, cy=169, r=30)
+  PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <circle cx="109" cy="169" r="30" fill="#CC1422"/>
+  <!-- Cross: arm width=8 px, arm half-length=17 px (standard Swiss proportions) -->
+  <rect x=" 92" y="165" width="34" height="8" rx="1" fill="white"/>
+  <rect x="105" y="152" width="8" height="34" rx="1" fill="white"/>
+  <!-- Crisp circle outline -->
+  <circle cx="109" cy="169" r="30" fill="none" stroke="white" stroke-width="1.8"/>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+       DOMINICAN REPUBLIC FLAG  (O² position · cx=550, cy=169, r=30)
+       Quartered: blue TL+BR, red TR+BL, white cross
+  PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <!-- TL  blue -->
+  <rect clip-path="url(#docp)" x="520" y="139" width="30" height="30" fill="#002D62"/>
+  <!-- TR  red -->
+  <rect clip-path="url(#docp)" x="550" y="139" width="30" height="30" fill="#CE1126"/>
+  <!-- BL  red -->
+  <rect clip-path="url(#docp)" x="520" y="169" width="30" height="30" fill="#CE1126"/>
+  <!-- BR  blue -->
+  <rect clip-path="url(#docp)" x="550" y="169" width="30" height="30" fill="#002D62"/>
+  <!-- White cross -->
+  <rect clip-path="url(#docp)" x="520" y="166" width="60" height="6" fill="white"/>
+  <rect clip-path="url(#docp)" x="547" y="139" width="6" height="60" fill="white"/>
+  <!-- Crisp circle outline -->
+  <circle cx="550" cy="169" r="30" fill="none" stroke="white" stroke-width="1.8"/>
+
+  <!-- PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+       EXPRESS  (centred, blue, wide letter-spacing)
+  PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP -->
+  <text
+    font-family="Impact,'Arial Narrow',Arial,sans-serif"
+    font-size="54" fill="#1B3A8A"
+    text-anchor="middle" x="300" y="234"
+    letter-spacing="11">EXPRESS</text>
+</svg>

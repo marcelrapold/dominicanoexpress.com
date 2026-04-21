@@ -68,16 +68,18 @@
       height: 64px; gap: 16px;
     }
     .logo {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center;
       text-decoration: none; flex-shrink: 0;
     }
-    .logo-icon {
-      width: 36px; height: 36px; border-radius: 8px;
-      background: var(--accent); display: flex; align-items: center; justify-content: center;
-      font-size: 18px; line-height: 1; flex-shrink: 0;
+    .logo-svg {
+      height: 36px; width: auto; display: block;
+      transition: opacity .18s;
     }
-    .logo-text { color: #fff; font-weight: 800; font-size: 16px; letter-spacing: -.3px; }
-    .logo-text span { color: #fbbf24; }
+    .logo:hover .logo-svg { opacity: .82; }
+    .logo-svg-footer {
+      height: 56px; width: auto; display: block;
+      margin-bottom: 12px;
+    }
 
     nav { display: flex; align-items: center; gap: 4px; }
     nav a {
@@ -571,7 +573,7 @@
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
     @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
-    .footer-brand .logo { margin-bottom: 12px; }
+    .footer-brand .logo { margin-bottom: 4px; }
     .footer-brand p { font-size: 13px; line-height: 1.7; max-width: 260px; }
     .footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: rgba(255,255,255,.4); margin-bottom: 14px; }
     .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
@@ -763,9 +765,8 @@
 <header class="site-header">
   <div class="container">
     <div class="header-inner">
-      <a href="/" class="logo">
-        <div class="logo-icon">🚢</div>
-        <span class="logo-text">Dominicano<span>Express</span></span>
+      <a href="/" class="logo" aria-label="Dominicano Express – Startseite">
+        <img src="/logo-white.svg" alt="Dominicano Express" class="logo-svg" width="180" height="27"/>
       </a>
 
       <nav aria-label="Main navigation">
@@ -1395,9 +1396,8 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="/" class="logo" style="margin-bottom:14px">
-          <div class="logo-icon">🚢</div>
-          <span class="logo-text">Dominicano<span>Express</span></span>
+        <a href="/" class="logo" aria-label="Dominicano Express">
+          <img src="/logo-white.svg" alt="Dominicano Express" class="logo-svg-footer" width="224" height="42"/>
         </a>
         <p data-i18n="footer_desc">Envíos marítimos mensuales entre Suiza y República Dominicana. Empresa familiar con más de 20 años de experiencia.</p>
         <div style="margin-top:16px;font-size:13px">

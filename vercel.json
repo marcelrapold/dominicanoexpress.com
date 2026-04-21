@@ -3,6 +3,8 @@
     { "src": "/scan/?$",          "dest": "/apps/scan/index.html" },
     { "src": "/scan/(.*)",        "dest": "/apps/scan/$1" },
     { "src": "/flags/(.*)",       "dest": "/apps/web/flags/$1" },
+    { "src": "/logo\\.svg",         "dest": "/apps/web/logo.svg" },
+    { "src": "/logo-white\\.svg",   "dest": "/apps/web/logo-white.svg" },
     {
       "src": "/(.*)",
       "dest": "/apps/web/index.html",
