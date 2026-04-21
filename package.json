@@ -4,7 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build:box": "esbuild apps/web/js/box-illustration-src.mjs --bundle --format=esm --outfile=apps/web/js/box-illustration.js --platform=browser"
+    "build:box": "esbuild apps/web/js/box-illustration-src.mjs --bundle --format=esm --outfile=apps/web/js/box-illustration.js --platform=browser",
+    "build:scan": "esbuild apps/web/js/scan-src/index.mjs --bundle --format=iife --outfile=apps/web/js/scan-profiles.js --platform=browser",
+    "build:i18n": "node scripts/extract-scan-i18n.mjs",
+    "build": "npm run build:i18n && npm run build:box && npm run build:scan"
   },
   "dependencies": {
     "@vercel/og": "^0.6.3",

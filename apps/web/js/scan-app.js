@@ -633,171 +633,32 @@ function compressImage(dataURL, maxBytes) {
 }
 
 // ── Field extraction ──────────────────────────────────────────────────────────
-function cleanPersonName (s) {
-  if (!s || typeof s !== 'string') return '';
-  let t = s
-    .replace(/[▲◄►▼▸◂•|]{1,3}/g, ' ')
-    .replace(/\s*[0-9]{6,}.*$/g, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
-  t = t.replace(/^[^A-Za-zÀ-ÿ]+/, '').replace(/[^A-Za-zÀ-ÿ\s'-]+$/, '');
-  return t.slice(0, 90);
-}
-
 /**
- * Label auf gleicher Zeile (häufig bei Ausweisen) oder nächster Zeile.
+ * Die eigentliche Feld-Extraktion steckt modular in `apps/web/js/scan-src/`
+ * und wird via esbuild nach `apps/web/js/scan-profiles.js` gebündelt. Das
+ * Bundle exponiert `window.ScanProfiles.extractFields(rawText)` und kennt
+ * u. a. Schweizer ID/Pass/Führerausweis, dominikanische Cédula/Pass/Lizenz
+ * sowie ein generisches MRZ-Profil (ICAO 9303 TD1/TD2/TD3).
+ *
+ * Weitere Dokumenttypen lassen sich später per
+ * `window.ScanProfiles.registerProfile({ id, detect, extract, … })` ergänzen,
+ * ohne scan-app.js anzufassen.
  */
-function valueAfterLabels (txt, labelRegex) {
-  const block = txt.replace(/\r\n/g, '\n');
-  const sameLine = new RegExp(
-    '(?:' + labelRegex + ')[^\\S\\n]{0,6}[:·|]{0,2}[^\\S\\n]{0,4}([^\\n]+)',
-    'im'
-  );
-  let m = block.match(sameLine);
-  if (m && m[1]) return cleanPersonName(m[1]);
-  const nextLine = new RegExp('(?:' + labelRegex + ')[^\\n]{0,72}\\n([^\\n]+)', 'im');
-  m = block.match(nextLine);
-  return m && m[1] ? cleanPersonName(m[1]) : '';
-}
-
 function extractFields (raw) {
-  const f = {};
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  const txt = raw;
-
-  const mrzCandidates = lines
+  const api = (typeof window !== 'undefined') ? window.ScanProfiles : null;
+  if (api && typeof api.extractFields === 'function') {
+    try {
+      return api.extractFields(raw || '');
+    } catch (err) {
+      console.warn('[scan] profile runner failed', err);
+    }
+  }
+  /* Fallback: schlank, nur MRZ. Nur aktiv, falls das Profile-Bundle fehlt. */
+  const lines = String(raw || '').split('\n').map(l => l.trim()).filter(Boolean);
+  const mrzLines = lines
     .map(l => l.toUpperCase().replace(/[^A-Z0-9<]/g, ''))
     .filter(l => l.length >= 28 && (l.match(/</g) || []).length >= 2);
-
-  if (mrzCandidates.length >= 2) {
-    const mrz = parseMRZ(mrzCandidates);
-    if (mrz) Object.assign(f, mrz);
-  }
-  f._mrz = mrzCandidates.length >= 2 ? mrzCandidates.slice(0, 3) : null;
-
-  const after = (label) => {
-    const re = new RegExp(label + '[^\\n]{0,60}\\n([^\\n]+)', 'i');
-    const m = txt.match(re);
-    return m ? cleanPersonName(m[1].replace(/[▲◄►▼▸◂]/g, '')) : undefined;
-  };
-
-  const SUR_RE =
-    'Surname|Nachname|Nom(?![a-z])|Cognome|Apellidos?|APELLIDOS|Family\\s*name';
-  const GIV_RE =
-    'Given\\s*names?|Vornamen?|Prénoms?|NOMBRES?|Nome(?![a-z])|Forename|Other\\s*names?';
-  const NAT_RE = 'Nationality|Nationalit|Staatsangeh|Naziunalitad';
-
-  if (!f.surname) {
-    const s =
-      valueAfterLabels(txt, SUR_RE) ||
-      after('(?:Surname|Name\\s*·|Nom\\s*·|Cognome|Nachname|Apellido)');
-    if (s && s.length < 50 && s.length > 1) f.surname = s;
-  }
-  if (!f.givenNames) {
-    const g =
-      valueAfterLabels(txt, GIV_RE) ||
-      after('(?:Given name|Vorname|Prénom|Nome\\s*i|Prenum)');
-    if (g && g.length < 80 && g.length > 1) f.givenNames = g;
-  }
-  if (!f.nationality) {
-    const n = valueAfterLabels(txt, NAT_RE) || after('(?:Nationality|Nationalit|Naziunalitad|Staatsangeh)');
-    if (n && n.length < 60) f.nationality = n;
-  }
-
-  if (!f.dob) {
-    const m = txt.match(/(?:Date of birth|Geburtsdatum|Naissance|Data di nascita)[^\n]{0,60}\n?\s*(\d{1,2}[\s./-]\d{2}[\s./-]\d{4})/i);
-    if (m) f.dob = normalizeDate(m[1]);
-  }
-
-  const issueM = txt.match(/(?:Date of issue|Ausgestellt|D[eé]livr[eé]|Rilasciato|Emess ils)[^\n]{0,60}\n?\s*(\d{1,2}[\s./-]\d{2}[\s./-]\d{4})/i);
-  if (issueM) f.issued = normalizeDate(issueM[1]);
-
-  if (!f.expiry) {
-    const m = txt.match(/(?:Date of expiry|Gültig bis|Expiration|Scadenza|Data da scadenza)[^\n]{0,60}\n?\s*(\d{1,2}[\s./-]\d{2}[\s./-]\d{4})/i);
-    if (m) f.expiry = normalizeDate(m[1]);
-  }
-
-  if (!f.sex) {
-    const m = txt.match(/(?:Sex|Geschlecht|Sexe|Sesso|Schlattaina)[^\n]{0,30}\n?\s*([MFmf])\b/i);
-    if (m) f.sex = m[1].toUpperCase();
-  }
-
-  const htM = txt.match(/(\d{3})\s*cm/i);
-  if (htM) f.height = htM[1] + ' cm';
-
-  const heimatM = txt.match(/(?:Heimatort|Lieu d.origine|Place of origin|Luogo di attinenza)[^\n]{0,40}\n([^\n]{2,40})/i);
-  if (heimatM) f.placeOfOrigin = heimatM[1].replace(/[▲◄►▼▸◂•]/g, '').trim();
-
-  const authM = txt.match(/(?:Beh[öo]rde|Autorit[eéa]|Authority|Autoritad)[^\n]{0,40}\n([^\n]{2,50})/i);
-  if (authM) f.authority = authM[1].replace(/[▲◄►▼▸◂•]/g, '').trim();
-
-  if (!f.docNumber) {
-    const m = txt.match(/\b([A-Z][A-Z0-9]{7,8})\b/);
-    if (m) f.docNumber = m[1];
-  }
-
-  if (!f.dob) {
-    const dates = [...txt.matchAll(/\b(\d{1,2}[\s./-]\d{2}[\s./-]\d{4})\b/g)].map(m => normalizeDate(m[1]));
-    if (dates[0]) f.dob    = dates[0];
-    if (dates[1] && !f.issued) f.issued = dates[1];
-    if (dates[2] && !f.expiry) f.expiry = dates[2];
-  }
-
-  if (!f.country) {
-    const m = txt.match(/\b(DEU|CHE|AUT|USA|GBR|FRA|ITA|ESP|NLD|BEL|POL|TUR|CAN|AUS|CHN|JPN|BRA|MEX|IND|DOM)\b/);
-    if (m) f.country = m[1];
-  }
-
-  return f;
-}
-
-// ── MRZ parser ────────────────────────────────────────────────────────────────
-function parseMRZ(lines) {
-  const cl  = l => l.replace(/[^A-Z0-9<]/g, '');
-  const L   = lines.map(cl);
-  const td3 = L.filter(l => l.length >= 42);
-  if (td3.length >= 2 && /^P/.test(td3[0])) return parseTD3(td3[0], td3[1]);
-  const td1 = L.filter(l => l.length >= 28);
-  if (td1.length >= 3) return parseTD1(td1[0], td1[1], td1[2]);
-  if (td1.length >= 2) return parseTD1(td1[0], td1[1], '');
-  return null;
-}
-function parseTD1(l1, l2, l3) {
-  return {
-    docType:     'National ID Card',
-    country:     l1.substring(2,5).replace(/</g,''),
-    docNumber:   l1.substring(5,14).replace(/</g,''),
-    dob:         mrzDate(l2.substring(0,6)),
-    sex:         l2[7] === 'M' ? 'M' : l2[7] === 'F' ? 'F' : l2[7],
-    expiry:      mrzDate(l2.substring(8,14)),
-    nationality: l2.substring(15,18).replace(/</g,''),
-    surname:     (l3.split('<<')[0]||'').replace(/</g,' ').trim(),
-    givenNames:  (l3.split('<<')[1]||'').replace(/</g,' ').trim()
-  };
-}
-function parseTD3(l1, l2) {
-  const ns = l1.substring(5).split('<<');
-  return {
-    docType:     'Passport',
-    country:     l1.substring(2,5).replace(/</g,''),
-    surname:     (ns[0]||'').replace(/</g,' ').trim(),
-    givenNames:  (ns[1]||'').replace(/</g,' ').trim(),
-    docNumber:   l2.substring(0,9).replace(/</g,''),
-    nationality: l2.substring(10,13).replace(/</g,''),
-    dob:         mrzDate(l2.substring(13,19)),
-    sex:         l2[20] === 'M' ? 'M' : l2[20] === 'F' ? 'F' : l2[20],
-    expiry:      mrzDate(l2.substring(21,27))
-  };
-}
-function mrzDate(s) {
-  if (!s || s.length < 6 || s.includes('<')) return null;
-  const yy = +s.slice(0,2), mm = +s.slice(2,4), dd = +s.slice(4,6);
-  if (isNaN(yy+mm+dd)) return null;
-  const yr = yy > 30 ? 1900+yy : 2000+yy;
-  return `${String(dd).padStart(2,'0')}.${String(mm).padStart(2,'0')}.${yr}`;
-}
-function normalizeDate(s) {
-  return s.trim().replace(/[\s/-]/g, '.').replace(/\.\.+/g, '.');
+  return { _mrz: mrzLines.length >= 2 ? mrzLines.slice(0, 3) : null };
 }
 
 // ── Render results ────────────────────────────────────────────────────────────
