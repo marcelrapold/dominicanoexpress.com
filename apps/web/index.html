@@ -1231,9 +1231,9 @@
       </a>
 
       <nav aria-label="Main navigation">
-        <a href="#nosotros" data-i18n="nav_nosotros">Sobre nosotros</a>
         <a href="#proceso" data-i18n="nav_proceso">Proceso</a>
         <a href="#productos" data-i18n="nav_productos">Productos</a>
+        <a href="#nosotros" data-i18n="nav_nosotros">Sobre nosotros</a>
         <a href="#afiliacion" data-i18n="nav_afiliacion">Afiliación</a>
         <a href="#faq" data-i18n="nav_faq">FAQ</a>
         <a href="#contacto" data-i18n="nav_contacto">Contacto</a>
@@ -1261,9 +1261,9 @@
     </div>
   </div>
   <nav class="mobile-nav" id="mobile-nav">
-    <a href="#nosotros" onclick="toggleMenu()" data-i18n="nav_nosotros">Sobre nosotros</a>
     <a href="#proceso" onclick="toggleMenu()" data-i18n="nav_proceso">Proceso</a>
     <a href="#productos" onclick="toggleMenu()" data-i18n="nav_productos">Productos</a>
+    <a href="#nosotros" onclick="toggleMenu()" data-i18n="nav_nosotros">Sobre nosotros</a>
     <a href="#afiliacion" onclick="toggleMenu()" data-i18n="nav_afiliacion">Afiliación</a>
     <a href="#faq" onclick="toggleMenu()" data-i18n="nav_faq">FAQ</a>
     <a href="#contacto" onclick="toggleMenu()" data-i18n="nav_contacto">Contacto</a>
@@ -1339,62 +1339,6 @@
             <img src="/img/products/box-mediana.png" alt="Caja" loading="lazy" />
             <img src="/img/products/barriles.png" alt="Barril" loading="lazy" />
             <img src="/img/products/box-jumbo.png" alt="Jumbo" loading="lazy" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── About / Trust (direkt nach Hero — Anker #nosotros für die Navi) ─────── -->
-<section class="section about-bg" id="nosotros" style="scroll-margin-top:86px">
-  <div class="about-video-bg" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="none">
-      <source src="/videos/about.mp4" type="video/mp4" />
-    </video>
-  </div>
-  <div class="container">
-    <div class="stats-row">
-      <div class="stat-box fade-in">
-        <span class="stat-big">20+</span>
-        <div class="stat-desc" data-i18n="stat_exp">años de experiencia</div>
-      </div>
-      <div class="stat-box fade-in">
-        <span class="stat-big">12</span>
-        <div class="stat-desc" data-i18n="stat_year">salidas al año</div>
-      </div>
-      <div class="stat-box fade-in">
-        <span class="stat-big"><img src="/flags/ch.svg" alt="CH" class="flag-img flag-stat" /></span>
-        <div class="stat-desc" data-i18n="stat_ch">recogida en toda Suiza</div>
-      </div>
-      <div class="stat-box fade-in">
-        <span class="stat-big"><img src="/flags/do.svg" alt="DO" class="flag-img flag-stat" /></span>
-        <div class="stat-desc" data-i18n="stat_do">entrega en toda RD</div>
-      </div>
-    </div>
-    <div class="about-grid">
-      <div class="about-text fade-in">
-        <div class="section-label" style="color:#fbbf24" data-i18n="about_label">Sobre Nosotros</div>
-        <h2 class="section-title" data-i18n="about_title">Empresa familiar con más de 20 años conectando familias</h2>
-        <p data-i18n="about_p1">Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza y la República Dominicana.</p>
-        <p data-i18n="about_p2">Con más de 20 años de experiencia en el sector logístico, ofrecemos soluciones de transporte puerta a puerta, confiables, eficientes y profesionalmente estructuradas.</p>
-        <div style="margin-top:32px">
-          <a href="https://wa.me/41791999393" class="btn btn-wa" target="_blank" rel="noopener">
-            <span data-i18n="about_cta">Contáctanos →</span>
-          </a>
-        </div>
-      </div>
-      <div class="flags-display fade-in" style="display:block; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,.12);">
-        <img src="/img/products/packaging.png" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" data-lb data-lb-cap="Embalaje profesional — Dominicano Express GmbH" />
-        <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
-          <div style="text-align:center">
-            <img src="/flags/ch.svg" alt="CH" class="flag-img flag-about" />
-            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">Embrach, Suiza</div>
-          </div>
-          <div class="route-arrow" style="align-self:center">→</div>
-          <div style="text-align:center">
-            <img src="/flags/do.svg" alt="DO" class="flag-img flag-about" />
-            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">República Dominicana</div>
           </div>
         </div>
       </div>
@@ -1692,6 +1636,62 @@
           <p style="margin-top:20px; font-size:13px; color:var(--muted); line-height:1.7" data-i18n="barril_footer">Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo. Con tapa segura para proteger tu mercancía en todo el trayecto.</p>
           <div style="margin-top:20px">
             <a href="https://wa.me/41791999393?text=Hola,%20me%20interesa%20un%20barril" class="product-cta" target="_blank" rel="noopener" data-i18n="prod_cta">Cotizar →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── About / Trust (#nosotros) ─────────────────────────────────────────────── -->
+<section class="section about-bg" id="nosotros" style="scroll-margin-top:86px">
+  <div class="about-video-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="none">
+      <source src="/videos/about.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-box fade-in">
+        <span class="stat-big">20+</span>
+        <div class="stat-desc" data-i18n="stat_exp">años de experiencia</div>
+      </div>
+      <div class="stat-box fade-in">
+        <span class="stat-big">12</span>
+        <div class="stat-desc" data-i18n="stat_year">salidas al año</div>
+      </div>
+      <div class="stat-box fade-in">
+        <span class="stat-big"><img src="/flags/ch.svg" alt="CH" class="flag-img flag-stat" /></span>
+        <div class="stat-desc" data-i18n="stat_ch">recogida en toda Suiza</div>
+      </div>
+      <div class="stat-box fade-in">
+        <span class="stat-big"><img src="/flags/do.svg" alt="DO" class="flag-img flag-stat" /></span>
+        <div class="stat-desc" data-i18n="stat_do">entrega en toda RD</div>
+      </div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <div class="section-label" style="color:#fbbf24" data-i18n="about_label">Sobre Nosotros</div>
+        <h2 class="section-title" data-i18n="about_title">Empresa familiar con más de 20 años conectando familias</h2>
+        <p data-i18n="about_p1">Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza y la República Dominicana.</p>
+        <p data-i18n="about_p2">Con más de 20 años de experiencia en el sector logístico, ofrecemos soluciones de transporte puerta a puerta, confiables, eficientes y profesionalmente estructuradas.</p>
+        <div style="margin-top:32px">
+          <a href="https://wa.me/41791999393" class="btn btn-wa" target="_blank" rel="noopener">
+            <span data-i18n="about_cta">Contáctanos →</span>
+          </a>
+        </div>
+      </div>
+      <div class="flags-display fade-in" style="display:block; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,.12);">
+        <img src="/img/products/packaging.png" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" data-lb data-lb-cap="Embalaje profesional — Dominicano Express GmbH" />
+        <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
+          <div style="text-align:center">
+            <img src="/flags/ch.svg" alt="CH" class="flag-img flag-about" />
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">Embrach, Suiza</div>
+          </div>
+          <div class="route-arrow" style="align-self:center">→</div>
+          <div style="text-align:center">
+            <img src="/flags/do.svg" alt="DO" class="flag-img flag-about" />
+            <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">República Dominicana</div>
           </div>
         </div>
       </div>
@@ -2014,9 +2014,9 @@
       <div class="footer-col">
         <h4 data-i18n="footer_col1">Servicios</h4>
         <ul>
-          <li><a href="#nosotros" data-i18n="nav_nosotros">Sobre nosotros</a></li>
           <li><a href="#proceso" data-i18n="nav_proceso">Proceso</a></li>
           <li><a href="#productos" data-i18n="nav_productos">Productos</a></li>
+          <li><a href="#nosotros" data-i18n="nav_nosotros">Sobre nosotros</a></li>
           <li><a href="#afiliacion" data-i18n="nav_afiliacion">Afiliación</a></li>
           <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
         </ul>
