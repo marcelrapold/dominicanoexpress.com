@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#00205B" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -45,48 +45,62 @@
 
     /* ── Header ─────────────────────────────────────────────────────────── */
     header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 16px;
+      background: #00205B;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      padding: 0 20px;
       padding-top: var(--safe-t);
-      height: calc(56px + var(--safe-t));
+      height: calc(58px + var(--safe-t));
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       padding-bottom: 10px;
       position: sticky; top: 0; z-index: 50;
     }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon {
-      width: 34px; height: 34px; border-radius: 9px;
-      background: var(--blue); display: flex; align-items: center; justify-content: center;
+    .header-left { display: flex; align-items: center; gap: 18px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500;
+      text-decoration: none; transition: color .18s;
+      padding: 4px 0;
       flex-shrink: 0;
     }
-    .logo-icon svg { width: 18px; height: 18px; stroke: #fff; fill: none; }
-    .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
-    .logo-sub  { font-size: 11px; color: var(--muted); }
+    .back-link:hover { color: rgba(255,255,255,.9); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; flex-shrink: 0; }
+    .header-divider { width: 1px; height: 22px; background: rgba(255,255,255,.15); flex-shrink: 0; }
+    .scan-logo-img { height: 28px; width: auto; display: block; opacity: .92; }
+    .header-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px; font-weight: 700;
+      color: rgba(255,255,255,.6);
+      letter-spacing: .5px; text-transform: uppercase;
+    }
+    .badge-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,.5); fill: none; stroke-width: 2; }
     .header-right { display: flex; align-items: center; gap: 8px; }
     .ocr-pill {
       padding: 5px 11px; border-radius: 99px;
       font-size: 11px; font-weight: 600; letter-spacing: .3px;
-      border: 1px solid var(--border); color: var(--muted);
+      border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.55);
       display: flex; align-items: center; gap: 5px;
       touch-action: manipulation;
     }
-    .ocr-pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-    .ocr-pill-dot.ready { background: var(--green); }
-    .ocr-pill-dot.busy  { background: var(--amber); animation: pulse .7s ease infinite alternate; }
+    .ocr-pill-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.35); flex-shrink: 0; }
+    .ocr-pill-dot.ready { background: #4ade80; }
+    .ocr-pill-dot.busy  { background: #fbbf24; animation: pulse .7s ease infinite alternate; }
 
     /* ── Auto toggle (header) ───────────────────────────────────────────── */
     .auto-toggle {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 5px 11px; border-radius: 99px; min-height: 32px;
       font-size: 11px; font-weight: 700; cursor: pointer;
-      border: 1px solid var(--border); background: var(--surface);
-      color: var(--muted); transition: background .2s, border-color .2s, color .2s;
+      border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.5); transition: background .2s, border-color .2s, color .2s;
       user-select: none; touch-action: manipulation;
     }
-    .auto-toggle.on { background: #f0fdf4; border-color: #bbf7d0; color: var(--green); }
+    .auto-toggle.on { background: rgba(22,163,74,.2); border-color: rgba(34,197,94,.35); color: #4ade80; }
     .auto-toggle-dot {
       width: 6px; height: 6px; border-radius: 50%;
       background: currentColor; flex-shrink: 0;
@@ -451,6 +465,25 @@
     /* divider */
     .divider { height: 1px; background: var(--border); margin: 16px 0; }
 
+    /* scan footer */
+    .scan-footer {
+      background: #00205B;
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 16px 20px calc(16px + var(--safe-b));
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .scan-footer-brand { display: flex; align-items: center; gap: 10px; }
+    .scan-footer-logo { height: 22px; width: auto; opacity: .7; }
+    .scan-footer-text { font-size: 11px; color: rgba(255,255,255,.35); }
+    .scan-footer-link {
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,.55);
+      text-decoration: none; display: flex; align-items: center; gap: 5px;
+      transition: color .18s;
+    }
+    .scan-footer-link:hover { color: rgba(255,255,255,.9); }
+    .scan-footer-link svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
     /* hidden */
     input[type=file] { display: none; }
     canvas { display: none; }
@@ -489,17 +522,20 @@
 
 <!-- Header -->
 <header>
-  <div class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <div class="header-left">
+    <a href="/" class="back-link" aria-label="Back to Dominicano Express">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Inicio
+    </a>
+    <div class="header-divider" aria-hidden="true"></div>
+    <img src="/logo-white.svg" alt="Dominicano Express" class="scan-logo-img" width="160" height="28" />
+    <div class="header-badge" aria-label="ID Scanner">
+      <svg class="badge-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="5" width="18" height="14" rx="2"/>
         <circle cx="8" cy="11" r="2"/>
         <path d="M14 9h4M14 13h3"/>
       </svg>
-    </div>
-    <div>
-      <div class="logo-name">ID Scanner</div>
-      <div class="logo-sub">Document Recognition</div>
+      ID Scanner
     </div>
   </div>
   <div class="header-right">
@@ -666,6 +702,18 @@
   </div>
 
 </main>
+
+<!-- Footer -->
+<footer class="scan-footer">
+  <div class="scan-footer-brand">
+    <img src="/logo-white.svg" alt="Dominicano Express" class="scan-footer-logo" width="130" height="22" />
+    <span class="scan-footer-text">Tech Demo — ID Scanner</span>
+  </div>
+  <a href="/" class="scan-footer-link">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    dominicanoexpress.rapold.io
+  </a>
+</footer>
 
 <script>
 // ── Config ──────────────────────────────────────────────────────────────────
