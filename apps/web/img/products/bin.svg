@@ -1,0 +1,61 @@
+<svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bodyG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#145214"/>
+      <stop offset="30%"  stop-color="#2E7D32"/>
+      <stop offset="60%"  stop-color="#5CB860"/>
+      <stop offset="85%"  stop-color="#2E7D32"/>
+      <stop offset="100%" stop-color="#145214"/>
+    </linearGradient>
+    <linearGradient id="lidG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#0f3d0f"/>
+      <stop offset="45%"  stop-color="#388E3C"/>
+      <stop offset="65%"  stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#0f3d0f"/>
+    </linearGradient>
+    <linearGradient id="wheelG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#333"/>
+      <stop offset="100%" stop-color="#111"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Handle bar -->
+  <rect x="26" y="3" width="28" height="9" rx="4.5" fill="#2E7D32"/>
+  <rect x="28" y="4.5" width="24" height="5" rx="2.5" fill="#4CAF50"/>
+
+  <!-- Lid -->
+  <path d="M6 10 Q40 6 74 10 L70 28 Q40 24 10 28 Z" fill="url(#lidG)"/>
+  <!-- Lid edge highlight -->
+  <path d="M8 10.5 Q40 7 72 10.5" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+  <!-- Lid hinge -->
+  <rect x="34" y="26" width="12" height="4" rx="2" fill="#1B5E20"/>
+
+  <!-- Body (trapezoid) -->
+  <path d="M10 28 Q40 24.5 70 28 L66 99 Q40 101 14 99 Z" fill="url(#bodyG)"/>
+
+  <!-- Body left highlight -->
+  <path d="M15 30 L12 97" stroke="rgba(255,255,255,0.08)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Axle bar -->
+  <rect x="14" y="96" width="52" height="5" rx="2.5" fill="#1B5E20"/>
+
+  <!-- Wheel left -->
+  <circle cx="21" cy="109" r="10" fill="url(#wheelG)"/>
+  <circle cx="21" cy="109" r="6"  fill="#2a2a2a"/>
+  <circle cx="21" cy="109" r="2.5" fill="#444"/>
+  <!-- Wheel tread dots -->
+  <circle cx="21" cy="100" r="1.2" fill="#555"/>
+  <circle cx="21" cy="118" r="1.2" fill="#555"/>
+  <circle cx="12" cy="109" r="1.2" fill="#555"/>
+  <circle cx="30" cy="109" r="1.2" fill="#555"/>
+
+  <!-- Wheel right -->
+  <circle cx="59" cy="109" r="10" fill="url(#wheelG)"/>
+  <circle cx="59" cy="109" r="6"  fill="#2a2a2a"/>
+  <circle cx="59" cy="109" r="2.5" fill="#444"/>
+  <!-- Wheel tread dots -->
+  <circle cx="59" cy="100" r="1.2" fill="#555"/>
+  <circle cx="59" cy="118" r="1.2" fill="#555"/>
+  <circle cx="50" cy="109" r="1.2" fill="#555"/>
+  <circle cx="68" cy="109" r="1.2" fill="#555"/>
+</svg>

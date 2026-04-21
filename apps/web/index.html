@@ -710,13 +710,17 @@
     .barril-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .barril-card {
       background: var(--cream); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 18px 12px; text-align: center;
-      transition: border-color .2s, background .2s; cursor: default;
+      border-radius: var(--radius); padding: 20px 12px 16px; text-align: center;
+      transition: border-color .2s, background .2s, transform .2s; cursor: default;
     }
-    .barril-card:hover { border-color: var(--primary); background: #eff6ff; }
-    .barril-icon { font-size: 32px; margin-bottom: 8px; }
-    .barril-vol { font-size: 18px; font-weight: 900; color: var(--primary); }
-    .barril-type { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 600; letter-spacing: .3px; }
+    .barril-card:hover { border-color: var(--primary); background: #eff6ff; transform: translateY(-3px); }
+    .barril-icon {
+      display: flex; align-items: flex-end; justify-content: center;
+      margin-bottom: 10px; height: 72px;
+    }
+    .barril-icon img { display: block; width: auto; object-fit: contain; }
+    .barril-vol { font-size: 17px; font-weight: 900; color: var(--primary); }
+    .barril-type { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase; }
 
     /* ── Trust / About ────────────────────────────────────────────────────── */
     .about-bg { background: var(--primary); position: relative; overflow: hidden; }
@@ -1569,11 +1573,31 @@
         <div>
           <p class="section-sub" style="margin-bottom:24px" data-i18n="barril_intro">Robustos y seguros para grandes volúmenes. Disponibles en diferentes capacidades.</p>
           <div class="barril-grid">
-            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">120 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-            <div class="barril-card"><div class="barril-icon">🛢️</div><div class="barril-vol">220 L</div><div class="barril-type" data-i18n="barril_type">Barril</div></div>
-            <div class="barril-card"><div class="barril-icon">🗑️</div><div class="barril-vol">150 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
-            <div class="barril-card"><div class="barril-icon">🗑️</div><div class="barril-vol">240 L</div><div class="barril-type" data-i18n="zafacon_type">Zafacón</div></div>
+            <div class="barril-card">
+              <div class="barril-icon"><img src="/img/products/barrel.svg" alt="Barril 120L" height="52" /></div>
+              <div class="barril-vol">120 L</div>
+              <div class="barril-type" data-i18n="barril_type">Barril</div>
+            </div>
+            <div class="barril-card">
+              <div class="barril-icon"><img src="/img/products/barrel.svg" alt="Barril 150L" height="62" /></div>
+              <div class="barril-vol">150 L</div>
+              <div class="barril-type" data-i18n="barril_type">Barril</div>
+            </div>
+            <div class="barril-card">
+              <div class="barril-icon"><img src="/img/products/barrel.svg" alt="Barril 220L" height="72" /></div>
+              <div class="barril-vol">220 L</div>
+              <div class="barril-type" data-i18n="barril_type">Barril</div>
+            </div>
+            <div class="barril-card">
+              <div class="barril-icon"><img src="/img/products/bin.svg" alt="Zafacón 150L" height="58" /></div>
+              <div class="barril-vol">150 L</div>
+              <div class="barril-type" data-i18n="zafacon_type">Zafacón</div>
+            </div>
+            <div class="barril-card">
+              <div class="barril-icon"><img src="/img/products/bin.svg" alt="Zafacón 240L" height="70" /></div>
+              <div class="barril-vol">240 L</div>
+              <div class="barril-type" data-i18n="zafacon_type">Zafacón</div>
+            </div>
           </div>
           <p style="margin-top:20px; font-size:13px; color:var(--muted); line-height:1.7" data-i18n="barril_footer">Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo. Con tapa segura para proteger tu mercancía en todo el trayecto.</p>
           <div style="margin-top:20px">
