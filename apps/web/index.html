@@ -288,63 +288,90 @@
 
     /* ── Process ──────────────────────────────────────────────────────────── */
     .process-bg { background: var(--cream); }
-    /* ── Process (9 steps) ───────────────────────────────────────────────── */
-    .process-scroll-wrap {
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-      margin-top: 48px; padding-bottom: 8px;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    /* ── Process (treasure map) ──────────────────────────────────────────── */
+    .pm-map { margin-top: 44px; }
+    .pm-lane {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      position: relative; gap: 0;
     }
-    .process-scroll-wrap::-webkit-scrollbar { height: 4px; }
-    .process-scroll-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    .process-flow {
-      display: flex; align-items: flex-start; gap: 0;
-      min-width: max-content; padding: 8px 4px 24px;
-      position: relative;
+    .pm-lane-2 { grid-template-columns: 1fr repeat(4, 1fr); }
+    .pm-lane::before {
+      content: ''; position: absolute;
+      top: 34px; left: 52px; right: 52px; height: 3px; z-index: 0;
+      background: repeating-linear-gradient(90deg,
+        rgba(14,75,180,.3) 0, rgba(14,75,180,.3) 8px,
+        transparent 8px, transparent 16px);
     }
-    .pf-step {
+    .pm-step {
       display: flex; flex-direction: column; align-items: center;
-      width: 108px; text-align: center; position: relative; flex-shrink: 0;
+      text-align: center; position: relative; z-index: 1; padding: 0 6px;
     }
-    .pf-bubble {
+    .pm-bubble {
       width: 68px; height: 68px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #005a8b);
       display: flex; align-items: center; justify-content: center;
-      position: relative; z-index: 2; flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(0,60,110,.25);
-      transition: transform .2s, box-shadow .2s;
+      position: relative; flex-shrink: 0;
+      box-shadow: 0 6px 20px rgba(0,0,0,.22);
+      transition: transform .22s ease, box-shadow .22s ease;
     }
-    .pf-bubble svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .pf-step:hover .pf-bubble { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,60,110,.35); }
-    .pf-num {
-      position: absolute; top: -5px; right: -3px;
+    .pm-step:hover .pm-bubble { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,.32); }
+    .pm-bubble svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pm-num {
+      position: absolute; top: -5px; right: -5px;
       width: 22px; height: 22px; border-radius: 50%;
       background: var(--accent); color: #fff;
-      font-size: 10px; font-weight: 900; letter-spacing: -.3px;
+      font-size: 10px; font-weight: 900;
       display: flex; align-items: center; justify-content: center;
-      border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+      border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25);
     }
-    .pf-label {
-      margin-top: 12px; font-size: 11.5px; font-weight: 700;
-      color: var(--primary); line-height: 1.3; max-width: 90px;
+    .pm-title {
+      margin-top: 12px; font-size: 12.5px; font-weight: 800;
+      color: var(--primary); line-height: 1.2; max-width: 92px;
     }
-    .pf-connector {
-      display: flex; align-items: center; margin-top: 22px;
-      flex-shrink: 0; width: 24px;
+    .pm-desc {
+      margin-top: 5px; font-size: 11px; color: var(--muted);
+      line-height: 1.5; max-width: 92px;
     }
-    .pf-connector svg { width: 24px; height: 24px; }
+    .pm-spacer { visibility: hidden; pointer-events: none; }
+    .pm-turn {
+      display: flex; justify-content: flex-end; align-items: center;
+      padding: 2px 52px 2px 0; position: relative; height: 56px;
+    }
+    .pm-turn::before {
+      content: ''; position: absolute;
+      right: 52px; top: 0; height: 100%; width: 3px;
+      background: repeating-linear-gradient(180deg,
+        rgba(206,17,38,.5) 0, rgba(206,17,38,.5) 8px,
+        transparent 8px, transparent 16px);
+    }
+    .pm-turn-arrow {
+      position: absolute; right: 30px; bottom: 2px;
+      color: var(--accent); font-size: 18px; line-height: 1;
+    }
     .process-tagline {
-      margin-top: 40px; text-align: center;
-      background: linear-gradient(135deg, var(--primary) 0%, #005a8b 100%);
-      border-radius: var(--radius); padding: 24px 32px;
+      margin-top: 44px; text-align: center;
+      background: linear-gradient(135deg, #001a4a 0%, #003280 50%, #001a4a 100%);
+      border-radius: var(--radius); padding: 22px 32px;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px;
     }
-    .tagline-text {
-      font-size: 15px; font-weight: 600; color: rgba(255,255,255,.9); font-style: italic;
-    }
+    .tagline-text { font-size: 15px; font-weight: 600; color: rgba(255,255,255,.88); font-style: italic; }
     .tagline-badge {
       background: var(--accent); color: #fff;
-      font-size: 14px; font-weight: 900; letter-spacing: 1px;
-      padding: 6px 18px; border-radius: 6px; white-space: nowrap;
+      font-size: 14px; font-weight: 900; letter-spacing: 1.2px;
+      padding: 7px 20px; border-radius: 6px; white-space: nowrap;
+    }
+    @media (max-width: 760px) {
+      .pm-lane, .pm-lane-2 { grid-template-columns: 1fr; }
+      .pm-lane::before { display: none; }
+      .pm-step {
+        flex-direction: row; align-items: flex-start; text-align: left;
+        padding: 16px 0; gap: 16px; border-bottom: 1px dashed var(--border);
+      }
+      .pm-step:last-child { border-bottom: none; }
+      .pm-title, .pm-desc { max-width: none; margin-top: 0; }
+      .pm-title { margin-bottom: 3px; }
+      .pm-bubble { flex-shrink: 0; }
+      .pm-turn { display: none; }
+      .pm-spacer { display: none; }
     }
 
     /* ── Products ─────────────────────────────────────────────────────────── */
@@ -884,121 +911,102 @@
       <p class="section-sub" style="margin:14px auto 0" data-i18n="process_sub">Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.</p>
     </div>
 
-    <div class="process-scroll-wrap fade-in">
-      <div class="process-flow">
+    <div class="pm-map fade-in">
 
-        <!-- 1 Contáctanos -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">1</span>
+      <!-- ── ROW 1: Steps 1–5 ──────────────────────────────────────────── -->
+      <div class="pm-lane">
+
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#1d6fef,#0d47c7)">
+            <span class="pm-num">1</span>
             <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf1">Contáctanos</div>
+          <div class="pm-title" data-i18n="pf1">Contáctanos</div>
+          <div class="pm-desc" data-i18n="pf1d">Escríbenos por WhatsApp. Te asesoramos sin compromiso.</div>
         </div>
 
-        <!-- arrow -->
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 2 Llevamos -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">2</span>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#1a5de0,#0c3db0)">
+            <span class="pm-num">2</span>
             <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf2">Llevamos</div>
+          <div class="pm-title" data-i18n="pf2">Llevamos</div>
+          <div class="pm-desc" data-i18n="pf2d">Te entregamos cajas o barriles vacíos en tu domicilio suizo.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 3 Recogemos -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">3</span>
-            <svg viewBox="0 0 24 24"><path d="M21 10H3"/><path d="M21 6H3"/><path d="M21 14H3"/><path d="M21 18H3"/></svg>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#154fc2,#0a3498)">
+            <span class="pm-num">3</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M5 8h14"/><path d="M5 16h8"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf3">Recogemos</div>
+          <div class="pm-title" data-i18n="pf3">Recogemos</div>
+          <div class="pm-desc" data-i18n="pf3d">Pasamos a recoger tu mercancía ya lista y embalada.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 4 Almacenamos CH -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">4</span>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#113fa8,#082880)">
+            <span class="pm-num">4</span>
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf4">Almacenamos</div>
+          <div class="pm-title" data-i18n="pf4">Almacenamos</div>
+          <div class="pm-desc" data-i18n="pf4d">Tu envío llega a nuestro almacén en Suiza, listo para el barco.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 5 Despachamos -->
-        <div class="pf-step">
-          <div class="pf-bubble" style="background:linear-gradient(135deg,#0e6699,#0a4d7a)">
-            <span class="pf-num">5</span>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#0b4a90,#052d60)">
+            <span class="pm-num">5</span>
             <svg viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M12 2v10"/><path d="M8 8l4-4 4 4"/><path d="M2 16s2-2 6-2 8 2 14 2"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf5">Despachamos</div>
+          <div class="pm-title" data-i18n="pf5">Despachamos</div>
+          <div class="pm-desc" data-i18n="pf5d">Embarcamos en el contenedor mensual con rumbo a RD.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
+      </div>
 
-        <!-- 6 Aduanas -->
-        <div class="pf-step">
-          <div class="pf-bubble" style="background:linear-gradient(135deg,#0e6699,#0a4d7a)">
-            <span class="pf-num">6</span>
-            <svg viewBox="0 0 24 24"><path d="M4 22V12"/><path d="M20 22V12"/><path d="M2 22h20"/><path d="M2 12h20"/><path d="M12 12V2"/><path d="M7 12V7"/><path d="M17 12V7"/><path d="M7 7h10"/></svg>
+      <!-- ── TURN (path curves down on right) ──────────────────────────── -->
+      <div class="pm-turn">
+        <span class="pm-turn-arrow">↙</span>
+      </div>
+
+      <!-- ── ROW 2: Steps 6–9 (right-aligned) ──────────────────────────── -->
+      <div class="pm-lane pm-lane-2">
+
+        <div class="pm-spacer pm-step" aria-hidden="true"></div>
+
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#0b4a90,#052d60)">
+            <span class="pm-num">6</span>
+            <svg viewBox="0 0 24 24"><path d="M4 22V12M20 22V12M2 22h20M2 12h20M12 12V2M7 12V7M17 12V7M7 7h10"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf6">Aduanas</div>
+          <div class="pm-title" data-i18n="pf6">Aduanas</div>
+          <div class="pm-desc" data-i18n="pf6d">Gestionamos todos los trámites aduaneros sin que te preocupes.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 7 Almacenamos RD -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">7</span>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#0d6b8a,#094e68)">
+            <span class="pm-num">7</span>
             <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf7">Almacenamos</div>
+          <div class="pm-title" data-i18n="pf7">Almacenamos</div>
+          <div class="pm-desc" data-i18n="pf7d">La mercancía llega a nuestro almacén en República Dominicana.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 8 Distribuimos -->
-        <div class="pf-step">
-          <div class="pf-bubble">
-            <span class="pf-num">8</span>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#d06000,#9c4700)">
+            <span class="pm-num">8</span>
             <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.4 11.5 7.7 11.8a.5.5 0 0 0 .6 0C12.6 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
           </div>
-          <div class="pf-label" data-i18n="pf8">Distribuimos<br>y Entregamos</div>
+          <div class="pm-title" data-i18n="pf8">Distribuimos<br>y Entregamos</div>
+          <div class="pm-desc" data-i18n="pf8d">Organizamos la distribución y entrega local en toda RD.</div>
         </div>
 
-        <div class="pf-connector">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </div>
-
-        <!-- 9 Cliente Satisfecho -->
-        <div class="pf-step">
-          <div class="pf-bubble" style="background:linear-gradient(135deg,var(--accent),#a80e1e)">
-            <span class="pf-num" style="background:var(--primary)">9</span>
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M9 12l2 2 4-4" stroke-width="2"/></svg>
+        <div class="pm-step">
+          <div class="pm-bubble" style="background:linear-gradient(135deg,#CE1126,#8e0a1a)">
+            <span class="pm-num" style="background:#001a4a">9</span>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="9 11 11 13 15 9" stroke-width="2.2"/></svg>
           </div>
-          <div class="pf-label" style="color:var(--accent);font-weight:800" data-i18n="pf9">Cliente<br>Satisfecho ✓</div>
+          <div class="pm-title" style="color:var(--accent);font-weight:900" data-i18n="pf9">¡Cliente Satisfecho!</div>
+          <div class="pm-desc" data-i18n="pf9d">Tu familia recibe todo directamente en la puerta de su hogar.</div>
         </div>
 
       </div>
@@ -1457,8 +1465,15 @@ const T = {
     scanner_banner_cta:'Abrir App →',
     process_label:'Así Funcionamos', process_title:'9 pasos, de puerta a puerta',
     process_sub:'Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.',
-    pf1:'Contáctanos', pf2:'Llevamos', pf3:'Recogemos', pf4:'Almacenamos',
-    pf5:'Despachamos', pf6:'Aduanas', pf7:'Almacenamos', pf8:'Distribuimos y Entregamos', pf9:'Cliente Satisfecho ✓',
+    pf1:'Contáctanos', pf1d:'Escríbenos por WhatsApp. Te asesoramos sin compromiso.',
+    pf2:'Llevamos', pf2d:'Te entregamos cajas o barriles vacíos en tu domicilio suizo.',
+    pf3:'Recogemos', pf3d:'Pasamos a recoger tu mercancía ya lista y embalada.',
+    pf4:'Almacenamos', pf4d:'Tu envío llega a nuestro almacén en Suiza, listo para el barco.',
+    pf5:'Despachamos', pf5d:'Embarcamos en el contenedor mensual con rumbo a RD.',
+    pf6:'Aduanas', pf6d:'Gestionamos todos los trámites aduaneros sin que te preocupes.',
+    pf7:'Almacenamos', pf7d:'La mercancía llega a nuestro almacén en República Dominicana.',
+    pf8:'Distribuimos y Entregamos', pf8d:'Organizamos la distribución y entrega local en toda RD.',
+    pf9:'¡Cliente Satisfecho!', pf9d:'Tu familia recibe todo directamente en la puerta de su hogar.',
     process_tagline:'"Porque Entendemos Tu Necesidad, Trabajamos Con Capacidad"',
     process_badge:'SIEMPRE DISPUESTOS',
     gallery_label:'Enviamos Contenedores Mensuales', gallery_title:'Así trabaja nuestro equipo',
@@ -1533,8 +1548,15 @@ const T = {
     scanner_banner_cta:'App öffnen →',
     process_label:'So funktioniert es', process_title:'9 Schritte, Tür zu Tür',
     process_sub:'Von der Anfrage bis zur Haustür — wir kümmern uns um absolut alles.',
-    pf1:'Kontakt', pf2:'Lieferung', pf3:'Abholung', pf4:'Einlagerung CH',
-    pf5:'Versand', pf6:'Zoll', pf7:'Einlagerung DO', pf8:'Verteilung &amp; Zustellung', pf9:'Zufriedener Kunde ✓',
+    pf1:'Kontakt', pf1d:'Schreiben Sie uns auf WhatsApp. Kostenlose Beratung.',
+    pf2:'Lieferung', pf2d:'Wir bringen leere Kisten oder Fässer zu Ihrer Adresse in der Schweiz.',
+    pf3:'Abholung', pf3d:'Wir holen Ihre gepackte Ware direkt bei Ihnen ab.',
+    pf4:'Einlagerung CH', pf4d:'Ihre Sendung lagert in unserem Schweizer Depot bis zur Abfahrt.',
+    pf5:'Versand', pf5d:'Einladen in den monatlichen Container Richtung Dominikanische Republik.',
+    pf6:'Zoll', pf6d:'Wir erledigen alle Zollformalitäten – kein Aufwand für Sie.',
+    pf7:'Einlagerung DO', pf7d:'Die Ware kommt in unser Depot in der Dominikanischen Republik.',
+    pf8:'Verteilung &amp; Zustellung', pf8d:'Wir organisieren die lokale Verteilung und Hauszustellung.',
+    pf9:'Zufriedener Kunde!', pf9d:'Ihre Familie empfängt alles direkt an der Haustür.',
     process_tagline:'"Weil wir Ihren Bedarf verstehen, arbeiten wir mit voller Kapazität"',
     process_badge:'IMMER BEREIT',
     gallery_label:'Monatliche Container', gallery_title:'So arbeitet unser Team',
@@ -1607,8 +1629,15 @@ const T = {
     scanner_banner_cta:'Open App →',
     process_label:'How it works', process_title:'9 steps, door to door',
     process_sub:'From the first message to delivery — we handle absolutely everything.',
-    pf1:'Contact us', pf2:'We deliver', pf3:'We pick up', pf4:'Storage CH',
-    pf5:'We ship', pf6:'Customs', pf7:'Storage DO', pf8:'Distribution &amp; Delivery', pf9:'Happy Customer ✓',
+    pf1:'Contact us', pf1d:'Message us on WhatsApp. Free consultation, no commitment.',
+    pf2:'We deliver', pf2d:'We bring empty boxes or barrels to your Swiss address.',
+    pf3:'We pick up', pf3d:'We collect your packed shipment directly from your door.',
+    pf4:'Storage CH', pf4d:'Your goods are stored at our Swiss depot until shipping day.',
+    pf5:'We ship', pf5d:'Loaded into our monthly container, bound for the Dominican Republic.',
+    pf6:'Customs', pf6d:'We handle all customs formalities — no hassle for you.',
+    pf7:'Storage DO', pf7d:'Goods arrive at our depot in the Dominican Republic.',
+    pf8:'Distribution &amp; Delivery', pf8d:'We coordinate local distribution and home delivery.',
+    pf9:'Happy Customer!', pf9d:'Your family receives everything straight at their front door.',
     process_tagline:'"Because we understand your needs, we work at full capacity"',
     process_badge:'ALWAYS READY',
     gallery_label:'Monthly Containers', gallery_title:'Our team in action',
