@@ -388,11 +388,16 @@
     .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; }
     .hero-logo-hero {
       display: block;
-      height: 72px; width: auto;
-      margin-bottom: 32px;
-      filter: drop-shadow(0 4px 16px rgba(0,0,0,.45));
+      height: 38px; width: auto;
+      margin: 0 auto 20px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.45));
+      opacity: .92;
     }
-    @media (max-width: 600px) { .hero-logo-hero { height: 52px; margin-bottom: 22px; } }
+    .hero-logo-divider {
+      border: none; border-top: 1px solid rgba(255,255,255,.12);
+      margin: 0 0 24px;
+    }
+    @media (max-width: 600px) { .hero-logo-hero { height: 32px; } }
     .hero h1 {
       font-size: clamp(28px, 4.5vw, 52px); font-weight: 900;
       color: #fff; line-height: 1.1; letter-spacing: -.8px;
@@ -1158,7 +1163,6 @@
   <div class="container">
     <div class="hero-inner">
       <div class="hero-content fade-in">
-        <img src="/logo-white.svg" alt="Dominicano Express" class="hero-logo-hero" width="360" height="72" />
         <div class="hero-eyebrow">
           <span class="eyebrow-dot"></span>
           <span data-i18n="hero_eyebrow">Empresa familiar · Más de 20 años de experiencia</span>
@@ -1182,6 +1186,8 @@
 
       <div class="hero-visual fade-in">
         <div class="hero-card">
+          <img src="/logo-white.svg" alt="Dominicano Express" class="hero-logo-hero" width="200" height="38" />
+          <hr class="hero-logo-divider" />
           <div class="route-display">
             <div class="flag-circle"><img src="/flags/ch.svg" alt="CH" class="flag-img flag-circle-img" /></div>
             <div class="route-line"><span class="route-ship">🚢</span></div>
