@@ -69,11 +69,14 @@ function buildContext (rawText) {
  * @param {string} rawText
  * @returns {object} Felder inkl. `_mrz`, `_profile`, `_profileScore`
  */
+/** Felder, bei denen das höchstbewertete Profil den MRZ-Default überschreiben darf. */
+const OVERRIDABLE = new Set(['docType']);
+
 export function extractFields (rawText) {
   const ctx = buildContext(rawText);
   const result = {};
 
-  /* MRZ-Basis */
+  /* MRZ-Basis (rohe Felder inkl. generischem docType = „Passport" o. ä.) */
   if (ctx.mrz.parsed) Object.assign(result, ctx.mrz.parsed);
   result._mrz = ctx.mrz.raw;
 
@@ -92,7 +95,8 @@ export function extractFields (rawText) {
     .filter(s => s.score >= DETECT_THRESHOLD)
     .sort((a, b) => b.weighted - a.weighted);
 
-  /* Extraktion */
+  /* Extraktion: primary darf OVERRIDABLE-Felder überschreiben, Nachfolger nur
+     leere Felder füllen. */
   let primary = null;
   for (const s of scored) {
     let fields;
@@ -101,18 +105,25 @@ export function extractFields (rawText) {
     } catch (_) {
       fields = {};
     }
+    const isPrimary = !primary;
     for (const k of Object.keys(fields)) {
-      if (fields[k] == null || fields[k] === '') continue;
-      if (result[k] == null || result[k] === '') result[k] = fields[k];
+      const v = fields[k];
+      if (v == null || v === '') continue;
+      const isEmpty = result[k] == null || result[k] === '';
+      if (isEmpty || (isPrimary && OVERRIDABLE.has(k))) {
+        result[k] = v;
+      }
     }
     if (!primary) primary = s;
   }
 
-  /* DocType/Label konsolidieren */
+  /* Profile-Meta + statischer DocType-Override:
+     Ein primäres Profil überschreibt den generischen MRZ-Standardwert
+     („Passport") durch sein freundliches Label. */
   if (primary) {
     result._profile = primary.p.id;
     result._profileScore = Math.round(primary.score * 100) / 100;
-    if (!result.docType && primary.p.docType) result.docType = primary.p.docType;
+    if (primary.p.docType) result.docType = primary.p.docType;
   }
 
   return result;

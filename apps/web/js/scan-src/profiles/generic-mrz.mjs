@@ -5,7 +5,12 @@
  * erkannt hat, reicht dieses Profil die Felder durch und identifiziert den
  * Dokumenttyp. Fängt damit praktisch alle weltweit ausgestellten ICAO-9303-
  * konformen Pässe und ID-Karten ab — unabhängig vom Layout.
+ *
+ * Zusätzlich wird das freundliche Länder-Label gesetzt (z. B. „Deutscher
+ * Reisepass" statt „Passport"), ohne dass ein eigenes Länderprofil nötig ist.
  */
+
+import { friendlyDocLabel } from '../country-labels.mjs';
 
 export default {
   id: 'generic-mrz',
@@ -26,9 +31,10 @@ export default {
   },
 
   extract (ctx) {
-    if (!ctx.mrz.parsed) return {};
-    /* Die Felder sind bereits über das MRZ-Parsing in den Gesamt-Result
-       eingespeist. Hier nur den DocType-Hinweis präzisieren. */
-    return { docType: ctx.mrz.parsed.docType };
+    const mrz = ctx.mrz.parsed;
+    if (!mrz) return {};
+    return {
+      docType: friendlyDocLabel(mrz.country, mrz.docType)
+    };
   }
 };

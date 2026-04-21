@@ -82,12 +82,12 @@ export function parseMRZ (lines) {
 function parseTD1 (l1, l2, l3) {
   return {
     docType: 'National ID Card',
-    country: l1.substring(2, 5).replace(/</g, ''),
+    country: normalizeCountryCode(l1.substring(2, 5)),
     docNumber: l1.substring(5, 14).replace(/</g, ''),
     dob: mrzDate(l2.substring(0, 6)),
     sex: normalizeSex(l2[7]),
     expiry: mrzDate(l2.substring(8, 14)),
-    nationality: l2.substring(15, 18).replace(/</g, ''),
+    nationality: normalizeCountryCode(l2.substring(15, 18)),
     surname: splitName(l3)[0],
     givenNames: splitName(l3)[1]
   };
@@ -99,26 +99,36 @@ function parseTD2 (l1, l2) {
   const parts = namePart.split('|');
   return {
     docType: 'Identity Card',
-    country: l1.substring(2, 5).replace(/</g, ''),
+    country: normalizeCountryCode(l1.substring(2, 5)),
     surname: (parts[0] || '').replace(/</g, ' ').trim(),
     givenNames: (parts[1] || '').replace(/</g, ' ').trim(),
     docNumber: l2.substring(0, 9).replace(/</g, ''),
-    nationality: l2.substring(10, 13).replace(/</g, ''),
+    nationality: normalizeCountryCode(l2.substring(10, 13)),
     dob: mrzDate(l2.substring(13, 19)),
     sex: normalizeSex(l2[20]),
     expiry: mrzDate(l2.substring(21, 27))
   };
 }
 
+/** Einzelbuchstaben-Ländercodes (z. B. `D<<` = Deutschland) auf ISO-3 mappen. */
+const SINGLE_LETTER_COUNTRY = { D: 'DEU' };
+
+function normalizeCountryCode (raw) {
+  const code = String(raw || '').replace(/</g, '');
+  if (code.length === 3) return code;
+  if (code.length === 1 && SINGLE_LETTER_COUNTRY[code]) return SINGLE_LETTER_COUNTRY[code];
+  return code;
+}
+
 function parseTD3 (l1, l2) {
   const [surname, givenNames] = splitName(l1.substring(5));
   return {
     docType: 'Passport',
-    country: l1.substring(2, 5).replace(/</g, ''),
+    country: normalizeCountryCode(l1.substring(2, 5)),
     surname,
     givenNames,
     docNumber: l2.substring(0, 9).replace(/</g, ''),
-    nationality: l2.substring(10, 13).replace(/</g, ''),
+    nationality: normalizeCountryCode(l2.substring(10, 13)),
     dob: mrzDate(l2.substring(13, 19)),
     sex: normalizeSex(l2[20]),
     expiry: mrzDate(l2.substring(21, 27))

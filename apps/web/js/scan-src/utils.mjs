@@ -45,20 +45,22 @@ export function valueAfterLabels (txt, labelRegex) {
     if (v && !LABEL_TOKENS.test(v)) return v;
   }
 
-  /* Variante B: Fortsetzungszeile */
-  const nextLine = new RegExp('(?:' + labelRegex + ')[^\\n]{0,72}\\n([^\\n]+)', 'im');
-  m = block.match(nextLine);
-  if (m && m[1]) {
-    const v = cleanPersonName(m[1]);
-    if (v && !LABEL_TOKENS.test(v)) return v;
-  }
-
-  /* Variante C: sameLine OHNE Separator — nur wenn Wert klar aussieht */
+  /* Variante B: sameLine OHNE Separator (z. B. „4c. Landratsamt München").
+     Höhere Prio als Fortsetzungszeile, weil Werte sehr oft auf der
+     Labelzeile beginnen, sobald das Label eine Nummer ist. */
   const sameLinePlain = new RegExp(
     '(?:' + labelRegex + ')[^\\S\\n]{1,6}([A-ZÀ-Ÿ][^\\n]{1,80})',
     'im'
   );
   m = block.match(sameLinePlain);
+  if (m && m[1]) {
+    const v = cleanPersonName(m[1]);
+    if (v && !LABEL_TOKENS.test(v)) return v;
+  }
+
+  /* Variante C: Fortsetzungszeile */
+  const nextLine = new RegExp('(?:' + labelRegex + ')[^\\n]{0,72}\\n([^\\n]+)', 'im');
+  m = block.match(nextLine);
   if (m && m[1]) {
     const v = cleanPersonName(m[1]);
     if (v && !LABEL_TOKENS.test(v)) return v;

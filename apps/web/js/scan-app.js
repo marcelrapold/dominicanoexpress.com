@@ -740,6 +740,23 @@ function renderResults(f, rawText, dataURL) {
     el('mrz-lines').innerHTML = f._mrz.map(l => `<div class="mrz-line">${l}</div>`).join('');
   }
 
+  /* Debug-Overlay: nur bei ?debug=1 oder localStorage.scanDebug=1 sichtbar.
+     Zeigt welches Profil mit welchem Score gegriffen hat — macht das
+     Feintuning neuer Profile deutlich schneller. */
+  try {
+    const params = new URLSearchParams(location.search);
+    const debugOn = params.get('debug') === '1' || localStorage.getItem('scanDebug') === '1';
+    const dbgEl = el('scan-debug');
+    if (dbgEl) {
+      if (debugOn && f._profile) {
+        dbgEl.style.display = 'block';
+        dbgEl.textContent = `[debug] profile=${f._profile} · score=${f._profileScore ?? '?'}`;
+      } else {
+        dbgEl.style.display = 'none';
+      }
+    }
+  } catch (_) { /* no-op */ }
+
   el('export-textarea').value = buildExport(f, rawText);
   el('raw-text').textContent  = rawText;
 

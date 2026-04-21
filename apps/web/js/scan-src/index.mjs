@@ -22,6 +22,14 @@ import swissDriversLicense from './profiles/swiss-drivers-license.mjs';
 import dominicanCedula from './profiles/dominican-cedula.mjs';
 import dominicanPassport from './profiles/dominican-passport.mjs';
 import dominicanDriversLicense from './profiles/dominican-drivers-license.mjs';
+import germanId from './profiles/german-id.mjs';
+import germanPassport from './profiles/german-passport.mjs';
+import germanDriversLicense from './profiles/german-drivers-license.mjs';
+import austrianId from './profiles/austrian-id.mjs';
+import austrianPassport from './profiles/austrian-passport.mjs';
+import usPassport from './profiles/us-passport.mjs';
+import haitianId from './profiles/haitian-id.mjs';
+import haitianPassport from './profiles/haitian-passport.mjs';
 
 [
   genericMrz,
@@ -31,7 +39,15 @@ import dominicanDriversLicense from './profiles/dominican-drivers-license.mjs';
   swissDriversLicense,
   dominicanCedula,
   dominicanPassport,
-  dominicanDriversLicense
+  dominicanDriversLicense,
+  germanId,
+  germanPassport,
+  germanDriversLicense,
+  austrianId,
+  austrianPassport,
+  usPassport,
+  haitianId,
+  haitianPassport
 ].forEach(registerProfile);
 
 const api = {

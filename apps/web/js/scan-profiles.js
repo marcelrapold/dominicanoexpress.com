@@ -53,12 +53,12 @@
   function parseTD1(l1, l2, l3) {
     return {
       docType: "National ID Card",
-      country: l1.substring(2, 5).replace(/</g, ""),
+      country: normalizeCountryCode(l1.substring(2, 5)),
       docNumber: l1.substring(5, 14).replace(/</g, ""),
       dob: mrzDate(l2.substring(0, 6)),
       sex: normalizeSex(l2[7]),
       expiry: mrzDate(l2.substring(8, 14)),
-      nationality: l2.substring(15, 18).replace(/</g, ""),
+      nationality: normalizeCountryCode(l2.substring(15, 18)),
       surname: splitName(l3)[0],
       givenNames: splitName(l3)[1]
     };
@@ -69,25 +69,32 @@
     const parts = namePart.split("|");
     return {
       docType: "Identity Card",
-      country: l1.substring(2, 5).replace(/</g, ""),
+      country: normalizeCountryCode(l1.substring(2, 5)),
       surname: (parts[0] || "").replace(/</g, " ").trim(),
       givenNames: (parts[1] || "").replace(/</g, " ").trim(),
       docNumber: l2.substring(0, 9).replace(/</g, ""),
-      nationality: l2.substring(10, 13).replace(/</g, ""),
+      nationality: normalizeCountryCode(l2.substring(10, 13)),
       dob: mrzDate(l2.substring(13, 19)),
       sex: normalizeSex(l2[20]),
       expiry: mrzDate(l2.substring(21, 27))
     };
   }
+  var SINGLE_LETTER_COUNTRY = { D: "DEU" };
+  function normalizeCountryCode(raw) {
+    const code = String(raw || "").replace(/</g, "");
+    if (code.length === 3) return code;
+    if (code.length === 1 && SINGLE_LETTER_COUNTRY[code]) return SINGLE_LETTER_COUNTRY[code];
+    return code;
+  }
   function parseTD3(l1, l2) {
     const [surname, givenNames] = splitName(l1.substring(5));
     return {
       docType: "Passport",
-      country: l1.substring(2, 5).replace(/</g, ""),
+      country: normalizeCountryCode(l1.substring(2, 5)),
       surname,
       givenNames,
       docNumber: l2.substring(0, 9).replace(/</g, ""),
-      nationality: l2.substring(10, 13).replace(/</g, ""),
+      nationality: normalizeCountryCode(l2.substring(10, 13)),
       dob: mrzDate(l2.substring(13, 19)),
       sex: normalizeSex(l2[20]),
       expiry: mrzDate(l2.substring(21, 27))
@@ -148,17 +155,17 @@
       const v = cleanPersonName(m[1]);
       if (v && !LABEL_TOKENS.test(v)) return v;
     }
-    const nextLine = new RegExp("(?:" + labelRegex + ")[^\\n]{0,72}\\n([^\\n]+)", "im");
-    m = block.match(nextLine);
-    if (m && m[1]) {
-      const v = cleanPersonName(m[1]);
-      if (v && !LABEL_TOKENS.test(v)) return v;
-    }
     const sameLinePlain = new RegExp(
       "(?:" + labelRegex + ")[^\\S\\n]{1,6}([A-Z\xC0-\u0178][^\\n]{1,80})",
       "im"
     );
     m = block.match(sameLinePlain);
+    if (m && m[1]) {
+      const v = cleanPersonName(m[1]);
+      if (v && !LABEL_TOKENS.test(v)) return v;
+    }
+    const nextLine = new RegExp("(?:" + labelRegex + ")[^\\n]{0,72}\\n([^\\n]+)", "im");
+    m = block.match(nextLine);
     if (m && m[1]) {
       const v = cleanPersonName(m[1]);
       if (v && !LABEL_TOKENS.test(v)) return v;
@@ -283,6 +290,7 @@
     const countries = [...new Set([...upper.matchAll(re)].map((m) => m[1]))];
     return { text, upper, lines, linesUpper, mrz, countries };
   }
+  var OVERRIDABLE = /* @__PURE__ */ new Set(["docType"]);
   function extractFields(rawText) {
     const ctx = buildContext(rawText);
     const result = {};
@@ -306,18 +314,105 @@
       } catch (_) {
         fields = {};
       }
+      const isPrimary = !primary;
       for (const k of Object.keys(fields)) {
-        if (fields[k] == null || fields[k] === "") continue;
-        if (result[k] == null || result[k] === "") result[k] = fields[k];
+        const v = fields[k];
+        if (v == null || v === "") continue;
+        const isEmpty = result[k] == null || result[k] === "";
+        if (isEmpty || isPrimary && OVERRIDABLE.has(k)) {
+          result[k] = v;
+        }
       }
       if (!primary) primary = s;
     }
     if (primary) {
       result._profile = primary.p.id;
       result._profileScore = Math.round(primary.score * 100) / 100;
-      if (!result.docType && primary.p.docType) result.docType = primary.p.docType;
+      if (primary.p.docType) result.docType = primary.p.docType;
     }
     return result;
+  }
+
+  // apps/web/js/scan-src/country-labels.mjs
+  var COUNTRY_NAMES = {
+    CHE: "Schweiz",
+    DEU: "Deutschland",
+    AUT: "\xD6sterreich",
+    LIE: "Liechtenstein",
+    USA: "USA",
+    GBR: "Grossbritannien",
+    FRA: "Frankreich",
+    ITA: "Italien",
+    ESP: "Spanien",
+    NLD: "Niederlande",
+    BEL: "Belgien",
+    POL: "Polen",
+    TUR: "T\xFCrkei",
+    CAN: "Kanada",
+    AUS: "Australien",
+    CHN: "China",
+    JPN: "Japan",
+    BRA: "Brasilien",
+    MEX: "Mexiko",
+    IND: "Indien",
+    RUS: "Russland",
+    DOM: "Dominikanische Republik",
+    HTI: "Haiti",
+    VEN: "Venezuela",
+    COL: "Kolumbien",
+    PRI: "Puerto Rico",
+    CUB: "Kuba",
+    JAM: "Jamaika",
+    ARG: "Argentinien",
+    CHL: "Chile",
+    PER: "Peru",
+    ECU: "Ecuador",
+    BOL: "Bolivien",
+    URY: "Uruguay",
+    PRY: "Paraguay",
+    PAN: "Panam\xE1",
+    CRI: "Costa Rica",
+    GTM: "Guatemala",
+    HND: "Honduras",
+    NIC: "Nicaragua",
+    SLV: "El Salvador"
+  };
+  var PROFILES = {
+    CHE: { passport: "Schweizer Reisepass", id: "Schweizer Identit\xE4tskarte" },
+    DEU: { passport: "Deutscher Reisepass", id: "Deutscher Personalausweis" },
+    AUT: { passport: "\xD6sterreichischer Reisepass", id: "\xD6sterreichischer Personalausweis" },
+    LIE: { passport: "Liechtensteiner Pass", id: "Liechtensteiner Identit\xE4tskarte" },
+    USA: { passport: "US Passport", id: "US ID" },
+    GBR: { passport: "British Passport", id: "UK ID Card" },
+    FRA: { passport: "Passeport Fran\xE7ais", id: "Carte Nationale d\u2019Identit\xE9" },
+    ITA: { passport: "Passaporto Italiano", id: "Carta d\u2019Identit\xE0 Italiana" },
+    ESP: { passport: "Pasaporte Espa\xF1ol", id: "DNI Espa\xF1ol" },
+    NLD: { passport: "Nederlands Paspoort", id: "Nederlandse ID-kaart" },
+    BEL: { passport: "Belgisch Paspoort", id: "Belgische eID" },
+    POL: { passport: "Paszport Polski", id: "Polski Dow\xF3d Osobisty" },
+    TUR: { passport: "T\xFCrk Pasaportu", id: "T\xFCrk Kimlik Kart\u0131" },
+    DOM: { passport: "Pasaporte Dominicano", id: "C\xE9dula Dominicana" },
+    HTI: { passport: "Passeport Ha\xEFtien", id: "Carte d\u2019Identit\xE9 Nationale" },
+    VEN: { passport: "Pasaporte Venezolano", id: "C\xE9dula Venezolana" },
+    COL: { passport: "Pasaporte Colombiano", id: "C\xE9dula Colombiana" },
+    MEX: { passport: "Pasaporte Mexicano", id: "INE / IFE" },
+    ARG: { passport: "Pasaporte Argentino", id: "DNI Argentino" },
+    CHL: { passport: "Pasaporte Chileno", id: "RUT / C\xE9dula Chilena" },
+    PER: { passport: "Pasaporte Peruano", id: "DNI Peruano" },
+    BRA: { passport: "Passaporte Brasileiro", id: "RG Brasileiro" }
+  };
+  function friendlyDocLabel(country, docType) {
+    const entry = PROFILES[String(country || "").toUpperCase()];
+    const isPass = /passport/i.test(String(docType || ""));
+    const isId = /id|identity/i.test(String(docType || ""));
+    if (entry) {
+      if (isPass && entry.passport) return entry.passport;
+      if (isId && entry.id) return entry.id;
+    }
+    const countryName = COUNTRY_NAMES[country] || country || "";
+    if (isPass) return countryName ? `${countryName} Pass` : "Passport";
+    if (isId) return countryName ? `${countryName} ID` : "National ID Card";
+    return docType || "Document";
   }
 
   // apps/web/js/scan-src/profiles/generic-mrz.mjs
@@ -336,8 +431,11 @@
       return 0.85;
     },
     extract(ctx) {
-      if (!ctx.mrz.parsed) return {};
-      return { docType: ctx.mrz.parsed.docType };
+      const mrz = ctx.mrz.parsed;
+      if (!mrz) return {};
+      return {
+        docType: friendlyDocLabel(mrz.country, mrz.docType)
+      };
     }
   };
 
@@ -672,6 +770,300 @@
     }
   };
 
+  // apps/web/js/scan-src/profiles/german-id.mjs
+  var STRONG5 = /PERSONALAUSWEIS/i;
+  var SUPPORTING5 = [
+    /BUNDESREPUBLIK\s+DEUTSCHLAND/i,
+    /FEDERAL\s+REPUBLIC\s+OF\s+GERMANY/i
+  ];
+  var german_id_default = {
+    id: "german-id",
+    label: "Deutscher Personalausweis",
+    docType: "Deutscher Personalausweis",
+    priority: 30,
+    detect(ctx) {
+      const strong = STRONG5.test(ctx.upper);
+      const mrz = ctx.mrz.parsed;
+      const isGermanIdMrz = mrz && /^DEU$/.test(String(mrz.country || "")) && !/passport/i.test(String(mrz.docType || ""));
+      if (!strong && !isGermanIdMrz) return 0;
+      let score = strong ? 0.55 : 0;
+      if (isGermanIdMrz) score += 0.35;
+      score += countMatches(ctx.upper, SUPPORTING5) * 0.05;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Geburtsort|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Beh[\xF6o]rde|Authority");
+      if (auth) f.authority = auth;
+      const religion = valueAfterLabels(txt, "Ordens-?\\s*oder\\s*K[\xFCu]nstlername|Religious\\s*name");
+      if (religion) f.alias = religion;
+      if (!f.nationality) f.nationality = "DEU";
+      if (!f.country) f.country = "DEU";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/german-passport.mjs
+  var STRONG6 = /REISEPASS/i;
+  var SUPPORTING6 = [
+    /BUNDESREPUBLIK\s+DEUTSCHLAND/i,
+    /FEDERAL\s+REPUBLIC\s+OF\s+GERMANY/i
+  ];
+  var german_passport_default = {
+    id: "german-passport",
+    label: "Deutscher Reisepass",
+    docType: "Deutscher Reisepass",
+    priority: 25,
+    detect(ctx) {
+      const mrz = ctx.mrz.parsed;
+      const hasMrz = mrz && /passport/i.test(String(mrz.docType || "")) && /^DEU$/.test(String(mrz.country || ""));
+      const labeled = STRONG6.test(ctx.upper);
+      if (!hasMrz && !labeled) return 0;
+      let score = hasMrz ? 0.55 : 0;
+      if (labeled) score += 0.3;
+      score += countMatches(ctx.upper, SUPPORTING6) * 0.05;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Geburtsort|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Ausstellende\\s*Beh[\xF6o]rde|Issuing\\s*authority|Beh[\xF6o]rde");
+      if (auth) f.authority = auth;
+      if (!f.nationality) f.nationality = "DEU";
+      if (!f.country) f.country = "DEU";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/german-drivers-license.mjs
+  var STRONG7 = [
+    /F[ÜU]HRERSCHEIN/i,
+    /DRIVING\s+LICEN[CS]E/i
+  ];
+  var SUPPORTING7 = [
+    /BUNDESREPUBLIK\s+DEUTSCHLAND/i,
+    /DEUTSCHLAND/i
+  ];
+  var CLASSES_RE = /\b(AM|A1|A2|A|B1|BE|B|C1E|C1|CE|C|D1E|D1|DE|D|L|T)\b/g;
+  var german_drivers_license_default = {
+    id: "german-drivers-license",
+    label: "Deutscher F\xFChrerschein",
+    docType: "Deutscher F\xFChrerschein",
+    priority: 28,
+    detect(ctx) {
+      if (!STRONG7.some((r) => r.test(ctx.upper))) return 0;
+      if (/F[ÜU]HRERAUSWEIS/i.test(ctx.text)) return 0;
+      let score = 0.5;
+      score += countMatches(ctx.upper, SUPPORTING7) * 0.1;
+      if (/\bKlassen?\b|\bKategorien?\b/i.test(ctx.text)) score += 0.15;
+      if (ctx.mrz.parsed) score *= 0.15;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const sur = valueAfterLabels(txt, "1\\.(?:\\s*(?:Name|Surname))?");
+      if (sur) f.surname = sur;
+      const giv = valueAfterLabels(txt, "2\\.(?:\\s*(?:Vornamen?|Given\\s*names?))?");
+      if (giv) f.givenNames = giv;
+      const dob = findDateAfterLabel(txt, "3\\.|Geburtsdatum");
+      if (dob) f.dob = dob;
+      const issued = findDateAfterLabel(txt, "4a\\.|Ausstellungsdatum|Date\\s*of\\s*issue");
+      if (issued) f.issued = issued;
+      const expiry = findDateAfterLabel(txt, "4b\\.|Ablaufdatum|Date\\s*of\\s*expiry");
+      if (expiry) f.expiry = expiry;
+      const auth = valueAfterLabels(txt, "4c\\.|Ausstellende\\s*Beh[\xF6o]rde|Issuing\\s*authority");
+      if (auth) f.authority = auth;
+      const nrM = txt.match(/\b5\.\s*(?:[^\n]{0,20}\n)?\s*([A-Z0-9]{8,12})\b/i);
+      if (nrM) f.docNumber = nrM[1].toUpperCase();
+      const catBlock = txt.match(/(?:\b9\.|Klassen?|Kategorien?)[^\n]{0,4}\n?([^\n]{1,120})/i);
+      if (catBlock) {
+        const unique = [...new Set([...catBlock[1].matchAll(CLASSES_RE)].map((m) => m[1]))];
+        if (unique.length) f.categories = unique.join(", ");
+      }
+      if (!f.nationality) f.nationality = "DEU";
+      if (!f.country) f.country = "DEU";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/austrian-id.mjs
+  var AUSTRIA_MARKER = /REPUBLIK\s+[ÖO]STERREICH|IDENTIT[ÄA]TSAUSWEIS/i;
+  var austrian_id_default = {
+    id: "austrian-id",
+    label: "\xD6sterreichischer Personalausweis",
+    docType: "\xD6sterreichischer Personalausweis",
+    priority: 29,
+    detect(ctx) {
+      const marker = AUSTRIA_MARKER.test(ctx.upper);
+      const mrz = ctx.mrz.parsed;
+      const isAut = mrz && /^AUT$/.test(String(mrz.country || "")) && !/passport/i.test(String(mrz.docType || ""));
+      if (!marker && !isAut) return 0;
+      let score = marker ? 0.5 : 0;
+      if (isAut) score += 0.4;
+      if (/PERSONALAUSWEIS/i.test(ctx.upper)) score += 0.1;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Geburtsort|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Ausstellende\\s*Beh[\xF6o]rde|Beh[\xF6o]rde|Authority");
+      if (auth) f.authority = auth;
+      if (!f.nationality) f.nationality = "AUT";
+      if (!f.country) f.country = "AUT";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/austrian-passport.mjs
+  var AUSTRIA_MARKER2 = /REPUBLIK\s+[ÖO]STERREICH|REPUBLIC\s+OF\s+AUSTRIA/i;
+  var austrian_passport_default = {
+    id: "austrian-passport",
+    label: "\xD6sterreichischer Reisepass",
+    docType: "\xD6sterreichischer Reisepass",
+    priority: 24,
+    detect(ctx) {
+      const mrz = ctx.mrz.parsed;
+      const hasMrz = mrz && /passport/i.test(String(mrz.docType || "")) && /^AUT$/.test(String(mrz.country || ""));
+      const hasMarker = AUSTRIA_MARKER2.test(ctx.upper);
+      if (!hasMrz && !hasMarker) return 0;
+      let score = hasMrz ? 0.55 : 0;
+      if (hasMarker) score += 0.3;
+      if (/REISEPASS/i.test(ctx.upper)) score += 0.1;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Geburtsort|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Ausstellende\\s*Beh[\xF6o]rde|Issuing\\s*authority|Beh[\xF6o]rde");
+      if (auth) f.authority = auth;
+      if (!f.nationality) f.nationality = "AUT";
+      if (!f.country) f.country = "AUT";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/us-passport.mjs
+  var STRONG8 = [
+    /UNITED\s+STATES\s+OF\s+AMERICA/i,
+    /PASSPORT/i
+  ];
+  var us_passport_default = {
+    id: "us-passport",
+    label: "US Passport",
+    docType: "US Passport",
+    priority: 22,
+    detect(ctx) {
+      const mrz = ctx.mrz.parsed;
+      const hasMrz = mrz && /passport/i.test(String(mrz.docType || "")) && /^USA$/.test(String(mrz.country || ""));
+      if (!hasMrz) return 0;
+      let score = 0.55;
+      score += countMatches(ctx.upper, STRONG8) * 0.1;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Authority|Issuing\\s*authority");
+      if (auth) f.authority = auth;
+      if (!f.nationality) f.nationality = "USA";
+      if (!f.country) f.country = "USA";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/haitian-id.mjs
+  var STRONG9 = [
+    /CARTE\s+D[''']IDENTIT[EÉ]\s+NATIONALE/i,
+    /R[EÉ]PUBLIQUE\s+D[''']HA[IÏ]TI/i,
+    /OFFICE\s+NATIONAL\s+D[''']IDENTIFICATION/i
+  ];
+  var NIN_RE = /\b(\d{2}[-\s]?\d{2}[-\s]?\d{2}[-\s]?\d{4})\b/;
+  var haitian_id_default = {
+    id: "haitian-id",
+    label: "Carte d\u2019Identit\xE9 Ha\xEFtienne",
+    docType: "Carte d\u2019Identit\xE9 Ha\xEFtienne",
+    priority: 35,
+    detect(ctx) {
+      const strong = countMatches(ctx.upper, STRONG9) > 0;
+      const hasNin = NIN_RE.test(ctx.text);
+      if (!strong && !hasNin) return 0;
+      let score = strong ? 0.55 : 0;
+      if (hasNin) score += 0.25;
+      if (ctx.countries.includes("HTI")) score += 0.1;
+      if (ctx.mrz.parsed && ctx.mrz.parsed.docType === "Passport") score *= 0.3;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const nin = txt.match(NIN_RE);
+      if (nin) {
+        const d = nin[1].replace(/\D/g, "");
+        f.docNumber = d.length === 10 ? `${d.slice(0, 2)}-${d.slice(2, 4)}-${d.slice(4, 6)}-${d.slice(6)}` : nin[1].trim();
+      }
+      const sur = valueAfterLabels(txt, "Nom|Surname|Apellido");
+      if (sur) f.surname = sur;
+      const giv = valueAfterLabels(txt, "Pr[e\xE9]noms?|Given\\s*names?|Nombres?");
+      if (giv) f.givenNames = giv;
+      const dob = findDateAfterLabel(txt, "Date\\s*de\\s*naissance|DOB");
+      if (dob) f.dob = dob;
+      const expiry = findDateAfterLabel(txt, "Date\\s*d['\\s]*expiration|Expire");
+      if (expiry) f.expiry = expiry;
+      const place = valueAfterLabels(txt, "Lieu\\s*de\\s*naissance|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const sexM = txt.match(/(?:Sexe|Sex|Sesso)[^\n]{0,20}\n?\s*([MFmf])\b/i);
+      if (sexM) f.sex = sexM[1].toUpperCase();
+      if (!f.nationality) f.nationality = "HTI";
+      if (!f.country) f.country = "HTI";
+      return f;
+    }
+  };
+
+  // apps/web/js/scan-src/profiles/haitian-passport.mjs
+  var STRONG10 = [
+    /PASSEPORT/i,
+    /R[EÉ]PUBLIQUE\s+D[''']HA[IÏ]TI/i,
+    /REPUBLIC\s+OF\s+HAITI/i
+  ];
+  var haitian_passport_default = {
+    id: "haitian-passport",
+    label: "Passeport Ha\xEFtien",
+    docType: "Passeport Ha\xEFtien",
+    priority: 23,
+    detect(ctx) {
+      const mrz = ctx.mrz.parsed;
+      const hasMrz = mrz && /passport/i.test(String(mrz.docType || "")) && /^HTI$/.test(String(mrz.country || ""));
+      const labeled = countMatches(ctx.upper, STRONG10) > 0;
+      if (!hasMrz && !labeled) return 0;
+      let score = hasMrz ? 0.55 : 0;
+      if (labeled) score += 0.3;
+      return Math.min(1, score);
+    },
+    extract(ctx) {
+      const txt = ctx.text;
+      const f = {};
+      const place = valueAfterLabels(txt, "Lieu\\s*de\\s*naissance|Place\\s*of\\s*birth");
+      if (place) f.placeOfOrigin = place;
+      const auth = valueAfterLabels(txt, "Autorit[e\xE9]|Authority");
+      if (auth) f.authority = auth;
+      if (!f.nationality) f.nationality = "HTI";
+      if (!f.country) f.country = "HTI";
+      return f;
+    }
+  };
+
   // apps/web/js/scan-src/index.mjs
   [
     generic_mrz_default,
@@ -681,7 +1073,15 @@
     swiss_drivers_license_default,
     dominican_cedula_default,
     dominican_passport_default,
-    dominican_drivers_license_default
+    dominican_drivers_license_default,
+    german_id_default,
+    german_passport_default,
+    german_drivers_license_default,
+    austrian_id_default,
+    austrian_passport_default,
+    us_passport_default,
+    haitian_id_default,
+    haitian_passport_default
   ].forEach(registerProfile);
   var api = {
     extractFields,

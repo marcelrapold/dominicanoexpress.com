@@ -4,30 +4,62 @@
  * Eigene Projektion (30°), keine Abhängigkeit mehr auf die Library.
  */
 
-/** Zentrale Maßangaben aller Kisten (cm). */
+/** Zentrale Maßangaben aller Kisten (cm). Jede Grösse bekommt eine eigene,
+ *  leicht abgestufte Kartonfarbe — Mediana hell-sandig, Mega satt-karamell.
+ *  Das visualisiert die Hierarchie der Boxgrössen, ohne zu knallig zu werden. */
+const PALETTE_MEDIANA = {
+  top: '#efe0c2',
+  front: '#d3b989',
+  side: '#b5965e',
+  edge: '#6b4f2c'
+};
+const PALETTE_JUMBO = {
+  top: '#e8d7b4',
+  front: '#c9a876',
+  side: '#a58250',
+  edge: '#5c4327'
+};
+const PALETTE_MAXI = {
+  top: '#decba0',
+  front: '#bf9a63',
+  side: '#946f42',
+  edge: '#4c3720'
+};
+const PALETTE_MEGA = {
+  top: '#d3bc8a',
+  front: '#b18a52',
+  side: '#825f35',
+  edge: '#3c2a17'
+};
+
 export const BOX_MODELS = {
-  mediana: { id: 'mediana', h: 50, r: 50, l: 70 },
-  jumbo: { id: 'jumbo', h: 60, r: 60, l: 85 },
-  maxi: { id: 'maxi', h: 70, r: 70, l: 100 },
-  mega: { id: 'mega', h: 85, r: 85, l: 120 }
+  mediana: { id: 'mediana', h: 50, r: 50, l: 70, palette: PALETTE_MEDIANA },
+  jumbo:   { id: 'jumbo',   h: 60, r: 60, l: 85, palette: PALETTE_JUMBO },
+  maxi:    { id: 'maxi',    h: 70, r: 70, l: 100, palette: PALETTE_MAXI },
+  mega:    { id: 'mega',    h: 85, r: 85, l: 120, palette: PALETTE_MEGA }
 };
 
 const NS = 'http://www.w3.org/2000/svg';
 
-const COLORS = {
-  top: '#e8d7b4',
-  topShade: '#d8c499',
-  front: '#c9a876',
-  frontShade: '#b08d59',
-  side: '#a58250',
-  sideShade: '#8b6a3f',
-  edge: '#5c4327',
+const BASE_COLORS = {
   tape: '#f3e9d2',
   tapeStroke: '#c2a574',
   dimLine: '#1e3a5f',
   dimText: '#102a4c',
   shadow: 'rgba(23, 37, 84, 0.18)'
 };
+
+/** Baut das finale Farbschema pro Box: Palette + statische Tape/Dim-Farben. */
+function buildColors (palette) {
+  const p = palette || PALETTE_JUMBO;
+  return {
+    top: p.top,
+    front: p.front,
+    side: p.side,
+    edge: p.edge,
+    ...BASE_COLORS
+  };
+}
 
 /** Isometrische Projektion (30° nach links/rechts). */
 function proj (cx, cy, x, y, z, scale) {
@@ -63,7 +95,7 @@ function pathFrom (points) {
  * @param {{ side?: 'left'|'right', fontSize?: number, gap?: number }} opts
  */
 function dimension (svg, p1, p2, cx, cy, scale, label, opts = {}) {
-  const { side = 'left', fontSize = 11, gap = 18 } = opts;
+  const { side = 'left', fontSize = 11, gap = 18, COLORS = buildColors() } = opts;
   const a = proj(cx, cy, p1.x, p1.y, p1.z, scale);
   const b = proj(cx, cy, p2.x, p2.y, p2.z, scale);
   const dx = b.x - a.x;
@@ -165,8 +197,9 @@ function dimension (svg, p1, p2, cx, cy, scale, label, opts = {}) {
  * @param {{ variant?: 'card'|'hero' }} opts
  */
 export function mountBoxIllustration (container, dims, opts = {}) {
-  const { h: H, r: R, l: L } = dims;
+  const { h: H, r: R, l: L, palette } = dims;
   const variant = opts.variant || 'card';
+  const COLORS = buildColors(palette);
   const wPx = variant === 'hero' ? 240 : 280;
   const hPx = variant === 'hero' ? 160 : 200;
   const fontSize = variant === 'hero' ? 10 : 12;
@@ -333,6 +366,39 @@ export function mountBoxIllustration (container, dims, opts = {}) {
   ln(0.55, 0.55);
   ln(0.78, 0.65);
 
+  /* Dominicano-Express-Monogramm oben rechts im Label.
+     Rotes Kreis-Badge mit weissem „DE" — liest sich auf jeder Boxgrösse
+     gleich klar und unterscheidet die eigenen Kartons visuell. */
+  const badgeR = Math.min(labelW, labelH) * 0.16;
+  const badgeCX = lx0 + labelW - badgeR - labelW * 0.08;
+  const badgeCY = ly0 + labelH - (labelH - badgeR) - labelH * 0.04;
+  const badgePos = P(badgeCX, 0, badgeCY);
+  /* Projizierte „Grösse" des Badges: in iso landet ein Kreis auf der
+     y=0-Fläche als leichte Ellipse. Wir nutzen einen echten Kreis in
+     Bildschirm-Pixeln (optisch sauber, da der Betrachter frontal schaut). */
+  const badgeRadiusPx = badgeR * scale * 0.9;
+  el('circle', {
+    cx: badgePos.x,
+    cy: badgePos.y,
+    r: badgeRadiusPx,
+    fill: '#c0392b',
+    stroke: '#7a1f14',
+    'stroke-width': 0.8,
+    opacity: '0.95'
+  }, body);
+  const badgeText = el('text', {
+    x: badgePos.x,
+    y: badgePos.y,
+    fill: '#ffffff',
+    'font-size': badgeRadiusPx * 0.95,
+    'font-family': 'system-ui, Segoe UI, Roboto, sans-serif',
+    'font-weight': '800',
+    'text-anchor': 'middle',
+    'dominant-baseline': 'central',
+    'letter-spacing': '-0.5'
+  }, body);
+  badgeText.textContent = 'DE';
+
   /* Kantenhervorhebung an der oberen Deckel-Oberkante (Akzent) */
   el('line', {
     x1: V.t00H.x, y1: V.t00H.y,
@@ -361,7 +427,7 @@ export function mountBoxIllustration (container, dims, opts = {}) {
     { x: 0, y: 0, z: H },
     cx, cy, scale,
     `${H}`,
-    { side: 'left', fontSize, gap }
+    { side: 'left', fontSize, gap, COLORS }
   );
 
   /* Breite L: obere vordere Kante (links → rechts) */
@@ -371,7 +437,7 @@ export function mountBoxIllustration (container, dims, opts = {}) {
     { x: L, y: 0, z: H },
     cx, cy, scale,
     `${L}`,
-    { side: 'left', fontSize, gap }
+    { side: 'left', fontSize, gap, COLORS }
   );
 
   /* Tiefe R: obere rechte Kante (vorne → hinten) */
@@ -381,7 +447,7 @@ export function mountBoxIllustration (container, dims, opts = {}) {
     { x: L, y: R, z: H },
     cx, cy, scale,
     `${R}`,
-    { side: 'right', fontSize, gap }
+    { side: 'right', fontSize, gap, COLORS }
   );
 
   /* ARIA-Label */
