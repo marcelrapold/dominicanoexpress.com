@@ -94,6 +94,94 @@
     .auto-toggle.on .auto-toggle-dot { animation: pulse .8s ease infinite alternate; }
     .auto-toggle:active { opacity: .7; }
 
+    /* ── Popup: eine Kopfzeile (Logo wie Hauptseite + Tool + Schließen) ───── */
+    #scanner.scan-popup-panel .scan-chrome--popup {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      padding-top: calc(10px + var(--safe-t));
+      min-height: 50px;
+      background: linear-gradient(180deg, #001648 0%, #00205B 55%, #092456 100%);
+      border-bottom: 2px solid rgba(206, 17, 38, 0.9);
+      box-shadow: 0 6px 20px rgba(0, 16, 58, 0.35);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+    #scanner.scan-popup-panel .scan-chrome-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+    #scanner.scan-popup-panel .scan-chrome-logo {
+      height: clamp(22px, 3.8vw, 27px);
+      width: auto;
+      max-width: min(180px, 46vw);
+      display: block;
+      flex-shrink: 0;
+      opacity: 0.96;
+    }
+    #scanner.scan-popup-panel .scan-chrome-product {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.48);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+    @media (min-width: 420px) {
+      #scanner.scan-popup-panel .scan-chrome-product { max-width: 200px; }
+    }
+    #scanner.scan-popup-panel .scan-chrome-tools {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+    #scanner.scan-popup-panel .scan-chrome-tools .auto-toggle,
+    #scanner.scan-popup-panel .scan-chrome-tools .ocr-pill {
+      padding: 4px 9px;
+      min-height: 28px;
+      font-size: 10px;
+    }
+    #scanner.scan-popup-panel .scan-main {
+      padding-top: 12px;
+      padding-bottom: 16px;
+    }
+    #scanner.scan-popup-panel .scanner-card {
+      margin-bottom: 8px;
+    }
+    #scanner.scan-popup-panel .scan-hint-strip {
+      padding: 9px 12px;
+    }
+    #scanner.scan-popup-panel .scanner-dock {
+      padding: 10px 14px 12px;
+      gap: 14px;
+    }
+    #scanner.scan-popup-panel .scan-footer--popup {
+      justify-content: center;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 8px 16px calc(10px + var(--safe-b));
+      flex-shrink: 0;
+    }
+    #scanner.scan-popup-panel .scan-footer--popup .scan-footer-link {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    #scanner.scan-popup-panel .scan-footer--popup .scan-footer-link:hover {
+      color: var(--blue-dk);
+    }
+
     /* ── Main ───────────────────────────────────────────────────────────── */
     #scanner .scan-main {
       max-width: 900px;

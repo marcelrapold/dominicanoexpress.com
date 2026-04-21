@@ -200,7 +200,8 @@ vercel dev
 | Variable | Required | Description |
 |---|---|---|
 | `RESEND_API_KEY` | Yes (for scan mail) | API key from [resend.com](https://resend.com) |
-| `RESEND_FROM` | Yes | Verified sender, e.g. `Dominicano Express <no-reply@yourdomain.com>` |
+| `RESEND_FROM` | Yes | Verified **domain** only, e.g. `noreply@yourdomain.com` — the API sets the display name to **ID Scanner** automatically. |
+| `PUBLIC_SITE_URL` | No | Origin for the logo in e-mails (default: production URL in `send-scan-email.js`). Set when using a custom domain. |
 
 Scan-mails go to `marcel@marcelrapold.com` and `rapold.ch@hotmail.com` (see `api/send-scan-email.js`).  
 Set both variables in the Vercel project under **Settings → Environment Variables**.

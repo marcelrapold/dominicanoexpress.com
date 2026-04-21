@@ -5,6 +5,9 @@ export const config = { runtime: 'nodejs', maxDuration: 30 };
 /** Beide erhalten die Scan-Mail direkt im Feld „An“. */
 const SCAN_EMAIL_TO = ['marcel@marcelrapold.com', 'rapold.ch@hotmail.com'];
 
+/** Logo für E-Mail-Header (PNG/SVG per HTTPS; SVG wird evtl. in wenigen Clients unterdrückt). */
+const DEFAULT_PUBLIC_ORIGIN = 'https://dominicanoexpress.rapold.io';
+
 const BRAND = {
   nav: '#00205B',
   nav2: '#0a2f7a',
@@ -13,16 +16,21 @@ const BRAND = {
   muted: '#64748b',
   border: '#e2e8f0',
   surface: '#f8fafc',
+  paper: '#ffffff',
 };
+
+const INLINE_PREVIEW_CID = 'docpreview';
+const INLINE_LOGO_CID = 'brandlogo';
 
 const MSG = {
   es: {
     preheader: 'Nuevo resultado del escáner de identificación',
     title: 'Escaneo de documento',
     subtitle: 'Dominicano Express GmbH',
+    badge_id_scanner: 'ID Scanner',
     intro:
-      'Ha recibido un <strong>nuevo documento</strong> procesado con el escáner ID de la web. Los datos extraídos aparecen a continuación; la imagen optimizada se adjunta.',
-    section_image: 'Vista previa del documento',
+      'Ha recibido un <strong>nuevo resultado de identificación</strong> generado desde la web. La <strong>vista previa del documento</strong> aparece debajo; el archivo de imagen va incluido como adjunto para su archivo.',
+    section_image: 'Vista previa del documento (imagen del escaneo)',
     section_data: 'Datos extraídos (OCR)',
     section_raw: 'Texto OCR (referencia)',
     fields_note:
@@ -36,9 +44,10 @@ const MSG = {
     preheader: 'Neues Ausweis-Scan-Ergebnis',
     title: 'Dokumenten-Scan',
     subtitle: 'Dominicano Express GmbH',
+    badge_id_scanner: 'ID Scanner',
     intro:
-      'Sie haben ein <strong>neues Dokument</strong>, das mit dem ID-Scanner auf der Website erfasst wurde. Die extrahierten Daten finden Sie unten; das optimierte Bild ist angehängt.',
-    section_image: 'Dokumentvorschau',
+      'Sie erhalten ein <strong>neues Ausweis-/Dokumenten-Scan-Ergebnis</strong> von der Website. Die <strong>Vorschau des Dokumentfotos</strong> sehen Sie unten eingebettet; dasselbe Bild liegt zusätzlich als Datei im Anhang vor.',
+    section_image: 'Dokumentvorschau (Scan)',
     section_data: 'Extrahierte Daten (OCR)',
     section_raw: 'Rohtext OCR (Referenz)',
     fields_note:
@@ -53,9 +62,10 @@ const MSG = {
     preheader: 'New ID scan result',
     title: 'Document scan',
     subtitle: 'Dominicano Express GmbH',
+    badge_id_scanner: 'ID Scanner',
     intro:
-      'You have received a <strong>new document</strong> captured with the on-site ID scanner. Structured data is shown below; the optimised image is attached.',
-    section_image: 'Document preview',
+      'You have received a <strong>new identification capture</strong> from the website. A <strong>live preview</strong> of the document image is shown below; the same file is also attached for your records.',
+    section_image: 'Document preview (scan image)',
     section_data: 'Extracted data (OCR)',
     section_raw: 'Raw OCR text (reference)',
     fields_note:
@@ -126,13 +136,50 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-function buildEmailHtml({ t, labels, rows, rawSnippet, preheader }) {
+function truncate(s, max) {
+  const t = String(s ?? '').replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  return `${t.slice(0, Math.max(0, max - 1))}…`;
+}
+
+/** Betreff: Kundenname (aus OCR) + Dokumenttyp + Markenzeile */
+function formatCustomerName(fields, lang) {
+  const g = String(fields.givenNames || '').trim();
+  const s = String(fields.surname || '').trim();
+  if (!g && !s) return '';
+  if (lang === 'de') {
+    if (s && g) return `${s}, ${g}`;
+    return s || g;
+  }
+  return [g, s].filter(Boolean).join(' ').trim() || g || s;
+}
+
+function buildSubject(lang, fields) {
+  const name = formatCustomerName(fields, lang);
+  const docKind = truncate(fields.docType, 36);
+  const fall = { es: 'Documento', de: 'Dokument', en: 'Document' }[lang] || 'Document';
+  const doc = docKind || fall;
+  const mid = name ? `${name} — ${doc}` : doc;
+  return truncate(`[ID Scanner] ${mid} · Dominicano Express`, 240);
+}
+
+/** Absender-Anzeigename immer „ID Scanner“, E-Mail-Adresse aus RESEND_FROM */
+function buildFromWithDisplayName(resendFrom) {
+  const raw = String(resendFrom || '').trim();
+  if (!raw) return raw;
+  const m = raw.match(/<\s*([^>]+)\s*>/);
+  const email = (m ? m[1] : raw).trim().replace(/^mailto:/i, '');
+  if (!email.includes('@')) return raw;
+  return `ID Scanner <${email}>`;
+}
+
+function buildEmailHtml({ t, rows, rawSnippet, preheader, logoImgSrc, inlineCid }) {
   const rowHtml = rows
     .map(
-      (r) => `
+      (r, i) => `
       <tr>
-        <td style="padding:12px 16px;border-bottom:1px solid ${BRAND.border};font-size:13px;font-weight:600;color:${BRAND.muted};width:38%;">${escapeHtml(r.label)}</td>
-        <td style="padding:12px 16px;border-bottom:1px solid ${BRAND.border};font-size:14px;font-weight:600;color:${BRAND.text};">${escapeHtml(r.value)}</td>
+        <td style="padding:13px 18px;border-bottom:1px solid ${BRAND.border};font-size:12px;font-weight:700;color:${BRAND.muted};width:38%;vertical-align:top;${i === rows.length - 1 ? 'border-bottom:none;' : ''}">${escapeHtml(r.label)}</td>
+        <td style="padding:13px 18px;border-bottom:1px solid ${BRAND.border};font-size:14px;font-weight:600;color:${BRAND.text};line-height:1.45;vertical-align:top;${i === rows.length - 1 ? 'border-bottom:none;' : ''}">${escapeHtml(r.value)}</td>
       </tr>`
     )
     .join('');
@@ -144,69 +191,94 @@ function buildEmailHtml({ t, labels, rows, rawSnippet, preheader }) {
 <meta name="viewport" content="width=device-width"/>
 <title>${escapeHtml(t.title)}</title>
 </head>
-<body style="margin:0;padding:0;background:${BRAND.surface};-webkit-font-smoothing:antialiased;">
-  <span style="display:none;font-size:1px;color:#f8fafc;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheader)}</span>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND.surface};padding:24px 12px;">
+<body style="margin:0;padding:0;background:#e8edf3;-webkit-font-smoothing:antialiased;font-family:Segoe UI,system-ui,-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;">
+  <span style="display:none!important;font-size:1px;color:#f8fafc;line-height:1;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheader)}</span>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8edf3;padding:28px 14px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;border-radius:14px;overflow:hidden;border:1px solid ${BRAND.border};box-shadow:0 12px 40px rgba(15,23,42,.08);background:#fff;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;border-radius:16px;overflow:hidden;border:1px solid ${BRAND.border};box-shadow:0 16px 48px rgba(15,23,42,.12);background:${BRAND.paper};">
 
-          <!-- Header -->
           <tr>
-            <td style="background:linear-gradient(135deg,${BRAND.nav} 0%,${BRAND.nav2} 100%);padding:28px 28px 24px;border-bottom:4px solid ${BRAND.accent};">
-              <table role="presentation" width="100%">
+            <td style="height:4px;background:${BRAND.accent};line-height:4px;font-size:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Kopfzeile: Logo + Corporate -->
+          <tr>
+            <td style="background:linear-gradient(145deg,${BRAND.nav} 0%,${BRAND.nav2} 100%);padding:22px 26px 20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="vertical-align:middle;">
-                    <div style="font-size:11px;font-weight:800;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;">${escapeHtml(t.subtitle)}</div>
-                    <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;margin-top:6px;line-height:1.2;">${escapeHtml(t.title)}</div>
+                    <img src="${escapeHtml(logoImgSrc)}" width="168" height="30" alt="Dominicano Express" style="display:block;border:0;outline:none;height:auto;max-width:168px;"/>
                   </td>
-                  <td align="right" style="vertical-align:middle;width:52px;">
-                    <div style="display:inline-block;background:${BRAND.accent};color:#fff;font-weight:900;font-size:15px;padding:10px 11px;border-radius:8px;line-height:1;">DE</div>
+                  <td align="right" style="vertical-align:middle;white-space:nowrap;">
+                    <span style="display:inline-block;background:rgba(255,255,255,.12);color:#fff;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.2);">${escapeHtml(t.badge_id_scanner)}</span>
                   </td>
                 </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Lead -->
-          <tr>
-            <td style="padding:24px 28px 8px;font-size:15px;line-height:1.65;color:${BRAND.text};">${t.intro}</td>
-          </tr>
-          <tr>
-            <td style="padding:0 28px 20px;font-size:13px;line-height:1.6;color:${BRAND.muted};">${escapeHtml(t.fields_note)}</td>
-          </tr>
-
-          <!-- Data table -->
-          <tr>
-            <td style="padding:0 20px 20px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${BRAND.border};border-radius:10px;overflow:hidden;background:#fff;">
                 <tr>
-                  <td colspan="2" style="padding:12px 16px;background:${BRAND.surface};font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:${BRAND.muted};">${escapeHtml(t.section_data)}</td>
+                  <td colspan="2" style="padding-top:16px;">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.28em;color:rgba(255,255,255,.45);text-transform:uppercase;">${escapeHtml(t.subtitle)}</div>
+                    <div style="font-size:21px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-top:4px;line-height:1.2;">${escapeHtml(t.title)}</div>
+                  </td>
                 </tr>
-                ${rowHtml}
               </table>
             </td>
           </tr>
 
-          <!-- Raw -->
           <tr>
-            <td style="padding:0 28px 24px;">
-              <div style="font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:${BRAND.muted};margin-bottom:8px;">${escapeHtml(t.section_raw)}</div>
-              <div style="font-family:Consolas,Monaco,monospace;font-size:12px;line-height:1.65;color:${BRAND.muted};background:${BRAND.surface};border:1px solid ${BRAND.border};border-radius:10px;padding:14px 16px;max-height:200px;overflow:auto;white-space:pre-wrap;word-break:break-word;">${escapeHtml(rawSnippet)}</div>
+            <td style="padding:22px 26px 6px;font-size:15px;line-height:1.65;color:${BRAND.text};">${t.intro}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 26px 18px;font-size:13px;line-height:1.6;color:${BRAND.muted};">${escapeHtml(t.fields_note)}</td>
+          </tr>
+
+          <!-- Dokumentvorschau (CID inline) -->
+          <tr>
+            <td style="padding:0 20px 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND.surface};border:1px solid ${BRAND.border};border-radius:12px;overflow:hidden;">
+                <tr>
+                  <td style="padding:12px 16px;background:#fff;border-bottom:1px solid ${BRAND.border};">
+                    <div style="font-size:10px;font-weight:800;letter-spacing:.14em;color:${BRAND.muted};text-transform:uppercase;">${escapeHtml(t.section_image)}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 14px 18px;text-align:center;background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);">
+                    <img src="cid:${escapeHtml(inlineCid)}" width="520" alt="" style="display:block;max-width:100%;height:auto;margin:0 auto;border-radius:10px;border:1px solid ${BRAND.border};box-shadow:0 4px 24px rgba(15,23,42,.08);"/>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Daten -->
           <tr>
-            <td style="background:#0f172a;padding:22px 28px;">
-              <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.5;">${escapeHtml(t.footer_line1)}</div>
-              <div style="margin-top:10px;font-size:11px;line-height:1.55;color:rgba(248,250,252,.62);">${escapeHtml(t.footer_line2)}</div>
-              <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:10px;line-height:1.5;color:rgba(248,250,252,.45);">${escapeHtml(t.legal)}</div>
+            <td style="padding:0 20px 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${BRAND.border};border-radius:12px;overflow:hidden;background:${BRAND.paper};">
+                <tr>
+                  <td colspan="2" style="padding:14px 18px;background:linear-gradient(180deg,#f8fafc,#f1f5f9);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:${BRAND.muted};border-bottom:1px solid ${BRAND.border};">${escapeHtml(t.section_data)}</td>
+                </tr>
+                ${rowHtml || `<tr><td colspan="2" style="padding:18px;font-size:13px;color:${BRAND.muted};">—</td></tr>`}
+              </table>
+            </td>
+          </tr>
+
+          <!-- OCR Rohtext -->
+          <tr>
+            <td style="padding:0 26px 26px;">
+              <div style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:${BRAND.muted};margin-bottom:8px;">${escapeHtml(t.section_raw)}</div>
+              <div style="font-family:Consolas,ui-monospace,monospace;font-size:11px;line-height:1.6;color:${BRAND.muted};background:${BRAND.surface};border:1px solid ${BRAND.border};border-radius:10px;padding:14px 16px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;">${escapeHtml(rawSnippet)}</div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background:linear-gradient(180deg,#0f172a,#020617);padding:24px 26px;">
+              <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.55;">${escapeHtml(t.footer_line1)}</div>
+              <div style="margin-top:10px;font-size:11px;line-height:1.55;color:rgba(248,250,252,.58);">${escapeHtml(t.footer_line2)}</div>
+              <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;line-height:1.5;color:rgba(248,250,252,.42);">${escapeHtml(t.legal)}</div>
             </td>
           </tr>
         </table>
-        <div style="font-size:11px;color:${BRAND.muted};margin-top:16px;max-width:640px;text-align:center;line-height:1.5;">
-          ${escapeHtml(t.footer_privacy)} <a href="https://dominicanoexpress.rapold.io/datenschutz" style="color:${BRAND.nav};font-weight:600;">dominicanoexpress.rapold.io/datenschutz</a>
+        <div style="font-size:11px;color:${BRAND.muted};margin-top:18px;max-width:600px;text-align:center;line-height:1.55;">
+          ${escapeHtml(t.footer_privacy)} <a href="https://dominicanoexpress.rapold.io/datenschutz" style="color:${BRAND.nav};font-weight:600;text-decoration:none;">dominicanoexpress.rapold.io/datenschutz</a>
         </div>
       </td>
     </tr>
@@ -302,32 +374,63 @@ export default async function handler(req, res) {
   const rawText = typeof body.rawText === 'string' ? body.rawText : '';
   const rawSnippet = rawText.length > 4000 ? `${rawText.slice(0, 4000)}…` : rawText;
 
-  const subjectByLang = {
-    es: `[ID Scanner] Documento escaneado · ${fields.docType || 'Documento'}`,
-    de: `[ID Scanner] Dokument gescannt · ${fields.docType || 'Dokument'}`,
-    en: `[ID Scanner] Document scanned · ${fields.docType || 'Document'}`,
-  };
+  const subject = buildSubject(lang, fields);
+  const custName = formatCustomerName(fields, lang);
+  const preheader = custName ? `${t.preheader} · ${custName}` : t.preheader;
+
+  const siteOrigin = (process.env.PUBLIC_SITE_URL || DEFAULT_PUBLIC_ORIGIN).replace(/\/$/, '');
+  const logoUrl = `${siteOrigin}/logo-white.svg`;
+
+  let logoImgSrc = logoUrl;
+  const logoAttachments = [];
+  try {
+    const lr = await fetch(logoUrl);
+    if (lr.ok) {
+      const buf = Buffer.from(await lr.arrayBuffer());
+      if (buf.length > 0 && buf.length < 512000) {
+        logoImgSrc = `cid:${INLINE_LOGO_CID}`;
+        logoAttachments.push({
+          filename: 'logo-white.svg',
+          content: buf,
+          contentType: 'image/svg+xml',
+          inlineContentId: INLINE_LOGO_CID,
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('send-scan-email: logo fetch skipped:', e?.message || e);
+  }
 
   const html = buildEmailHtml({
     t,
-    labels,
     rows,
     rawSnippet,
-    preheader: t.preheader,
+    preheader,
+    logoImgSrc,
+    inlineCid: INLINE_PREVIEW_CID,
   });
 
+  const slugBase = custName || fields.docNumber || 'scan';
+  const fileSlug = String(slugBase)
+    .replace(/[^\w\s.-]/g, '')
+    .replace(/\s+/g, '-')
+    .slice(0, 56) || 'scan';
+
   const resend = new Resend(apiKey);
+  const fromWithName = buildFromWithDisplayName(from);
 
   const { data, error } = await resend.emails.send({
-    from,
+    from: fromWithName,
     to: SCAN_EMAIL_TO,
-    subject: subjectByLang[lang],
+    subject,
     html,
     attachments: [
+      ...logoAttachments,
       {
-        filename: `scan-${Date.now()}.jpg`,
+        filename: `ID-Scan_${fileSlug}_${Date.now()}.jpg`,
         content: imageBuffer,
         contentType: mime.includes('png') ? 'image/png' : 'image/jpeg',
+        inlineContentId: INLINE_PREVIEW_CID,
       },
     ],
   });
