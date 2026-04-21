@@ -6,25 +6,25 @@
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Static](https://img.shields.io/badge/Type-Static%20Monorepo-purple?style=flat-square)]()
 
-> Monorepo für **dominicanoexpress.com** — Hauptwebsite + AI-gestützte ID-Scanner App.  
-> Zero-Build · Pure HTML/CSS/JS · Deployed via Vercel on every push to `main`.
+> Monorepo for **dominicanoexpress.com** — main website + AI-powered ID Scanner app.  
+> Zero-build · Pure HTML/CSS/JS · Deployed via Vercel on every push to `main`.
 
 ---
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-- [Architektur](#architektur)
-- [Repository-Struktur](#repository-struktur)
+- [Architecture](#architecture)
+- [Repository Structure](#repository-structure)
 - [Apps](#apps)
 - [Tech Stack](#tech-stack)
 - [Deployment](#deployment)
-- [Lokale Entwicklung](#lokale-entwicklung)
-- [Umgebungsvariablen](#umgebungsvariablen)
+- [Local Development](#local-development)
+- [Environment Variables](#environment-variables)
 - [Routing](#routing)
 
 ---
 
-## Architektur
+## Architecture
 
 ```mermaid
 graph TB
@@ -63,7 +63,7 @@ graph TB
 
 ---
 
-## Repository-Struktur
+## Repository Structure
 
 ```
 dominicanoexpress.com/
@@ -72,8 +72,8 @@ dominicanoexpress.com/
 │   ├── scan/                   # ID Scanner App
 │   │   └── index.html          #   Single-file app (OCR + UI)
 │   │
-│   └── web/                    # Hauptwebsite
-│       └── index.html          #   Placeholder (Inhalt folgt)
+│   └── web/                    # Main Website
+│       └── index.html          #   Placeholder (content coming soon)
 │
 ├── .gitignore
 ├── vercel.json                 # Routing + Security Headers
@@ -88,150 +88,155 @@ dominicanoexpress.com/
 
 **URL:** [`/scan`](https://dominicanoexpress-com.vercel.app/scan)
 
-KI-gestützte Dokumentenerkennung für Ausweise, Reisepässe und Führerscheine.  
-Extrahiert alle Felder inklusive MRZ-Zone, strukturiert sie und ermöglicht Copy-to-Clipboard Export.
+AI-powered document recognition for ID cards, passports, and driver's licenses.  
+Extracts all fields including the MRZ zone, structures them, and provides copy-to-clipboard export.
 
 **Features:**
 | Feature | Detail |
 |---|---|
-| Dokumenttypen | Personalausweis (TD1) · Reisepass (TD3) · Führerschein · Visum |
-| Eingabe | Live-Kamera · Foto hochladen · Drag & Drop |
-| OCR Engine | OCR.space API Engine 2 (Cloud, kein WASM) |
-| MRZ Parser | TD1 (30×3) + TD3 (44×2) vollständig |
-| Extrahierte Felder | Name · Geburtsdatum · Dokumentnummer · Gültigkeit · Nationalität · Geschlecht · Grösse · Heimatort · Behörde · Ausstellungsdatum |
-| Export | Plaintext strukturiert · Copy per Feld · Copy All |
-| iOS / Android | ✅ Vollständig kompatibel (kein WASM) |
-| Datenschutz | Bilder werden einmalig an ocr.space gesendet, nicht gespeichert |
+| Document Types | National ID (TD1) · Passport (TD3) · Driver's License · Visa |
+| Input | Live camera · Upload photo · Drag & Drop |
+| OCR Engine | OCR.space API Engine 2 (cloud-based, no WASM) |
+| MRZ Parser | TD1 (30×3) + TD3 (44×2) fully supported |
+| Extracted Fields | Name · Date of Birth · Document No. · Expiry · Nationality · Sex · Height · Place of Origin · Authority · Date of Issue |
+| Auto-Capture | Laplacian sharpness detection — captures automatically when image is in focus |
+| Haptic Feedback | Native vibration patterns on Android (soft tap, success, error) |
+| Export | Structured plaintext · Copy per field · Copy All |
+| iOS / Android | ✅ Fully compatible (no WASM dependency) |
+| Privacy | Images sent once to ocr.space for processing, not stored |
 
 ---
 
-### 🌍 `/apps/web` — Hauptwebsite
+### 🌍 `/apps/web` — Main Website
 
 **URL:** [`/`](https://dominicanoexpress-com.vercel.app)
 
-Hauptwebsite für dominicanoexpress.com.  
-Inhalt wird separat geliefert. Placeholder aktiv.
+Main website for dominicanoexpress.com.  
+Content to be delivered separately. Placeholder currently active.
 
 ---
 
 ## Tech Stack
 
-| Schicht | Technologie | Begründung |
+| Layer | Technology | Rationale |
 |---|---|---|
-| **Frontend** | Vanilla HTML / CSS / JS | Zero-dependency, maximale Kompatibilität |
-| **OCR** | [ocr.space API](https://ocr.space/ocrapi) | Cloud-OCR, kein WASM, iOS-kompatibel, kostenlose Tier |
-| **Hosting** | [Vercel](https://vercel.com) | Edge CDN, GitHub-Integration, SSL, Free Tier |
-| **Routing** | `vercel.json` Rewrites | Monorepo-Pfade auf URL-Pfade mappen |
-| **CI/CD** | GitHub Actions (implicit via Vercel) | Push to `main` → auto-deploy |
-| **MRZ Parsing** | Custom JS Parser | TD1 + TD3, kein externes Package nötig |
+| **Frontend** | Vanilla HTML / CSS / JS | Zero dependencies, maximum compatibility |
+| **OCR** | [ocr.space API](https://ocr.space/ocrapi) | Cloud OCR, no WASM, iOS-compatible, free tier |
+| **Hosting** | [Vercel](https://vercel.com) | Edge CDN, GitHub integration, SSL, free tier |
+| **Routing** | `vercel.json` rewrites | Map monorepo paths to URL paths |
+| **CI/CD** | GitHub (implicit via Vercel) | Push to `main` → auto-deploy in ~10s |
+| **MRZ Parsing** | Custom JS parser | TD1 + TD3, no external package needed |
+| **Sharpness Detection** | Laplacian variance (canvas) | Real-time focus analysis for auto-capture |
 
 ---
 
 ## Deployment
 
-### Automatisch (empfohlen)
+### Automatic (recommended)
 
-Jeder Push auf `main` löst automatisch ein Production-Deployment aus:
+Every push to `main` triggers an automatic production deployment:
 
 ```bash
 git add .
-git commit -m "feat: beschreibung"
+git commit -m "feat: describe your change"
 git push origin main
-# → Vercel deployt automatisch innerhalb ~10s
+# → Vercel deploys automatically within ~10s
 ```
 
-### Manuell via Vercel CLI
+### Manual via Vercel CLI
 
 ```bash
-# CLI installieren (einmalig)
+# Install CLI (once)
 npm i -g vercel
 
-# Login (einmalig)
+# Login (once)
 vercel login
 
-# Projekt verknüpfen (einmalig)
+# Link project (once)
 vercel link --project dominicanoexpress-com
 
-# Production deploy
+# Deploy to production
 vercel --prod --yes
 ```
 
-### Deployment-Status prüfen
+### Check deployment status
 
 ```bash
 vercel inspect dominicanoexpress-com.vercel.app
 ```
 
-Oder im Dashboard: [vercel.com/muraschal/dominicanoexpress-com](https://vercel.com/muraschal/dominicanoexpress-com)
+Or via dashboard: [vercel.com/muraschal/dominicanoexpress-com](https://vercel.com/muraschal/dominicanoexpress-com)
 
 ---
 
-## Lokale Entwicklung
+## Local Development
 
-Da die Apps reines HTML sind, reicht ein einfacher HTTP-Server:
+Since the apps are pure HTML, a simple HTTP server is sufficient:
 
 ```bash
-# Option A: Python (kein Install nötig)
+# Option A: Python (no install required)
 python -m http.server 3000
 # → http://localhost:3000/apps/scan/
 
-# Option B: Node.js npx
+# Option B: Node.js via npx
 npx serve .
 # → http://localhost:3000
 
-# Option C: Vercel Dev (mit vollem Routing aus vercel.json)
+# Option C: Vercel Dev (full routing from vercel.json)
 npm i -g vercel
 vercel dev
-# → http://localhost:3000/scan   (Routing identisch zu Production)
+# → http://localhost:3000/scan   (routing identical to production)
 ```
 
-> ⚠️ **Kamera & HTTPS:** Kamerazugriff erfordert HTTPS oder `localhost`.  
-> `vercel dev` und `python -m http.server` auf `localhost` funktionieren beide.
+> ⚠️ **Camera & HTTPS:** Camera access requires HTTPS or `localhost`.  
+> Both `vercel dev` and `python -m http.server` work on `localhost`.
 
 ---
 
-## Umgebungsvariablen
+## Environment Variables
 
-Aktuell keine serverseitigen Umgebungsvariablen nötig.  
-Der OCR API-Key ist clientseitig in `apps/scan/index.html` konfiguriert:
+No server-side environment variables required.  
+The OCR API key is configured client-side in `apps/scan/index.html`:
 
-| Variable | Datei | Default | Beschreibung |
+| Variable | File | Default | Description |
 |---|---|---|---|
-| `OCR_KEY` | `apps/scan/index.html` (JS) | `helloworld` | OCR.space API Key |
+| `OCR_KEY` | `apps/scan/index.html` (JS) | `helloworld` | OCR.space API key |
 
-> **Produktionsempfehlung:** Eigenen kostenlosen Key auf [ocr.space/ocrapi](https://ocr.space/ocrapi) registrieren (25.000 Req/Monat gratis) und in der Datei ersetzen. Alternativ über eine Vercel Serverless Function als Proxy schützen.
+> **Production recommendation:** Register your own free key at [ocr.space/ocrapi](https://ocr.space/ocrapi) (25,000 req/month free) and replace it in the file. Alternatively, protect it via a Vercel Serverless Function proxy.
 
 ---
 
 ## Routing
 
-Konfiguriert in [`vercel.json`](./vercel.json):
+Configured in [`vercel.json`](./vercel.json):
 
-| URL | Datei | Beschreibung |
+| URL | File | Description |
 |---|---|---|
-| `/` | `apps/web/index.html` | Hauptwebsite |
-| `/*` | `apps/web/*` | Alle Web-Unterseiten |
-| `/scan` | `apps/scan/index.html` | ID Scanner App |
-| `/scan/*` | `apps/scan/*` | Scanner Assets |
+| `/` | `apps/web/index.html` | Main website |
+| `/*` | `apps/web/*` | All web sub-pages |
+| `/scan` | `apps/scan/index.html` | ID Scanner app |
+| `/scan/*` | `apps/scan/*` | Scanner assets |
 
-Security Headers werden auf alle Routen angewendet (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`).
+Security headers applied to all routes (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`).
 
 ---
 
-## Neue App hinzufügen
+## Adding a New App
 
 ```bash
-# 1. Verzeichnis erstellen
-mkdir apps/meine-app
+# 1. Create directory
+mkdir apps/my-app
 
-# 2. App entwickeln
-echo "<h1>Hello</h1>" > apps/meine-app/index.html
+# 2. Build your app
+echo "<h1>Hello</h1>" > apps/my-app/index.html
 
-# 3. Route in vercel.json hinzufügen
-# { "source": "/meine-app", "destination": "/apps/meine-app/index.html" }
+# 3. Add route in vercel.json
+# { "source": "/my-app", "destination": "/apps/my-app/index.html" }
 
-# 4. Deployen
-git add . && git commit -m "feat: add meine-app" && git push
+# 4. Deploy
+git add .
+git commit -m "feat: add my-app"
+git push
 ```
 
 ---
