@@ -923,40 +923,90 @@
     .mobile-nav a:last-child { border-bottom: none; }
 
     /* ── Gallery ──────────────────────────────────────────────────────────── */
-    /* ── Photo Gallery ────────────────────────────────────────────── */
+    /* ── Gallery Viewer ───────────────────────────────────────────── */
     .gallery-section { background: var(--cream); }
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 190px;
-      gap: 10px; margin-top: 32px;
+    .gallery-viewer { margin-top: 36px; }
+
+    .gv-hero {
+      position: relative; border-radius: 16px; overflow: hidden;
+      aspect-ratio: 16/9; background: #1a2540;
+      cursor: zoom-in;
+      box-shadow: 0 12px 48px rgba(0,0,0,.18);
     }
-    .photo-item {
-      border-radius: 10px; overflow: hidden;
-      position: relative; cursor: zoom-in;
-      background: #d0dae8;
-    }
-    .photo-item.wide { grid-column: span 2; }
-    .photo-item.tall { grid-row: span 2; }
-    .photo-item img {
+    .gv-hero img {
       width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform .32s ease;
+      transition: transform .45s cubic-bezier(.22,1,.36,1), opacity .3s;
+      will-change: transform;
     }
-    .photo-item:hover img { transform: scale(1.07); }
-    .photo-overlay {
+    .gv-hero img.gv-switching { opacity: 0; transform: scale(1.04); }
+    .gv-hero-overlay {
       position: absolute; inset: 0;
-      background: rgba(0,0,0,.28);
+      background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 45%);
+      pointer-events: none;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px 24px;
+    }
+    .gv-cap {
+      color: #fff; font-size: 14px; font-weight: 500;
+      opacity: .88; letter-spacing: .2px; line-height: 1.4;
+    }
+    .gv-count {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.82); font-size: 12px; font-weight: 700;
+      padding: 4px 11px; border-radius: 99px;
+      border: 1px solid rgba(255,255,255,.15);
+      font-variant-numeric: tabular-nums; pointer-events: none;
+      letter-spacing: .5px;
+    }
+    .gv-zoom-pill {
+      position: absolute; bottom: 18px; right: 18px;
+      background: rgba(0,0,0,.42); backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700;
+      padding: 5px 12px 5px 10px; border-radius: 99px;
+      border: 1px solid rgba(255,255,255,.18);
+      display: flex; align-items: center; gap: 5px;
+      pointer-events: none; letter-spacing: .4px; text-transform: uppercase;
+    }
+    .gv-zoom-pill svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .gv-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(0,0,0,.42); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.22); color: #fff;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity .2s;
+      cursor: pointer; z-index: 2;
+      transition: background .15s, transform .15s;
     }
-    .photo-item:hover .photo-overlay { opacity: 1; }
-    .photo-overlay svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
-    @media (max-width: 840px) {
-      .photo-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 160px; }
+    .gv-arrow:hover { background: rgba(0,0,0,.7); transform: translateY(-50%) scale(1.1); }
+    .gv-arrow:active { transform: translateY(-50%) scale(.95); }
+    .gv-prev { left: 14px; }
+    .gv-next { right: 14px; }
+    .gv-arrow svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .gv-strip {
+      display: flex; gap: 8px; align-items: stretch;
+      overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none; -ms-overflow-style: none;
+      padding: 12px 2px 6px; margin-top: 4px;
+      scroll-snap-type: x mandatory;
     }
-    @media (max-width: 540px) {
-      .photo-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 130px; }
-      .photo-item.tall { grid-row: span 1; }
+    .gv-strip::-webkit-scrollbar { display: none; }
+    .gv-thumb {
+      flex-shrink: 0; width: 88px; height: 60px;
+      border-radius: 8px; overflow: hidden;
+      cursor: pointer; opacity: .5;
+      outline: 2.5px solid transparent; outline-offset: 2px;
+      transition: opacity .2s, transform .2s, outline-color .15s;
+      scroll-snap-align: start;
+    }
+    .gv-thumb.active  { opacity: 1; outline-color: var(--accent); transform: scale(1.06); }
+    .gv-thumb:hover:not(.active) { opacity: .82; transform: scale(1.04); }
+    .gv-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (max-width: 600px) {
+      .gv-hero  { aspect-ratio: 4/3; }
+      .gv-thumb { width: 68px; height: 48px; }
+      .gv-arrow { width: 38px; height: 38px; }
     }
 
     /* TODO_CLIENT indicator */
@@ -1529,116 +1579,27 @@
       <h2 class="section-title" data-i18n="gallery_title">Así trabaja nuestro equipo</h2>
       <p class="section-sub" data-i18n="gallery_sub">Fotos reales de nuestras operaciones — de Suiza a la puerta de tu familia.</p>
     </div>
-    <div class="photo-grid fade-in">
-
-      <!-- 1 — featured wide+tall -->
-      <div class="photo-item wide tall" data-lb data-lb-cap="Carga de contenedor — Dominicano Express">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_3634.JPG/:/rs=w:900,cg:true" alt="Carga de contenedor" loading="eager" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+    <div class="gallery-viewer fade-in" id="gallery-viewer">
+      <!-- Hero photo -->
+      <div class="gv-hero" id="gv-hero" onclick="galleryHeroClick()">
+        <img id="gv-img" src="" alt="" loading="eager" />
+        <div class="gv-hero-overlay">
+          <span class="gv-cap" id="gv-cap"></span>
+        </div>
+        <span class="gv-count" id="gv-count" aria-live="polite"></span>
+        <span class="gv-zoom-pill" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          Ampliar
+        </span>
+        <button class="gv-arrow gv-prev" onclick="event.stopPropagation();galleryNav(-1)" aria-label="Foto anterior">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="gv-arrow gv-next" onclick="event.stopPropagation();galleryNav(+1)" aria-label="Siguiente foto">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
-
-      <!-- 2 -->
-      <div class="photo-item" data-lb data-lb-cap="Envíos listos para el contenedor">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/b3a7ee22-7acb-4cd9-b647-2b8b4fe9afd2.jpeg/:/rs=w:600,cg:true" alt="Envíos listos" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 3 -->
-      <div class="photo-item" data-lb data-lb-cap="Verificación de mercancía — Suiza">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8589.jpeg/:/rs=w:600,cg:true" alt="Verificación de mercancía" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 4 -->
-      <div class="photo-item" data-lb data-lb-cap="Paquetes empacados con cuidado">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8590.jpeg/:/rs=w:600,cg:true" alt="Paquetes empacados" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 5 -->
-      <div class="photo-item" data-lb data-lb-cap="Preparación para la carga marítima">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/1b6e3d48-4844-4333-a66c-870c036c81c8.jpeg/:/rs=w:600,cg:true" alt="Preparación carga marítima" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 6 — wide -->
-      <div class="photo-item wide" data-lb data-lb-cap="Apertura de contenedor — llegada en la República Dominicana">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_3607.JPG/:/rs=w:900,cg:true" alt="Apertura de contenedor" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 7 -->
-      <div class="photo-item" data-lb data-lb-cap="Contenedor completamente cargado">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0002.jpeg/:/rs=w:600,cg:true" alt="Contenedor completamente cargado" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 8 -->
-      <div class="photo-item" data-lb data-lb-cap="Almacén logístico — Suiza">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0015.jpeg/:/rs=w:600,cg:true" alt="Almacén logístico Suiza" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 9 -->
-      <div class="photo-item" data-lb data-lb-cap="Mercancía lista para despacho">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_4489.jpeg/:/rs=w:600,cg:true" alt="Mercancía lista para despacho" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 10 -->
-      <div class="photo-item" data-lb data-lb-cap="Recogida domiciliaria — Suiza">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8588.jpeg/:/rs=w:600,cg:true" alt="Recogida domiciliaria Suiza" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 11 -->
-      <div class="photo-item" data-lb data-lb-cap="Centro logístico — organización de envíos">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2437.jpeg/:/rs=w:600,cg:true" alt="Centro logístico" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 12 — wide -->
-      <div class="photo-item wide" data-lb data-lb-cap="Infraestructura de contenedores — Dominicano Express">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/f25bee00-e81b-4c33-9fed-5dbd192877c9.jpeg/:/rs=w:900,cg:true" alt="Infraestructura contenedores" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 13 -->
-      <div class="photo-item" data-lb data-lb-cap="Punto de recogida — organización impecable">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_0442.jpeg/:/rs=w:600,cg:true" alt="Punto de recogida" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 14 -->
-      <div class="photo-item" data-lb data-lb-cap="Manipulación profesional de carga">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_8586.jpeg/:/rs=w:600,cg:true" alt="Manipulación profesional de carga" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 15 -->
-      <div class="photo-item" data-lb data-lb-cap="Operaciones de carga en el muelle">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/f1f1c206-dc33-44e3-8339-2acc128e1b93.jpeg/:/rs=w:600,cg:true" alt="Operaciones de carga" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 16 -->
-      <div class="photo-item" data-lb data-lb-cap="Revisión final antes del despacho">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_9300.jpeg/:/rs=w:600,cg:true" alt="Revisión final" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 17 -->
-      <div class="photo-item" data-lb data-lb-cap="Contenedor en tránsito — camino a la República Dominicana">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2545.jpeg/:/rs=w:600,cg:true" alt="Contenedor en tránsito" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
-      <!-- 18 — wide to close the row nicely -->
-      <div class="photo-item wide" data-lb data-lb-cap="Mercancía organizada — listos para el siguiente envío">
-        <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/IMG_2305.jpeg/:/rs=w:900,cg:true" alt="Mercancía organizada" loading="lazy" />
-        <div class="photo-overlay"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
-      </div>
-
+      <!-- Thumbnail strip — injected by JS -->
+      <div class="gv-strip" id="gv-strip" role="list" aria-label="Todas las fotos"></div>
     </div>
   </div>
 </section>
@@ -2299,46 +2260,30 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
-// ── Lightbox ────────────────────────────────────────────────────────────────────
+// ── Lightbox ─────────────────────────────────────────────────────────────────
 (function() {
   const lb      = document.getElementById('lb');
   const lbImg   = document.getElementById('lb-img');
   const lbCap   = document.getElementById('lb-cap');
   const lbCount = document.getElementById('lb-count');
-  let items = [], cur = 0, startX = 0;
+  let _items = [], _cur = 0, _startX = 0;
 
-  function getSrc(el) {
-    // explicit override wins
-    if (el.dataset.lbSrc) return el.dataset.lbSrc;
-    // img element itself
-    if (el.tagName === 'IMG') return el.src;
-    // container with img child
-    const img = el.querySelector('img');
-    return img ? img.src : null;
-  }
+  function setItems(arr) { _items = arr; }
 
-  function collectItems() {
-    items = Array.from(document.querySelectorAll('[data-lb]'))
-      .map(el => ({ src: getSrc(el), cap: el.dataset.lbCap || el.querySelector('img')?.alt || '' }))
-      .filter(it => !!it.src);
-  }
-
-  function open(idx) {
-    collectItems();
-    if (!items.length) return;
-    cur = ((idx % items.length) + items.length) % items.length;
-    const { src, cap } = items[cur];
-    // Upscale wsimg CDN images; keep others as-is
-    const hqSrc = src.includes('wsimg.com')
+  function show(idx) {
+    if (!_items.length) return;
+    _cur = (idx % _items.length + _items.length) % _items.length;
+    const { src, cap } = _items[_cur];
+    const hq = src.includes('wsimg.com')
       ? src.replace(/\/rs=w:\d+[^,]*/, '/rs=w:1400,cg:true')
       : src;
     lbImg.classList.add('lb-loading');
     lbImg.onload  = () => lbImg.classList.remove('lb-loading');
     lbImg.onerror = () => lbImg.classList.remove('lb-loading');
-    lbImg.src = hqSrc;
+    lbImg.src = hq;
     lbImg.alt = cap;
-    lbCap.textContent  = cap;
-    lbCount.textContent = `${cur + 1} / ${items.length}`;
+    lbCap.textContent   = cap;
+    lbCount.textContent = `${_cur + 1} / ${_items.length}`;
     lb.classList.add('lb-open');
     document.body.style.overflow = 'hidden';
   }
@@ -2349,41 +2294,114 @@ document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
     setTimeout(() => { lbImg.src = ''; }, 300);
   }
 
-  function prev() { open(cur - 1); }
-  function next() { open(cur + 1); }
-
-  // Click outside image closes
-  lb.addEventListener('click', e => { if (e.target === lb || e.target === document.getElementById('lb-inner')) close(); });
-  document.getElementById('lb-close').addEventListener('click', close);
-  document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); prev(); });
-  document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); next(); });
+  document.getElementById('lb-close').addEventListener('click', e => { e.stopPropagation(); close(); });
+  document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); show(_cur - 1); });
+  document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); show(_cur + 1); });
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
 
   document.addEventListener('keydown', e => {
     if (!lb.classList.contains('lb-open')) return;
-    if (e.key === 'Escape') close();
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'ArrowRight') next();
+    if (e.key === 'Escape')      close();
+    if (e.key === 'ArrowLeft')   show(_cur - 1);
+    if (e.key === 'ArrowRight')  show(_cur + 1);
   });
 
-  lb.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-  lb.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 48) { e.preventDefault(); dx < 0 ? next() : prev(); }
+  lb.addEventListener('touchstart', e => { _startX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - _startX;
+    if (Math.abs(dx) > 48) { dx < 0 ? show(_cur + 1) : show(_cur - 1); }
   });
 
-  // Delegate click to all [data-lb] elements (works for dynamically added ones too)
-  document.addEventListener('click', e => {
-    const el = e.target.closest('[data-lb]');
-    if (!el) return;
-    e.preventDefault();
-    collectItems();
-    const all = Array.from(document.querySelectorAll('[data-lb]'))
-      .filter(x => getSrc(x));
-    const idx = all.indexOf(el);
-    open(idx >= 0 ? idx : 0);
-  });
+  // Public API
+  window.lbOpen = function(items, idx) { setItems(items); show(idx || 0); };
+})();
 
-  window.lbOpen = open;
+// ── Gallery Viewer ────────────────────────────────────────────────────────────
+const CDN = 'https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/';
+const GALLERY = [
+  { f:'IMG_3634.JPG',                              cap:'Carga de contenedor — Dominicano Express' },
+  { f:'b3a7ee22-7acb-4cd9-b647-2b8b4fe9afd2.jpeg', cap:'Envíos listos para el contenedor' },
+  { f:'IMG_8589.jpeg',                             cap:'Verificación de mercancía — Suiza' },
+  { f:'IMG_8590.jpeg',                             cap:'Paquetes empacados con cuidado' },
+  { f:'1b6e3d48-4844-4333-a66c-870c036c81c8.jpeg', cap:'Preparación para la carga marítima' },
+  { f:'IMG_3607.JPG',                              cap:'Apertura de contenedor — República Dominicana' },
+  { f:'IMG_0002.jpeg',                             cap:'Contenedor completamente cargado' },
+  { f:'IMG_0015.jpeg',                             cap:'Almacén logístico — Suiza' },
+  { f:'IMG_4489.jpeg',                             cap:'Mercancía lista para despacho' },
+  { f:'IMG_8588.jpeg',                             cap:'Recogida domiciliaria — Suiza' },
+  { f:'IMG_2437.jpeg',                             cap:'Centro logístico — organización de envíos' },
+  { f:'f25bee00-e81b-4c33-9fed-5dbd192877c9.jpeg', cap:'Infraestructura de contenedores' },
+  { f:'IMG_0442.jpeg',                             cap:'Punto de recogida — organización impecable' },
+  { f:'IMG_8586.jpeg',                             cap:'Manipulación profesional de carga' },
+  { f:'f1f1c206-dc33-44e3-8339-2acc128e1b93.jpeg', cap:'Operaciones de carga' },
+  { f:'IMG_9300.jpeg',                             cap:'Revisión final antes del despacho' },
+  { f:'IMG_2545.jpeg',                             cap:'Contenedor en tránsito' },
+  { f:'IMG_2305.jpeg',                             cap:'Mercancía organizada — listos para el siguiente envío' },
+].map(g => ({
+  src: CDN + g.f + '/:/rs=w:1100,cg:true',
+  thumb: CDN + g.f + '/:/rs=w:200,h:150,cg:true',
+  cap: g.cap
+}));
+
+let _gActive = 0;
+
+function galleryShow(idx) {
+  const n = (idx % GALLERY.length + GALLERY.length) % GALLERY.length;
+  _gActive = n;
+  const heroImg = document.getElementById('gv-img');
+  const cap     = document.getElementById('gv-cap');
+  const count   = document.getElementById('gv-count');
+  if (!heroImg) return;
+  // Smooth crossfade
+  heroImg.classList.add('gv-switching');
+  setTimeout(() => {
+    heroImg.src = GALLERY[n].src;
+    heroImg.alt = GALLERY[n].cap;
+    if (cap)   cap.textContent   = GALLERY[n].cap;
+    if (count) count.textContent = `${n + 1} / ${GALLERY.length}`;
+    heroImg.onload = () => heroImg.classList.remove('gv-switching');
+    heroImg.onerror = () => heroImg.classList.remove('gv-switching');
+  }, 120);
+  // Update active thumbnail + scroll into view
+  document.querySelectorAll('.gv-thumb').forEach((el, i) => {
+    el.classList.toggle('active', i === n);
+    if (i === n) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+function galleryNav(delta) { galleryShow(_gActive + delta); }
+
+function galleryHeroClick() {
+  window.lbOpen(GALLERY.map(g => ({ src: g.src, cap: g.cap })), _gActive);
+}
+
+// Build thumbnail strip on DOMReady
+(function initGallery() {
+  const strip = document.getElementById('gv-strip');
+  if (!strip) return;
+  GALLERY.forEach((photo, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'gv-thumb' + (i === 0 ? ' active' : '');
+    btn.setAttribute('role', 'listitem');
+    btn.setAttribute('tabindex', '0');
+    btn.setAttribute('aria-label', photo.cap);
+    btn.onclick = () => galleryShow(i);
+    btn.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); galleryShow(i); } };
+    const img = document.createElement('img');
+    img.src = photo.thumb;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.draggable = false;
+    btn.appendChild(img);
+    strip.appendChild(btn);
+  });
+  // Show first photo immediately (no transition)
+  const heroImg = document.getElementById('gv-img');
+  const cap     = document.getElementById('gv-cap');
+  const count   = document.getElementById('gv-count');
+  if (heroImg) { heroImg.src = GALLERY[0].src; heroImg.alt = GALLERY[0].cap; }
+  if (cap)   cap.textContent   = GALLERY[0].cap;
+  if (count) count.textContent = `1 / ${GALLERY.length}`;
 })();
 </script>
 
