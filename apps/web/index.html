@@ -7,7 +7,7 @@
   <title>Dominicano Express GmbH – Envíos Suiza → República Dominicana</title>
   <meta name="description" content="Envíos marítimos mensuales de Suiza a la República Dominicana. Puerta a puerta, seguro incluido. Más de 20 años de experiencia." />
   <meta property="og:title" content="Dominicano Express GmbH" />
-  <meta property="og:description" content="Tu enlace marítimo entre Suiza 🇨🇭 y República Dominicana 🇩🇴" />
+  <meta property="og:description" content="Tu enlace marítimo entre Suiza y República Dominicana" />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -201,9 +201,14 @@
     .flag-circle {
       width: 52px; height: 52px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px; background: rgba(255,255,255,.08);
-      flex-shrink: 0;
+      background: rgba(255,255,255,.08); flex-shrink: 0;
+      overflow: hidden;
     }
+    .flag-img { display: inline-block; vertical-align: middle; }
+    .flag-circle-img { width: 52px; height: 52px; object-fit: cover; border-radius: 50%; }
+    .trust-item .flag-img { width: 22px; height: 16px; border-radius: 2px; object-fit: cover; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+    .flag-stat { width: 48px; height: 34px; border-radius: 4px; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+    .flag-about { width: 52px; height: 36px; border-radius: 4px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
     .route-line {
       flex: 1; height: 2px; border-radius: 1px;
       background: linear-gradient(90deg, rgba(255,255,255,.2), var(--accent), rgba(255,255,255,.2));
@@ -392,7 +397,7 @@
       display: flex; align-items: center; gap: 20px;
       justify-content: center;
     }
-    .flag-big { font-size: 72px; line-height: 1; }
+    .flag-big { line-height: 1; }
     .route-arrow { font-size: 28px; color: var(--accent); }
 
     /* ── Affiliate ────────────────────────────────────────────────────────── */
@@ -672,16 +677,16 @@
           <div class="trust-item">📦 <span data-i18n="trust1"><strong>Contenedores</strong> mensuales</span></div>
           <div class="trust-item">🛡️ <span data-i18n="trust2"><strong>Seguro</strong> incluido</span></div>
           <div class="trust-item">📍 <span data-i18n="trust3">Puerta a puerta en <strong>toda RD</strong></span></div>
-          <div class="trust-item">🇨🇭 <span data-i18n="trust4">Recogida en <strong>toda Suiza</strong></span></div>
+          <div class="trust-item"><img src="/flags/ch.svg" alt="CH" class="flag-img" /> <span data-i18n="trust4">Recogida en <strong>toda Suiza</strong></span></div>
         </div>
       </div>
 
       <div class="hero-visual fade-in">
         <div class="hero-card">
           <div class="route-display">
-            <div class="flag-circle">🇨🇭</div>
+            <div class="flag-circle"><img src="/flags/ch.svg" alt="CH" class="flag-img flag-circle-img" /></div>
             <div class="route-line"><span class="route-ship">🚢</span></div>
-            <div class="flag-circle">🇩🇴</div>
+            <div class="flag-circle"><img src="/flags/do.svg" alt="DO" class="flag-img flag-circle-img" /></div>
           </div>
           <div class="stats-grid">
             <div class="stat-item">
@@ -877,11 +882,11 @@
         <div class="stat-desc" data-i18n="stat_year">salidas al año</div>
       </div>
       <div class="stat-box fade-in">
-        <span class="stat-big">🇨🇭</span>
+        <span class="stat-big"><img src="/flags/ch.svg" alt="CH" class="flag-img flag-stat" /></span>
         <div class="stat-desc" data-i18n="stat_ch">recogida en toda Suiza</div>
       </div>
       <div class="stat-box fade-in">
-        <span class="stat-big">🇩🇴</span>
+        <span class="stat-big"><img src="/flags/do.svg" alt="DO" class="flag-img flag-stat" /></span>
         <div class="stat-desc" data-i18n="stat_do">entrega en toda RD</div>
       </div>
     </div>
@@ -889,7 +894,7 @@
       <div class="about-text fade-in">
         <div class="section-label" style="color:#fbbf24" data-i18n="about_label">Sobre Nosotros</div>
         <h2 class="section-title" data-i18n="about_title">Empresa familiar con más de 20 años conectando familias</h2>
-        <p data-i18n="about_p1">Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza 🇨🇭 y la República Dominicana 🇩🇴.</p>
+        <p data-i18n="about_p1">Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza y la República Dominicana.</p>
         <p data-i18n="about_p2">Con más de 20 años de experiencia en el sector logístico, ofrecemos soluciones de transporte puerta a puerta, confiables, eficientes y profesionalmente estructuradas.</p>
         <div style="margin-top:32px">
           <a href="https://wa.me/41791999393" class="btn btn-wa" target="_blank" rel="noopener">
@@ -901,12 +906,12 @@
         <img src="https://img1.wsimg.com/isteam/ip/629f37cd-c809-43b5-b982-d1908f172a9b/9D65FE71-FA1E-4436-B4D4-5AE63DF81C2B.png/:/rs=w:700,cg:true" alt="Embalaje profesional" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
         <div style="padding:20px; display:flex; gap:24px; justify-content:center; background:rgba(255,255,255,.04);">
           <div style="text-align:center">
-            <div class="flag-big" style="font-size:28px">🇨🇭</div>
+            <img src="/flags/ch.svg" alt="CH" class="flag-img flag-about" />
             <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">Embrach, Suiza</div>
           </div>
           <div class="route-arrow" style="align-self:center">→</div>
           <div style="text-align:center">
-            <div class="flag-big" style="font-size:28px">🇩🇴</div>
+            <img src="/flags/do.svg" alt="DO" class="flag-img flag-about" />
             <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:6px">República Dominicana</div>
           </div>
         </div>
@@ -1205,7 +1210,7 @@ const T = {
     barril_footer:'Fabricados con materiales fuertes, resistentes al peso, humedad y manejo marítimo intensivo.',
     stat_exp:'años de experiencia', stat_year:'salidas al año', stat_ch:'recogida en toda Suiza', stat_do:'entrega en toda RD',
     about_label:'Sobre Nosotros', about_title:'Empresa familiar con más de 20 años conectando familias',
-    about_p1:'Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza 🇨🇭 y la República Dominicana 🇩🇴.',
+    about_p1:'Dominicano Express GmbH es una empresa familiar especializada en envíos marítimos entre Suiza y la República Dominicana.',
     about_p2:'Con más de 20 años de experiencia, ofrecemos soluciones de transporte puerta a puerta, confiables, eficientes y profesionalmente estructuradas.',
     about_cta:'Contáctanos →',
     aff_label:'Afiliación', aff_title:'Programa para Autónomos',
@@ -1279,7 +1284,7 @@ const T = {
     barril_footer:'Aus robusten Materialien, beständig gegen Gewicht, Feuchtigkeit und intensive Handhabung.',
     stat_exp:'Jahre Erfahrung', stat_year:'Abfahrten pro Jahr', stat_ch:'Abholung in der ganzen Schweiz', stat_do:'Zustellung in ganz DO',
     about_label:'Über uns', about_title:'Familienunternehmen seit über 20 Jahren',
-    about_p1:'Dominicano Express GmbH ist ein Familienunternehmen für Seefracht zwischen der Schweiz 🇨🇭 und der Dominikanischen Republik 🇩🇴.',
+    about_p1:'Dominicano Express GmbH ist ein Familienunternehmen für Seefracht zwischen der Schweiz und der Dominikanischen Republik.',
     about_p2:'Mit über 20 Jahren Erfahrung bieten wir zuverlässige, effiziente Tür-zu-Tür-Lösungen, professionell strukturiert.',
     about_cta:'Kontakt aufnehmen →',
     aff_label:'Partnerprogramm', aff_title:'Programm für Selbstständige',
@@ -1351,7 +1356,7 @@ const T = {
     barril_footer:'Strong, durable materials handle weight, humidity and heavy maritime handling.',
     stat_exp:'years of experience', stat_year:'departures per year', stat_ch:'pickup anywhere in Switzerland', stat_do:'delivery across DR',
     about_label:'About Us', about_title:'Family business connecting families for 20+ years',
-    about_p1:'Dominicano Express GmbH is a family-run company specialising in ocean freight between Switzerland 🇨🇭 and the Dominican Republic 🇩🇴.',
+    about_p1:'Dominicano Express GmbH is a family-run company specialising in ocean freight between Switzerland and the Dominican Republic.',
     about_p2:'With more than 20 years in logistics, we deliver reliable, efficient, professionally managed door-to-door services.',
     about_cta:'Contact us →',
     aff_label:'Affiliate Programme', aff_title:'Programme for Self-Employed',
