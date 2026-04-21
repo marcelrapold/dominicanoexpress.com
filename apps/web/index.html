@@ -861,6 +861,55 @@
     .wa-float:active { transform: scale(.93); }
     .wa-float svg { width: 28px; height: 28px; fill: #fff; }
 
+    /* ── Map ──────────────────────────────────────────────────────────────── */
+    .map-section {
+      position: relative; height: 380px; overflow: hidden;
+      background: var(--ink);
+    }
+    .map-section iframe {
+      width: 100%; height: 100%; border: 0; display: block;
+      filter: grayscale(0.3) contrast(1.05);
+    }
+    /* Left gradient fade to make card readable */
+    .map-section::before {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(90deg, rgba(12,16,33,.82) 0%, rgba(12,16,33,.55) 34%, transparent 60%);
+    }
+    @media (max-width: 700px) {
+      .map-section::before { background: linear-gradient(180deg, rgba(12,16,33,.9) 0%, rgba(12,16,33,.5) 45%, transparent 70%); }
+    }
+    .map-card {
+      position: absolute; top: 50%; left: 48px; transform: translateY(-50%);
+      z-index: 2; max-width: 290px;
+    }
+    @media (max-width: 700px) {
+      .map-card { top: 24px; left: 50%; transform: translateX(-50%); text-align: center; }
+    }
+    .map-card-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: #fbbf24; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .map-card-label svg { width: 13px; height: 13px; fill: #fbbf24; }
+    @media (max-width: 700px) { .map-card-label { justify-content: center; } }
+    .map-card h3 {
+      font-size: 20px; font-weight: 800; color: #fff;
+      letter-spacing: -.3px; line-height: 1.25; margin-bottom: 8px;
+    }
+    .map-card-addr {
+      font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 20px;
+    }
+    .map-nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff;
+      font-size: 13px; font-weight: 700;
+      padding: 10px 20px; border-radius: 8px;
+      text-decoration: none; transition: background .18s, transform .18s;
+      box-shadow: 0 4px 16px rgba(206,17,38,.35);
+    }
+    .map-nav-btn:hover { background: #b00d20; transform: translateY(-1px); }
+    .map-nav-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
     /* ── Footer ───────────────────────────────────────────────────────────── */
     footer {
       background: var(--ink); color: rgba(255,255,255,.6);
@@ -1838,6 +1887,38 @@
   </div>
 </section>
 
+<!-- ── Map ───────────────────────────────────────────────────────────────── -->
+<div class="map-section">
+  <iframe
+    src="https://maps.google.com/maps?q=Tannenstrasse+98,+8424+Embrach,+Schweiz&hl=de&z=15&output=embed"
+    title="Dominicano Express GmbH — Tannenstrasse 98, 8424 Embrach"
+    allowfullscreen
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    aria-label="Standort Dominicano Express GmbH auf Google Maps">
+  </iframe>
+  <div class="map-card">
+    <div class="map-card-label">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <span data-i18n="contact_addr_label">Dirección</span>
+    </div>
+    <h3>Dominicano Express GmbH</h3>
+    <p class="map-card-addr">
+      Tannenstrasse 98<br/>
+      8424 Embrach<br/>
+      Kanton Zürich, Schweiz
+    </p>
+    <a
+      href="https://www.google.com/maps/dir/?api=1&destination=Tannenstrasse+98,+8424+Embrach,+Schweiz"
+      target="_blank" rel="noopener"
+      class="map-nav-btn"
+      data-i18n="map_route_btn">
+      <svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      Route planen
+    </a>
+  </div>
+</div>
+
 <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
 <footer>
   <div class="container">
@@ -1987,6 +2068,7 @@ const T = {
     footer_desc:'Envíos marítimos mensuales entre Suiza y República Dominicana.',
     footer_col1:'Servicios', footer_col2:'Herramientas', footer_col3:'Legal',
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
+    map_route_btn:'Cómo llegar',
     footer_impressum:'Aviso legal', footer_privacy:'Privacidad', footer_agb:'Condiciones',
     cookie_text:'Usamos cookies esenciales.', cookie_accept:'Aceptar', cookie_decline:'Rechazar',
     cookie_privacy_link:'Política de privacidad',
@@ -2084,6 +2166,7 @@ const T = {
     footer_desc:'Monatliche Seefracht zwischen der Schweiz und der Dominikanischen Republik.',
     footer_col1:'Leistungen', footer_col2:'Tools', footer_col3:'Rechtliches',
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
+    map_route_btn:'Route planen',
     footer_impressum:'Impressum', footer_privacy:'Datenschutz', footer_agb:'AGB',
     cookie_text:'Wir verwenden notwendige Cookies.', cookie_accept:'Akzeptieren', cookie_decline:'Ablehnen',
     cookie_privacy_link:'Datenschutzhinweis',
@@ -2181,6 +2264,7 @@ const T = {
     footer_desc:'Monthly ocean freight between Switzerland and the Dominican Republic.',
     footer_col1:'Services', footer_col2:'Tools', footer_col3:'Legal',
     footer_scanner:'🪪 ID Scanner', footer_wa:'WhatsApp',
+    map_route_btn:'Get directions',
     footer_impressum:'Legal notice', footer_privacy:'Privacy', footer_agb:'Terms',
     cookie_text:'We use essential cookies.', cookie_accept:'Accept', cookie_decline:'Decline',
     cookie_privacy_link:'Privacy policy',
