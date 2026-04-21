@@ -369,6 +369,13 @@
       color: #fbbf24; margin-bottom: 20px;
     }
     .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; }
+    .hero-logo-hero {
+      display: block;
+      height: 72px; width: auto;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.45));
+    }
+    @media (max-width: 600px) { .hero-logo-hero { height: 52px; margin-bottom: 22px; } }
     .hero h1 {
       font-size: clamp(28px, 4.5vw, 52px); font-weight: 900;
       color: #fff; line-height: 1.1; letter-spacing: -.8px;
@@ -1079,6 +1086,7 @@
   <div class="container">
     <div class="hero-inner">
       <div class="hero-content fade-in">
+        <img src="/logo-white.svg" alt="Dominicano Express" class="hero-logo-hero" width="360" height="72" />
         <div class="hero-eyebrow">
           <span class="eyebrow-dot"></span>
           <span data-i18n="hero_eyebrow">Empresa familiar · Más de 20 años de experiencia</span>
