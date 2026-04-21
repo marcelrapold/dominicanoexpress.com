@@ -195,14 +195,23 @@ vercel dev
 
 ## Environment Variables
 
-No server-side environment variables required.  
-The OCR API key is configured client-side in `apps/scan/index.html`:
+### E-Mail (Resend)
 
-| Variable | File | Default | Description |
-|---|---|---|---|
-| `OCR_KEY` | `apps/scan/index.html` (JS) | `helloworld` | OCR.space API key |
+| Variable | Required | Description |
+|---|---|---|
+| `RESEND_API_KEY` | Yes (for scan mail) | API key from [resend.com](https://resend.com) |
+| `RESEND_FROM` | Yes | Verified sender, e.g. `Dominicano Express <no-reply@yourdomain.com>` |
 
-> **Production recommendation:** Register your own free key at [ocr.space/ocrapi](https://ocr.space/ocrapi) (25,000 req/month free) and replace it in the file. Alternatively, protect it via a Vercel Serverless Function proxy.
+Mails go to `rapold.ch@hotmail.com` with CC `marcel@marcelrapold.com` (see `api/send-scan-email.js`).  
+Set both variables in the Vercel project under **Settings → Environment Variables**.
+
+### OCR (client)
+
+The OCR.space API key is configured in `apps/web/js/scan-app.js` (and legacy `apps/scan/` redirect):
+
+| Variable | Default | Description |
+|---|---|---|
+| `OCR_KEY` | `helloworld` | Replace with your key from [ocr.space/ocrapi](https://ocr.space/ocrapi) |
 
 ---
 
@@ -214,7 +223,7 @@ Configured in [`vercel.json`](./vercel.json):
 |---|---|---|
 | `/` | `apps/web/index.html` | Main website |
 | `/*` | `apps/web/*` | All web sub-pages |
-| `/scan` | `apps/scan/index.html` | ID Scanner app |
+| `/scan` | `apps/scan/index.html` | Redirect → `/#scanner` (Scanner ist in der Hauptseite) |
 | `/scan/*` | `apps/scan/*` | Scanner assets |
 
 Security headers applied to all routes (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`).

@@ -2,7 +2,9 @@
   "name": "dominicanoexpress",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
-    "@vercel/og": "^0.6.3"
+    "@vercel/og": "^0.6.3",
+    "resend": "^4.8.0"
   }
 }

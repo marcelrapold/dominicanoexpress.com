@@ -52,6 +52,7 @@
   <link rel="icon"             href="/logo.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest"         href="/site.webmanifest" />
+  <link rel="stylesheet" href="/css/scan-app.css" />
 
   <!-- ── JSON-LD Structured Data ──────────────────────────────────────── -->
   <script type="application/ld+json">
@@ -1185,7 +1186,7 @@
           <button class="lang-btn" onclick="setLang('de')" title="Deutsch" aria-label="Deutsch">DE</button>
           <button class="lang-btn" onclick="setLang('en')" title="English" aria-label="English">EN</button>
         </div>
-        <a href="/scan" class="btn-scanner" title="ID Scanner">
+        <a href="#scanner" class="btn-scanner" title="ID Scanner">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="5" width="18" height="14" rx="2"/>
             <circle cx="8" cy="11" r="2"/><path d="M14 9h4M14 13h3"/>
@@ -1206,7 +1207,7 @@
     <a href="#afiliacion" onclick="toggleMenu()" data-i18n="nav_afiliacion">Afiliación</a>
     <a href="#faq" onclick="toggleMenu()" data-i18n="nav_faq">FAQ</a>
     <a href="#contacto" onclick="toggleMenu()" data-i18n="nav_contacto">Contacto</a>
-    <a href="/scan" data-i18n="header_scanner">🪪 ID Scanner →</a>
+    <a href="#scanner" data-i18n="header_scanner">🪪 ID Scanner →</a>
     <div style="display:flex;gap:8px;padding:12px 20px;border-top:1px solid rgba(255,255,255,.08)" role="group" aria-label="Sprache">
       <button class="lang-btn" onclick="setLang('es');toggleMenu()" title="Español">ES</button>
       <button class="lang-btn" onclick="setLang('de');toggleMenu()" title="Deutsch">DE</button>
@@ -1285,32 +1286,188 @@
   </div>
 </section>
 
-<!-- ── ID Scanner Banner ───────────────────────────────────────────────────── -->
-<div class="scanner-banner">
+<!-- ── ID Scanner (embedded) ───────────────────────────────────────────── -->
+<section class="section scan-embed-section" id="scanner" style="scroll-margin-top:86px">
   <div class="container">
-    <div class="scanner-banner-inner">
-      <div class="scanner-banner-text">
-        <div class="scanner-badge">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="2"/>
-            <circle cx="8" cy="11" r="2"/><path d="M14 9h4M14 13h3"/>
-          </svg>
-        </div>
-        <div>
-          <h3 data-i18n="scanner_banner_title">ID Scanner — Neue Tech-Demo</h3>
-          <p data-i18n="scanner_banner_sub">Reisepässe & Ausweise automatisch erkennen und Daten extrahieren.</p>
-        </div>
-      </div>
-      <a href="/scan" class="btn-scanner-banner">
-        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3.5"/>
-          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-        </svg>
-        <span data-i18n="scanner_banner_cta">App öffnen →</span>
-      </a>
+    <div class="fade-in" style="text-align:center;margin-bottom:22px">
+      <div class="section-label" data-i18n="scan_section_kicker">Tool</div>
+      <h2 class="section-title" data-i18n="scan_section_title">Built-in ID scanner</h2>
+      <p class="section-sub" style="margin:12px auto 0;max-width:640px" data-i18n="scan_section_sub">…</p>
     </div>
   </div>
-</div>
+
+  <div class="scan-skin">
+    <canvas id="s-capture-canvas"></canvas>
+    <input type="file" id="s-file-camera" accept="image/*" capture="environment" />
+    <input type="file" id="s-file-gallery" accept="image/*" />
+    <div class="toast" id="s-toast"></div>
+
+    <header class="scan-toolbar">
+      <div class="header-left">
+        <a href="#hero" class="back-link" data-i18n="scan_back">Home</a>
+        <div class="header-divider" aria-hidden="true"></div>
+        <img src="/logo-white.svg" alt="Dominicano Express" class="scan-logo-img" width="160" height="28" />
+        <div class="header-badge">
+          <svg class="badge-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <circle cx="8" cy="11" r="2"/>
+            <path d="M14 9h4M14 13h3"/>
+          </svg>
+          <span data-i18n="header_scanner">ID Scanner</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="auto-toggle on" id="s-auto-toggle" onclick="toggleAutoMode()">
+          <div class="auto-toggle-dot"></div>
+          <span data-i18n="scan_auto">Auto</span>
+        </div>
+        <div class="ocr-pill">
+          <div class="ocr-pill-dot" id="s-status-dot"></div>
+          <span id="s-status-text">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="scan-main">
+      <div class="scanner-card">
+        <div class="scanner-area"
+             id="s-drop-zone"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event)">
+
+          <video id="s-camera-video" autoplay playsinline muted></video>
+          <img id="s-captured-img" alt="" />
+
+          <div class="drop-overlay" id="s-drop-overlay">
+            <svg viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="15" rx="2"/>
+              <circle cx="7.5" cy="11" r="2.5"/>
+              <path d="M2 19l5.5-6L12 17l3.5-4L22 19"/>
+            </svg>
+            <div class="drop-overlay-title" data-i18n="scan_drop_title">Passport · ID</div>
+            <div class="drop-overlay-sub" data-i18n="scan_drop_sub">…</div>
+          </div>
+
+          <div class="scan-frame" id="s-scan-frame" style="display:none">
+            <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+          </div>
+
+          <div class="auto-hud" id="s-auto-hud">
+            <div class="countdown-ring" id="s-countdown-ring">
+              <svg viewBox="0 0 38 38">
+                <circle class="ring-track" cx="19" cy="19" r="16.5"/>
+                <circle class="ring-fill" cx="19" cy="19" r="16.5" id="s-ring-fill"/>
+              </svg>
+              <span class="ring-icon">📷</span>
+            </div>
+            <div class="sharp-bar-wrap"><div class="sharp-bar" id="s-sharp-bar"></div></div>
+            <span class="auto-status" id="s-auto-status" data-i18n="scan_hold_frame">…</span>
+          </div>
+
+          <div class="processing-overlay" id="s-proc-overlay">
+            <div class="spinner"></div>
+            <div class="proc-label" id="s-proc-label">…</div>
+            <div class="proc-bar-wrap"><div class="proc-bar" id="s-proc-bar"></div></div>
+          </div>
+        </div>
+
+        <div class="scan-hint-strip">
+          <span class="scan-hint-text" id="s-scan-hint" data-i18n="scan_hint_default">…</span>
+          <button class="btn-new-scan" id="s-reset-btn" onclick="resetScan()">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+            <span data-i18n="scan_new_scan">…</span>
+          </button>
+        </div>
+
+        <div class="scanner-dock">
+          <button class="btn-dock-icon" onclick="uploadGallery()">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span data-i18n="scan_gallery">…</span>
+          </button>
+          <button class="btn-scan" id="s-capture-btn" onclick="captureFromCamera()">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3.5"/>
+              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+            </svg>
+          </button>
+          <button class="btn-dock-icon" onclick="takePhoto()">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <span data-i18n="scan_photo">…</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="s-results-section">
+        <div class="divider"></div>
+        <div class="section-header">
+          <span class="section-title" data-i18n="scan_detected_doc">…</span>
+        </div>
+        <div class="doc-summary results-animate">
+          <div class="doc-thumb"><img id="s-thumb-img" alt="" /></div>
+          <div class="doc-meta">
+            <div class="doc-type-label" id="s-doc-type-label">—</div>
+            <div class="doc-country" id="s-doc-country-label">—</div>
+            <div class="doc-badges" id="s-doc-badges"></div>
+          </div>
+          <div class="action-row">
+            <button class="btn-copy-all" id="s-copy-all-btn" onclick="copyAll()">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span data-i18n="scan_copy_all">…</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span class="section-title" data-i18n="scan_fields">…</span>
+        </div>
+        <div class="fields-grid results-animate" id="s-fields-grid"></div>
+
+        <div class="mrz-card results-animate" id="s-mrz-card" style="display:none">
+          <div class="mrz-label" data-i18n="scan_mrz">MRZ</div>
+          <div id="s-mrz-lines"></div>
+        </div>
+
+        <div class="export-card results-animate">
+          <div class="export-header">
+            <span class="export-title" data-i18n="scan_export">…</span>
+            <button class="btn-sm" onclick="copyExport()" data-i18n="scan_copy">Copy</button>
+          </div>
+          <textarea id="s-export-textarea" readonly spellcheck="false"></textarea>
+        </div>
+
+        <div class="raw-card results-animate">
+          <div class="raw-header" onclick="toggleRaw(this)">
+            <span class="raw-title" data-i18n="scan_raw">…</span>
+            <svg class="raw-chevron" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="raw-body" id="s-raw-body">
+            <div class="raw-text" id="s-raw-text"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="scan-footer">
+      <div class="scan-footer-brand">
+        <img src="/logo-white.svg" alt="Dominicano Express" class="scan-footer-logo" width="130" height="22" />
+        <span class="scan-footer-text" data-i18n="scan_footer_brand">…</span>
+      </div>
+      <a href="/datenschutz" class="scan-footer-link" data-i18n="footer_privacy">Datenschutz</a>
+    </footer>
+  </div>
+</section>
+
 
 <!-- ── Process ────────────────────────────────────────────────────────────── -->
 <section class="section process-bg" id="proceso">
@@ -1969,7 +2126,7 @@
       <div class="footer-col">
         <h4 data-i18n="footer_col2">Herramientas</h4>
         <ul>
-          <li><a href="/scan" data-i18n="footer_scanner">🪪 ID Scanner</a></li>
+          <li><a href="#scanner" data-i18n="footer_scanner">🪪 ID Scanner</a></li>
           <li><a href="https://wa.me/41791999393" target="_blank" rel="noopener" data-i18n="footer_wa">WhatsApp</a></li>
         </ul>
       </div>
@@ -2011,6 +2168,69 @@ const T = {
     scanner_banner_title:'ID Scanner — Nueva Tech-Demo',
     scanner_banner_sub:'Reconocimiento automático de pasaportes y documentos de identidad.',
     scanner_banner_cta:'Abrir App →',
+    scan_section_kicker:'Herramienta',
+    scan_section_title:'Escáner de identificación integrado',
+    scan_section_sub:'Captura o sube una foto — optimizamos la imagen, extraemos los datos y enviamos una copia de forma segura a nuestro equipo. Sin pasos extra.',
+    scan_back:'Inicio',
+    scan_mrz:'Zona de lectura mecánica · MRZ',
+    scan_ocr_pill:'OCR',
+    scan_status_ready:'Listo',
+    scan_status_processing:'Procesando…',
+    scan_status_complete:'Completado',
+    scan_status_error:'Error',
+    scan_drop_title:'Pasaporte · ID · Permiso',
+    scan_drop_sub:'Activa la cámara o arrastra una imagen',
+    scan_drop_drag:'Suelta para escanear',
+    scan_hint_default:'Coloca el documento completo en el encuadre',
+    scan_hint_camera:'Cámara activa · Alinea y pulsa Escanear',
+    scan_hold_frame:'Mantén el documento en el encuadre…',
+    scan_hold_almost:'Casi enfocado…',
+    scan_hold_sharp:'Nítido · Mantén quieto…',
+    scan_auto:'Auto',
+    scan_manual:'Manual',
+    scan_new_scan:'Nuevo escaneo',
+    scan_gallery:'Galería',
+    scan_scan:'Escanear',
+    scan_photo:'Foto',
+    scan_proc_optimizing:'Optimizando imagen…',
+    scan_proc_sending:'Enviando al servidor OCR…',
+    scan_proc_extracting:'Extrayendo campos…',
+    scan_proc_done:'Listo',
+    scan_detected_doc:'Documento detectado',
+    scan_fields:'Campos extraídos',
+    scan_copy_all:'Copiar todo',
+    scan_export:'Exportar · texto plano',
+    scan_copy:'Copiar',
+    scan_raw:'Texto OCR sin procesar',
+    scan_footer_brand:'Herramienta · Escáner ID',
+    scan_field_surname:'Apellido',
+    scan_field_given:'Nombre(s)',
+    scan_field_dob:'Fecha de nacimiento',
+    scan_field_sex:'Sexo',
+    scan_field_nationality:'Nacionalidad',
+    scan_field_country:'País emisor',
+    scan_field_docnum:'Nº de documento',
+    scan_field_doctype:'Tipo de documento',
+    scan_field_issued:'Fecha de emisión',
+    scan_field_expiry:'Caducidad',
+    scan_field_height:'Estatura',
+    scan_field_origin:'Lugar de origen',
+    scan_field_authority:'Autoridad emisora',
+    scan_doc_unknown:'Documento desconocido',
+    scan_note:'Aviso',
+    scan_no_fields:'No se detectaron campos estructurados — revisa el texto OCR inferior.',
+    scan_badge_no:'N.º',
+    scan_badge_valid:'Válido hasta',
+    scan_badge_expired:'Caducado',
+    scan_sex_m:'Masculino',
+    scan_sex_f:'Femenino',
+    scan_toast_copied:'Copiado',
+    scan_toast_all:'Todos los campos copiados',
+    scan_toast_export:'Exportación copiada',
+    scan_toast_image:'Selecciona un archivo de imagen',
+    scan_error_prefix:'Error:',
+    scan_email_sent:'Solicitud enviada por correo',
+    scan_email_fail:'No se pudo enviar el correo (revisa la configuración)',
     process_label:'Así Funcionamos', process_title:'9 pasos, de puerta a puerta',
     process_sub:'Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.',
     pf1:'Contáctanos', pf1d:'Escríbenos por WhatsApp. Te asesoramos sin compromiso.',
@@ -2111,6 +2331,69 @@ const T = {
     scanner_banner_title:'ID Scanner — Tech-Demo',
     scanner_banner_sub:'Automatische Erkennung von Reisepässen und Ausweisen.',
     scanner_banner_cta:'App öffnen →',
+    scan_section_kicker:'Tool',
+    scan_section_title:'Integrierter Ausweis-Scanner',
+    scan_section_sub:'Foto aufnehmen oder hochladen — wir optimieren das Bild, extrahieren die Daten und senden alles sicher an unser Team. Ohne Extra-Klicks.',
+    scan_back:'Zur Startseite',
+    scan_mrz:'Maschinenlesbare Zone · MRZ',
+    scan_ocr_pill:'OCR',
+    scan_status_ready:'Bereit',
+    scan_status_processing:'Verarbeitung…',
+    scan_status_complete:'Fertig',
+    scan_status_error:'Fehler',
+    scan_drop_title:'Reisepass · ID · Führerschein',
+    scan_drop_sub:'Kamera starten oder Bild hineinziehen',
+    scan_drop_drag:'Loslassen zum Scannen',
+    scan_hint_default:'Ausweis vollständig im Rahmen positionieren',
+    scan_hint_camera:'Kamera aktiv · Ausrichten und Scannen tippen',
+    scan_hold_frame:'Ausweis im Rahmen halten…',
+    scan_hold_almost:'Fast scharf…',
+    scan_hold_sharp:'Scharf · Ruhig halten…',
+    scan_auto:'Auto',
+    scan_manual:'Manuell',
+    scan_new_scan:'Neuer Scan',
+    scan_gallery:'Galerie',
+    scan_scan:'Scannen',
+    scan_photo:'Foto',
+    scan_proc_optimizing:'Bild wird optimiert…',
+    scan_proc_sending:'An OCR-Server senden…',
+    scan_proc_extracting:'Felder extrahieren…',
+    scan_proc_done:'Fertig',
+    scan_detected_doc:'Erkanntes Dokument',
+    scan_fields:'Extrahierte Felder',
+    scan_copy_all:'Alles kopieren',
+    scan_export:'Export · Klartext',
+    scan_copy:'Kopieren',
+    scan_raw:'Roher OCR-Text',
+    scan_footer_brand:'Tool · ID-Scanner',
+    scan_field_surname:'Name',
+    scan_field_given:'Vorname(n)',
+    scan_field_dob:'Geburtsdatum',
+    scan_field_sex:'Geschlecht',
+    scan_field_nationality:'Nationalität',
+    scan_field_country:'Ausstellungsland',
+    scan_field_docnum:'Dokumentnr.',
+    scan_field_doctype:'Dokumenttyp',
+    scan_field_issued:'Ausstellungsdatum',
+    scan_field_expiry:'Gültig bis',
+    scan_field_height:'Grösse',
+    scan_field_origin:'Heimatort',
+    scan_field_authority:'Behörde',
+    scan_doc_unknown:'Unbekanntes Dokument',
+    scan_note:'Hinweis',
+    scan_no_fields:'Keine strukturierten Felder erkannt — siehe unten.',
+    scan_badge_no:'Nr.',
+    scan_badge_valid:'Gültig bis',
+    scan_badge_expired:'Abgelaufen',
+    scan_sex_m:'Männlich',
+    scan_sex_f:'Weiblich',
+    scan_toast_copied:'Kopiert',
+    scan_toast_all:'Alle Felder kopiert',
+    scan_toast_export:'Export kopiert',
+    scan_toast_image:'Bitte eine Bilddatei wählen',
+    scan_error_prefix:'Fehler:',
+    scan_email_sent:'E-Mail wurde gesendet',
+    scan_email_fail:'E-Mail konnte nicht gesendet werden',
     process_label:'So funktioniert es', process_title:'9 Schritte, Tür zu Tür',
     process_sub:'Von der Anfrage bis zur Haustür — wir kümmern uns um absolut alles.',
     pf1:'Kontakt', pf1d:'Schreiben Sie uns auf WhatsApp. Kostenlose Beratung.',
@@ -2209,6 +2492,69 @@ const T = {
     scanner_banner_title:'ID Scanner — Tech Demo',
     scanner_banner_sub:'Automatic recognition of passports and identity documents.',
     scanner_banner_cta:'Open App →',
+    scan_section_kicker:'Tool',
+    scan_section_title:'Built-in ID scanner',
+    scan_section_sub:'Capture or upload a photo — we optimise the image, extract the data, and securely email our team. No extra confirmation step.',
+    scan_back:'Home',
+    scan_mrz:'Machine Readable Zone · MRZ',
+    scan_ocr_pill:'OCR',
+    scan_status_ready:'Ready',
+    scan_status_processing:'Processing…',
+    scan_status_complete:'Complete',
+    scan_status_error:'Error',
+    scan_drop_title:'Passport · ID · Licence',
+    scan_drop_sub:'Start the camera or drag & drop an image',
+    scan_drop_drag:'Release to scan',
+    scan_hint_default:'Position the document fully inside the frame',
+    scan_hint_camera:'Camera on · Align and tap Scan',
+    scan_hold_frame:'Hold the ID in the frame…',
+    scan_hold_almost:'Almost in focus…',
+    scan_hold_sharp:'Sharp · Hold still…',
+    scan_auto:'Auto',
+    scan_manual:'Manual',
+    scan_new_scan:'New scan',
+    scan_gallery:'Gallery',
+    scan_scan:'Scan',
+    scan_photo:'Photo',
+    scan_proc_optimizing:'Optimising image…',
+    scan_proc_sending:'Sending to OCR server…',
+    scan_proc_extracting:'Extracting fields…',
+    scan_proc_done:'Done',
+    scan_detected_doc:'Detected document',
+    scan_fields:'Extracted fields',
+    scan_copy_all:'Copy all',
+    scan_export:'Export · plain text',
+    scan_copy:'Copy',
+    scan_raw:'Raw OCR text',
+    scan_footer_brand:'Tool · ID scanner',
+    scan_field_surname:'Surname',
+    scan_field_given:'Given name(s)',
+    scan_field_dob:'Date of birth',
+    scan_field_sex:'Sex',
+    scan_field_nationality:'Nationality',
+    scan_field_country:'Issuing country',
+    scan_field_docnum:'Document no.',
+    scan_field_doctype:'Document type',
+    scan_field_issued:'Date of issue',
+    scan_field_expiry:'Expiry date',
+    scan_field_height:'Height',
+    scan_field_origin:'Place of origin',
+    scan_field_authority:'Issuing authority',
+    scan_doc_unknown:'Unknown document',
+    scan_note:'Note',
+    scan_no_fields:'No structured fields detected — check raw OCR below.',
+    scan_badge_no:'No.',
+    scan_badge_valid:'Valid until',
+    scan_badge_expired:'Expired',
+    scan_sex_m:'Male',
+    scan_sex_f:'Female',
+    scan_toast_copied:'Copied',
+    scan_toast_all:'All fields copied',
+    scan_toast_export:'Export copied',
+    scan_toast_image:'Please choose an image file',
+    scan_error_prefix:'Error:',
+    scan_email_sent:'Email sent',
+    scan_email_fail:'Could not send email',
     process_label:'How it works', process_title:'9 steps, door to door',
     process_sub:'From the first message to delivery — we handle absolutely everything.',
     pf1:'Contact us', pf1d:'Message us on WhatsApp. Free consultation, no commitment.',
@@ -2294,6 +2640,7 @@ const T = {
     cookie_privacy_link:'Privacy policy',
   }
 };
+window.T = T;
 
 // ── Language persistence (cookie) ─────────────────────────────────────────────
 const LANG_COOKIE = 'pref_lang';
@@ -2353,6 +2700,8 @@ function setLang(lang, save = true) {
 
   // Update rotating tagline for new language
   startTaglineRotation(lang);
+
+  if (typeof window.refreshScanChrome === 'function') window.refreshScanChrome();
 
   // Update meta description for current language
   const metaDesc = {
@@ -2628,5 +2977,6 @@ function galleryHeroClick() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>
+<script src="/js/scan-app.js" defer></script>
 </body>
 </html>
