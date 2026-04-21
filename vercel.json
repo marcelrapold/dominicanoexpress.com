@@ -4,8 +4,7 @@
   "rewrites": [
     { "source": "/scan",        "destination": "/apps/scan/index.html" },
     { "source": "/scan/:path*", "destination": "/apps/scan/:path*"     },
-    { "source": "/",            "destination": "/apps/web/index.html"  },
-    { "source": "/:path*",      "destination": "/apps/web/:path*"      }
+    { "source": "/(.*)",        "destination": "/apps/web/index.html"  }
   ],
   "headers": [
     {
