@@ -468,36 +468,68 @@
     .stat-val { font-size: 24px; font-weight: 900; color: #fbbf24; display: block; }
     .stat-label { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; display: block; letter-spacing: .3px; }
 
-    /* ── Scanner Banner ───────────────────────────────────────────────────── */
-    .scanner-banner {
-      background: linear-gradient(90deg, var(--primary) 0%, #1a3a7a 100%);
-      border-top: 3px solid var(--accent);
+    /* ── ID Scanner Popup (Sub-App) ───────────────────────────────────────── */
+    body.scan-popup-open { overflow: hidden; touch-action: none; }
+    .scan-popup-root {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+      pointer-events: none; opacity: 0; visibility: hidden;
+      transition: opacity .22s ease, visibility .22s;
     }
-    .scanner-banner-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 20px; padding: 20px 0; flex-wrap: wrap;
+    .scan-popup-root.is-open {
+      pointer-events: auto; opacity: 1; visibility: visible;
     }
-    .scanner-banner-text { display: flex; align-items: center; gap: 14px; }
-    .scanner-badge {
-      width: 44px; height: 44px; border-radius: 10px;
-      background: var(--accent); display: flex; align-items: center; justify-content: center;
+    .scan-popup-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .scan-popup-panel {
+      position: relative; z-index: 1;
+      width: 100%; max-width: min(920px, 100vw - 16px);
+      max-height: min(100dvh - 16px, 100vh - 16px);
+      display: flex; flex-direction: column;
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      transform: translateY(14px) scale(0.98);
+      transition: transform .26s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .scan-popup-root.is-open .scan-popup-panel { transform: translateY(0) scale(1); }
+    .scan-popup-topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, #00205B 0%, #0a2f7a 100%);
+      border-bottom: 3px solid var(--accent, #CE1126);
       flex-shrink: 0;
     }
-    .scanner-badge svg { width: 22px; height: 22px; stroke: #fff; fill: none; }
-    .scanner-banner h3 { font-size: 15px; font-weight: 700; color: #fff; }
-    .scanner-banner p { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 2px; }
-    .btn-scanner-banner {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 22px; min-height: 44px; border-radius: 10px;
-      background: var(--accent); color: #fff; border: none;
-      font-size: 14px; font-weight: 700; text-decoration: none;
-      box-shadow: 0 4px 16px rgba(206,17,38,.35); white-space: nowrap;
-      transition: background .15s, transform .1s; touch-action: manipulation;
-      flex-shrink: 0;
+    .scan-popup-title {
+      font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.02em;
+      padding-left: 2px; line-height: 1.25;
     }
-    .btn-scanner-banner:hover { background: var(--accent-dk); }
-    .btn-scanner-banner:active { transform: scale(.96); }
-    .btn-scanner-banner svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+    .scan-popup-close {
+      width: 42px; height: 42px; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, transform .1s;
+    }
+    .scan-popup-close:hover { background: rgba(255, 255, 255, 0.18); }
+    .scan-popup-close:active { transform: scale(0.94); }
+    .scan-popup-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .scan-popup-panel .scan-skin {
+      flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch;
+    }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    #scanner button.back-link {
+      font: inherit; color: inherit; background: none; border: none; cursor: pointer;
+      text-decoration: none; padding: 4px 0;
+    }
 
     /* ── Process ──────────────────────────────────────────────────────────── */
     .process-bg { background: var(--cream); }
@@ -1186,7 +1218,7 @@
           <button class="lang-btn" onclick="setLang('de')" title="Deutsch" aria-label="Deutsch">DE</button>
           <button class="lang-btn" onclick="setLang('en')" title="English" aria-label="English">EN</button>
         </div>
-        <a href="#scanner" class="btn-scanner" title="ID Scanner">
+        <a href="#scanner" class="btn-scanner" title="ID Scanner" aria-haspopup="dialog" aria-controls="scan-popup-root">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="5" width="18" height="14" rx="2"/>
             <circle cx="8" cy="11" r="2"/><path d="M14 9h4M14 13h3"/>
@@ -1207,7 +1239,7 @@
     <a href="#afiliacion" onclick="toggleMenu()" data-i18n="nav_afiliacion">Afiliación</a>
     <a href="#faq" onclick="toggleMenu()" data-i18n="nav_faq">FAQ</a>
     <a href="#contacto" onclick="toggleMenu()" data-i18n="nav_contacto">Contacto</a>
-    <a href="#scanner" data-i18n="header_scanner">🪪 ID Scanner →</a>
+    <a href="#scanner" data-i18n="header_scanner" aria-haspopup="dialog">🪪 ID Scanner →</a>
     <div style="display:flex;gap:8px;padding:12px 20px;border-top:1px solid rgba(255,255,255,.08)" role="group" aria-label="Sprache">
       <button class="lang-btn" onclick="setLang('es');toggleMenu()" title="Español">ES</button>
       <button class="lang-btn" onclick="setLang('de');toggleMenu()" title="Deutsch">DE</button>
@@ -1285,189 +1317,6 @@
     </div>
   </div>
 </section>
-
-<!-- ── ID Scanner (embedded) ───────────────────────────────────────────── -->
-<section class="section scan-embed-section" id="scanner" style="scroll-margin-top:86px">
-  <div class="container">
-    <div class="fade-in" style="text-align:center;margin-bottom:22px">
-      <div class="section-label" data-i18n="scan_section_kicker">Tool</div>
-      <h2 class="section-title" data-i18n="scan_section_title">Built-in ID scanner</h2>
-      <p class="section-sub" style="margin:12px auto 0;max-width:640px" data-i18n="scan_section_sub">…</p>
-    </div>
-  </div>
-
-  <div class="scan-skin">
-    <canvas id="s-capture-canvas"></canvas>
-    <input type="file" id="s-file-camera" accept="image/*" capture="environment" />
-    <input type="file" id="s-file-gallery" accept="image/*" />
-    <div class="toast" id="s-toast"></div>
-
-    <header class="scan-toolbar">
-      <div class="header-left">
-        <a href="#hero" class="back-link" data-i18n="scan_back">Home</a>
-        <div class="header-divider" aria-hidden="true"></div>
-        <img src="/logo-white.svg" alt="Dominicano Express" class="scan-logo-img" width="160" height="28" />
-        <div class="header-badge">
-          <svg class="badge-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="2"/>
-            <circle cx="8" cy="11" r="2"/>
-            <path d="M14 9h4M14 13h3"/>
-          </svg>
-          <span data-i18n="header_scanner">ID Scanner</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="auto-toggle on" id="s-auto-toggle" onclick="toggleAutoMode()">
-          <div class="auto-toggle-dot"></div>
-          <span data-i18n="scan_auto">Auto</span>
-        </div>
-        <div class="ocr-pill">
-          <div class="ocr-pill-dot" id="s-status-dot"></div>
-          <span id="s-status-text">Ready</span>
-        </div>
-      </div>
-    </header>
-
-    <main class="scan-main">
-      <div class="scanner-card">
-        <div class="scanner-area"
-             id="s-drop-zone"
-             ondragover="handleDragOver(event)"
-             ondragleave="handleDragLeave(event)"
-             ondrop="handleDrop(event)">
-
-          <video id="s-camera-video" autoplay playsinline muted></video>
-          <img id="s-captured-img" alt="" />
-
-          <div class="drop-overlay" id="s-drop-overlay">
-            <svg viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="5" width="20" height="15" rx="2"/>
-              <circle cx="7.5" cy="11" r="2.5"/>
-              <path d="M2 19l5.5-6L12 17l3.5-4L22 19"/>
-            </svg>
-            <div class="drop-overlay-title" data-i18n="scan_drop_title">Passport · ID</div>
-            <div class="drop-overlay-sub" data-i18n="scan_drop_sub">…</div>
-          </div>
-
-          <div class="scan-frame" id="s-scan-frame" style="display:none">
-            <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
-            <div class="scan-corner bl"></div><div class="scan-corner br"></div>
-          </div>
-
-          <div class="auto-hud" id="s-auto-hud">
-            <div class="countdown-ring" id="s-countdown-ring">
-              <svg viewBox="0 0 38 38">
-                <circle class="ring-track" cx="19" cy="19" r="16.5"/>
-                <circle class="ring-fill" cx="19" cy="19" r="16.5" id="s-ring-fill"/>
-              </svg>
-              <span class="ring-icon">📷</span>
-            </div>
-            <div class="sharp-bar-wrap"><div class="sharp-bar" id="s-sharp-bar"></div></div>
-            <span class="auto-status" id="s-auto-status" data-i18n="scan_hold_frame">…</span>
-          </div>
-
-          <div class="processing-overlay" id="s-proc-overlay">
-            <div class="spinner"></div>
-            <div class="proc-label" id="s-proc-label">…</div>
-            <div class="proc-bar-wrap"><div class="proc-bar" id="s-proc-bar"></div></div>
-          </div>
-        </div>
-
-        <div class="scan-hint-strip">
-          <span class="scan-hint-text" id="s-scan-hint" data-i18n="scan_hint_default">…</span>
-          <button class="btn-new-scan" id="s-reset-btn" onclick="resetScan()">
-            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
-            <span data-i18n="scan_new_scan">…</span>
-          </button>
-        </div>
-
-        <div class="scanner-dock">
-          <button class="btn-dock-icon" onclick="uploadGallery()">
-            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
-            </svg>
-            <span data-i18n="scan_gallery">…</span>
-          </button>
-          <button class="btn-scan" id="s-capture-btn" onclick="captureFromCamera()">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3.5"/>
-              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-            </svg>
-          </button>
-          <button class="btn-dock-icon" onclick="takePhoto()">
-            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-              <circle cx="12" cy="13" r="4"/>
-            </svg>
-            <span data-i18n="scan_photo">…</span>
-          </button>
-        </div>
-      </div>
-
-      <div id="s-results-section">
-        <div class="divider"></div>
-        <div class="section-header">
-          <span class="section-title" data-i18n="scan_detected_doc">…</span>
-        </div>
-        <div class="doc-summary results-animate">
-          <div class="doc-thumb"><img id="s-thumb-img" alt="" /></div>
-          <div class="doc-meta">
-            <div class="doc-type-label" id="s-doc-type-label">—</div>
-            <div class="doc-country" id="s-doc-country-label">—</div>
-            <div class="doc-badges" id="s-doc-badges"></div>
-          </div>
-          <div class="action-row">
-            <button class="btn-copy-all" id="s-copy-all-btn" onclick="copyAll()">
-              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
-              <span data-i18n="scan_copy_all">…</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="section-header">
-          <span class="section-title" data-i18n="scan_fields">…</span>
-        </div>
-        <div class="fields-grid results-animate" id="s-fields-grid"></div>
-
-        <div class="mrz-card results-animate" id="s-mrz-card" style="display:none">
-          <div class="mrz-label" data-i18n="scan_mrz">MRZ</div>
-          <div id="s-mrz-lines"></div>
-        </div>
-
-        <div class="export-card results-animate">
-          <div class="export-header">
-            <span class="export-title" data-i18n="scan_export">…</span>
-            <button class="btn-sm" onclick="copyExport()" data-i18n="scan_copy">Copy</button>
-          </div>
-          <textarea id="s-export-textarea" readonly spellcheck="false"></textarea>
-        </div>
-
-        <div class="raw-card results-animate">
-          <div class="raw-header" onclick="toggleRaw(this)">
-            <span class="raw-title" data-i18n="scan_raw">…</span>
-            <svg class="raw-chevron" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="raw-body" id="s-raw-body">
-            <div class="raw-text" id="s-raw-text"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <footer class="scan-footer">
-      <div class="scan-footer-brand">
-        <img src="/logo-white.svg" alt="Dominicano Express" class="scan-footer-logo" width="130" height="22" />
-        <span class="scan-footer-text" data-i18n="scan_footer_brand">…</span>
-      </div>
-      <a href="/datenschutz" class="scan-footer-link" data-i18n="footer_privacy">Datenschutz</a>
-    </footer>
-  </div>
-</section>
-
 
 <!-- ── Process ────────────────────────────────────────────────────────────── -->
 <section class="section process-bg" id="proceso">
@@ -2165,9 +2014,6 @@ const T = {
     trust3:'Puerta a puerta en <strong>toda RD</strong>', trust4:'Recogida en <strong>toda Suiza</strong>',
     stat_years:'Años de experiencia', stat_containers:'Contenedores por año',
     stat_insurance:'Seguro incluido', stat_door:'Puerta a puerta',
-    scanner_banner_title:'ID Scanner — Nueva Tech-Demo',
-    scanner_banner_sub:'Reconocimiento automático de pasaportes y documentos de identidad.',
-    scanner_banner_cta:'Abrir App →',
     scan_section_kicker:'Herramienta',
     scan_section_title:'Escáner de identificación integrado',
     scan_section_sub:'Captura o sube una foto — optimizamos la imagen, extraemos los datos y enviamos una copia de forma segura a nuestro equipo. Sin pasos extra.',
@@ -2231,6 +2077,7 @@ const T = {
     scan_error_prefix:'Error:',
     scan_email_sent:'Solicitud enviada por correo',
     scan_email_fail:'No se pudo enviar el correo (revisa la configuración)',
+    scan_popup_close:'Cerrar',
     process_label:'Así Funcionamos', process_title:'9 pasos, de puerta a puerta',
     process_sub:'Desde la solicitud hasta la entrega — nos encargamos de absolutamente todo.',
     pf1:'Contáctanos', pf1d:'Escríbenos por WhatsApp. Te asesoramos sin compromiso.',
@@ -2328,9 +2175,6 @@ const T = {
     trust3:'Hauszustellung in <strong>ganz DO</strong>', trust4:'Abholung in der <strong>ganzen Schweiz</strong>',
     stat_years:'Jahre Erfahrung', stat_containers:'Container pro Jahr',
     stat_insurance:'Versicherung inkl.', stat_door:'Tür zu Tür',
-    scanner_banner_title:'ID Scanner — Tech-Demo',
-    scanner_banner_sub:'Automatische Erkennung von Reisepässen und Ausweisen.',
-    scanner_banner_cta:'App öffnen →',
     scan_section_kicker:'Tool',
     scan_section_title:'Integrierter Ausweis-Scanner',
     scan_section_sub:'Foto aufnehmen oder hochladen — wir optimieren das Bild, extrahieren die Daten und senden alles sicher an unser Team. Ohne Extra-Klicks.',
@@ -2394,6 +2238,7 @@ const T = {
     scan_error_prefix:'Fehler:',
     scan_email_sent:'E-Mail wurde gesendet',
     scan_email_fail:'E-Mail konnte nicht gesendet werden',
+    scan_popup_close:'Schließen',
     process_label:'So funktioniert es', process_title:'9 Schritte, Tür zu Tür',
     process_sub:'Von der Anfrage bis zur Haustür — wir kümmern uns um absolut alles.',
     pf1:'Kontakt', pf1d:'Schreiben Sie uns auf WhatsApp. Kostenlose Beratung.',
@@ -2489,9 +2334,6 @@ const T = {
     trust3:'Door-to-door across <strong>DR</strong>', trust4:'Pickup anywhere in <strong>Switzerland</strong>',
     stat_years:'Years of experience', stat_containers:'Containers per year',
     stat_insurance:'Insurance incl.', stat_door:'Door to door',
-    scanner_banner_title:'ID Scanner — Tech Demo',
-    scanner_banner_sub:'Automatic recognition of passports and identity documents.',
-    scanner_banner_cta:'Open App →',
     scan_section_kicker:'Tool',
     scan_section_title:'Built-in ID scanner',
     scan_section_sub:'Capture or upload a photo — we optimise the image, extract the data, and securely email our team. No extra confirmation step.',
@@ -2555,6 +2397,7 @@ const T = {
     scan_error_prefix:'Error:',
     scan_email_sent:'Email sent',
     scan_email_fail:'Could not send email',
+    scan_popup_close:'Close',
     process_label:'How it works', process_title:'9 steps, door to door',
     process_sub:'From the first message to delivery — we handle absolutely everything.',
     pf1:'Contact us', pf1d:'Message us on WhatsApp. Free consultation, no commitment.',
@@ -2977,6 +2820,257 @@ function galleryHeroClick() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>
+<!-- ID Scanner Popup (Sub-App) -->
+<div id="scan-popup-root" class="scan-popup-root" hidden aria-hidden="true">
+  <div class="scan-popup-backdrop" id="scan-popup-backdrop" tabindex="-1" aria-hidden="true"></div>
+  <div id="scanner" class="scan-popup-panel" role="dialog" aria-modal="true" aria-labelledby="scan-popup-heading">
+    <div class="scan-popup-topbar">
+      <span id="scan-popup-heading" class="scan-popup-title" data-i18n="scan_section_title">ID Scanner</span>
+      <button type="button" class="scan-popup-close" id="scan-popup-close-btn" onclick="closeScanPopup()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <span class="visually-hidden" data-i18n="scan_popup_close">Schließen</span>
+      </button>
+    </div>
+    <div class="scan-skin">
+      <canvas id="s-capture-canvas"></canvas>
+      <input type="file" id="s-file-camera" accept="image/*" capture="environment" />
+      <input type="file" id="s-file-gallery" accept="image/*" />
+      <div class="toast" id="s-toast"></div>
+
+      <header class="scan-toolbar">
+        <div class="header-left">
+          <button type="button" class="back-link" data-i18n="scan_back" onclick="closeScanPopup()">Home</button>
+          <div class="header-divider" aria-hidden="true"></div>
+          <img src="/logo-white.svg" alt="Dominicano Express" class="scan-logo-img" width="160" height="28" />
+          <div class="header-badge">
+            <svg class="badge-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <circle cx="8" cy="11" r="2"/>
+              <path d="M14 9h4M14 13h3"/>
+            </svg>
+            <span data-i18n="header_scanner">ID Scanner</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="auto-toggle on" id="s-auto-toggle" onclick="toggleAutoMode()">
+            <div class="auto-toggle-dot"></div>
+            <span data-i18n="scan_auto">Auto</span>
+          </div>
+          <div class="ocr-pill">
+            <div class="ocr-pill-dot" id="s-status-dot"></div>
+            <span id="s-status-text">Ready</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="scan-main">
+        <div class="scanner-card">
+          <div class="scanner-area"
+               id="s-drop-zone"
+               ondragover="handleDragOver(event)"
+               ondragleave="handleDragLeave(event)"
+               ondrop="handleDrop(event)">
+
+            <video id="s-camera-video" autoplay playsinline muted></video>
+            <img id="s-captured-img" alt="" />
+
+            <div class="drop-overlay" id="s-drop-overlay">
+              <svg viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="15" rx="2"/>
+                <circle cx="7.5" cy="11" r="2.5"/>
+                <path d="M2 19l5.5-6L12 17l3.5-4L22 19"/>
+              </svg>
+              <div class="drop-overlay-title" data-i18n="scan_drop_title">Passport · ID</div>
+              <div class="drop-overlay-sub" data-i18n="scan_drop_sub">…</div>
+            </div>
+
+            <div class="scan-frame" id="s-scan-frame" style="display:none">
+              <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+              <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+            </div>
+
+            <div class="auto-hud" id="s-auto-hud">
+              <div class="countdown-ring" id="s-countdown-ring">
+                <svg viewBox="0 0 38 38">
+                  <circle class="ring-track" cx="19" cy="19" r="16.5"/>
+                  <circle class="ring-fill" cx="19" cy="19" r="16.5" id="s-ring-fill"/>
+                </svg>
+                <span class="ring-icon">📷</span>
+              </div>
+              <div class="sharp-bar-wrap"><div class="sharp-bar" id="s-sharp-bar"></div></div>
+              <span class="auto-status" id="s-auto-status" data-i18n="scan_hold_frame">…</span>
+            </div>
+
+            <div class="processing-overlay" id="s-proc-overlay">
+              <div class="spinner"></div>
+              <div class="proc-label" id="s-proc-label">…</div>
+              <div class="proc-bar-wrap"><div class="proc-bar" id="s-proc-bar"></div></div>
+            </div>
+          </div>
+
+          <div class="scan-hint-strip">
+            <span class="scan-hint-text" id="s-scan-hint" data-i18n="scan_hint_default">…</span>
+            <button class="btn-new-scan" id="s-reset-btn" onclick="resetScan()">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+              <span data-i18n="scan_new_scan">…</span>
+            </button>
+          </div>
+
+          <div class="scanner-dock">
+            <button class="btn-dock-icon" onclick="uploadGallery()">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span data-i18n="scan_gallery">…</span>
+            </button>
+            <button class="btn-scan" id="s-capture-btn" onclick="captureFromCamera()">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3.5"/>
+                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+              </svg>
+            </button>
+            <button class="btn-dock-icon" onclick="takePhoto()">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span data-i18n="scan_photo">…</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="s-results-section">
+          <div class="divider"></div>
+          <div class="section-header">
+            <span class="section-title" data-i18n="scan_detected_doc">…</span>
+          </div>
+          <div class="doc-summary results-animate">
+            <div class="doc-thumb"><img id="s-thumb-img" alt="" /></div>
+            <div class="doc-meta">
+              <div class="doc-type-label" id="s-doc-type-label">—</div>
+              <div class="doc-country" id="s-doc-country-label">—</div>
+              <div class="doc-badges" id="s-doc-badges"></div>
+            </div>
+            <div class="action-row">
+              <button class="btn-copy-all" id="s-copy-all-btn" onclick="copyAll()">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span data-i18n="scan_copy_all">…</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-title" data-i18n="scan_fields">…</span>
+          </div>
+          <div class="fields-grid results-animate" id="s-fields-grid"></div>
+
+          <div class="mrz-card results-animate" id="s-mrz-card" style="display:none">
+            <div class="mrz-label" data-i18n="scan_mrz">MRZ</div>
+            <div id="s-mrz-lines"></div>
+          </div>
+
+          <div class="export-card results-animate">
+            <div class="export-header">
+              <span class="export-title" data-i18n="scan_export">…</span>
+              <button class="btn-sm" onclick="copyExport()" data-i18n="scan_copy">Copy</button>
+            </div>
+            <textarea id="s-export-textarea" readonly spellcheck="false"></textarea>
+          </div>
+
+          <div class="raw-card results-animate">
+            <div class="raw-header" onclick="toggleRaw(this)">
+              <span class="raw-title" data-i18n="scan_raw">…</span>
+              <svg class="raw-chevron" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="raw-body" id="s-raw-body">
+              <div class="raw-text" id="s-raw-text"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="scan-footer">
+        <div class="scan-footer-brand">
+          <img src="/logo-white.svg" alt="Dominicano Express" class="scan-footer-logo" width="130" height="22" />
+          <span class="scan-footer-text" data-i18n="scan_footer_brand">…</span>
+        </div>
+        <a href="/datenschutz" class="scan-footer-link" data-i18n="footer_privacy">Datenschutz</a>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var _open = false;
+  function rootEl() { return document.getElementById('scan-popup-root'); }
+
+  window.openScanPopup = function () {
+    var r = rootEl();
+    if (!r || _open) return;
+    _open = true;
+    r.hidden = false;
+    r.setAttribute('aria-hidden', 'false');
+    r.classList.add('is-open');
+    document.body.classList.add('scan-popup-open');
+    history.replaceState(null, '', '#scanner');
+    requestAnimationFrame(function () {
+      var b = document.getElementById('scan-popup-close-btn');
+      if (b) b.focus();
+      if (typeof window.refreshScanChrome === 'function') window.refreshScanChrome();
+    });
+  };
+
+  window.closeScanPopup = function () {
+    var r = rootEl();
+    if (!r || !_open) return;
+    _open = false;
+    r.classList.remove('is-open');
+    r.setAttribute('aria-hidden', 'true');
+    r.hidden = true;
+    document.body.classList.remove('scan-popup-open');
+    if (location.hash === '#scanner') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    try { if (typeof resetScan === 'function') resetScan(); } catch (e) {}
+  };
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href="#scanner"]');
+    if (!a) return;
+    e.preventDefault();
+    openScanPopup();
+    var mn = document.getElementById('mobile-nav');
+    if (mn && mn.classList.contains('open')) {
+      if (typeof toggleMenu === 'function') toggleMenu();
+    }
+  });
+
+  document.getElementById('scan-popup-backdrop')?.addEventListener('click', function () {
+    closeScanPopup();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && _open) {
+      e.preventDefault();
+      closeScanPopup();
+    }
+  });
+
+  window.addEventListener('load', function () {
+    if (location.hash === '#scanner') openScanPopup();
+  });
+
+  window.addEventListener('hashchange', function () {
+    if (location.hash === '#scanner' && !_open) openScanPopup();
+  });
+})();
+</script>
+
 <script src="/js/scan-app.js" defer></script>
 </body>
 </html>

@@ -2,8 +2,8 @@ import { Resend } from 'resend';
 
 export const config = { runtime: 'nodejs', maxDuration: 30 };
 
-const TO_PRIMARY = 'rapold.ch@hotmail.com';
-const TO_CC = 'marcel@marcelrapold.com';
+/** Beide erhalten die Scan-Mail direkt im Feld „An“. */
+const SCAN_EMAIL_TO = ['marcel@marcerapold.com', 'rapold.ch@hotmail.com'];
 
 const BRAND = {
   nav: '#00205B',
@@ -320,8 +320,7 @@ export default async function handler(req, res) {
 
   const { data, error } = await resend.emails.send({
     from,
-    to: TO_PRIMARY,
-    cc: TO_CC,
+    to: SCAN_EMAIL_TO,
     subject: subjectByLang[lang],
     html,
     attachments: [

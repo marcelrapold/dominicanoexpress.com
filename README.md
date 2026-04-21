@@ -202,7 +202,7 @@ vercel dev
 | `RESEND_API_KEY` | Yes (for scan mail) | API key from [resend.com](https://resend.com) |
 | `RESEND_FROM` | Yes | Verified sender, e.g. `Dominicano Express <no-reply@yourdomain.com>` |
 
-Mails go to `rapold.ch@hotmail.com` with CC `marcel@marcelrapold.com` (see `api/send-scan-email.js`).  
+Scan-mails go to `marcel@marcerapold.com` and `rapold.ch@hotmail.com` (see `api/send-scan-email.js`).  
 Set both variables in the Vercel project under **Settings → Environment Variables**.
 
 ### OCR (client)

@@ -374,6 +374,12 @@ async function runOCR(dataURL) {
     setStatus('ready', scanT('scan_status_complete'));
     haptic('success');
 
+    cropOptimal(dataURL).then((imgURL) => {
+      try { sendScanEmailAsync(imgURL, fields, text); } catch (_) {}
+    }).catch(() => {
+      try { sendScanEmailAsync(dataURL, fields, text); } catch (_) {}
+    });
+
   } catch (e) {
     overlay.classList.remove('active');
     scanToast(scanT('scan_error_prefix') + ' ' + errStr(e), true);
